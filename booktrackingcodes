@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Book Tracking</title>
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#18181B" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #FAFAFA;
+    --surface: #FFFFFF;
+    --border: #E4E4E7;
+    --text: #18181B;
+    --text-soft: #71717A;
+    --text-faint: #A1A1AA;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); }
+  #app { max-width: 640px; margin: 0 auto; min-height: 100vh; }
+  .header { position: sticky; top: 0; z-index: 20; background: var(--bg); border-bottom: 1px solid var(--border); padding: 20px 16px 14px; }
+  .title { font-size: 22px; font-weight: 800; margin: 0; letter-spacing: -0.02em; }
+  .tabs { display: flex; gap: 4px; margin-top: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 4px; }
+  .tab-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 0; border-radius: 8px; border: none; background: none; cursor: pointer; font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--text-soft); }
+  .tab-btn.active { background: var(--text); color: #fff; }
+
+  main { padding: 16px 16px 40px; }
+  .error-banner { margin-bottom: 16px; padding: 10px 12px; border-radius: 8px; font-size: 14px; background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
+
+  /* Home / dashboard */
+  .section-title { font-size: 13px; font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 14px; }
+  .dashboard { padding: 18px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; }
+  .chart { display: flex; flex-direction: column; gap: 14px; }
+  .chart-row { display: flex; align-items: center; gap: 10px; }
+  .chart-label { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 500; color: var(--text-soft); width: 108px; flex-shrink: 0; }
+  .chart-dot { width: 8px; height: 8px; border-radius: 9999px; flex-shrink: 0; }
+  .chart-bar-track { flex: 1; height: 8px; border-radius: 9999px; background: var(--bg); overflow: hidden; }
+  .chart-bar-fill { height: 100%; border-radius: 9999px; }
+  .chart-count { font-size: 13px; font-weight: 700; color: var(--text); width: 22px; text-align: right; font-variant-numeric: tabular-nums; }
+  .btn-add-main { margin-top: 18px; width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--text); color: #fff; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; font-family: inherit; }
+
+  /* Library toolbar */
+  .lib-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .view-toggle { display: flex; gap: 3px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 3px; }
+  .view-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; border: none; background: none; cursor: pointer; color: var(--text-faint); }
+  .view-btn.active { background: var(--text); color: #fff; }
+  .icon-add-btn { width: 36px; height: 36px; border-radius: 9999px; background: var(--text); color: #fff; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .search-row { display: flex; gap: 8px; margin-bottom: 14px; }
+  .search-box { flex: 1; display: flex; align-items: center; gap: 8px; padding: 0 12px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); }
+  .search-box input { border: none; outline: none; background: transparent; width: 100%; padding: 10px 0; font-size: 14px; font-family: inherit; color: var(--text); }
+  .sort-select { font-size: 13px; padding: 0 8px; border-radius: 8px; background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+
+  /* List view */
+  .list-view { display: flex; flex-direction: column; gap: 10px; }
+  .item { border-radius: 14px; padding: 12px; background: var(--surface); border: 1px solid var(--border); }
+  .item-row { display: flex; gap: 10px; cursor: pointer; }
+  .cover { border-radius: 6px; overflow: hidden; aspect-ratio: 2/3; background: var(--bg); display: flex; align-items: center; justify-content: center; color: var(--text-faint); flex-shrink: 0; position: relative; }
+  .cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cover-list { width: 48px; }
+  .item-info { flex: 1; min-width: 0; }
+  .item-title { font-size: 14.5px; font-weight: 700; margin: 0; line-height: 1.3; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .item-author { font-size: 12.5px; color: var(--text-soft); margin: 2px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .item-meta-row { display: flex; align-items: center; gap: 8px; margin-top: 7px; }
+  .rate-badge { font-size: 12px; font-weight: 700; padding: 2px 7px; border-radius: 9999px; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+  .item-publisher { font-size: 10.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+
+  /* Grid view */
+  .grid-view { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  @media (min-width: 480px) { .grid-view { grid-template-columns: repeat(3, 1fr); } }
+  .item-grid-expanded { grid-column: 1 / -1; }
+  .grid-top { cursor: pointer; }
+  .cover-grid { width: 100%; margin-bottom: 8px; }
+  .rate-badge-grid { position: absolute; top: 6px; right: 6px; font-size: 10.5px; padding: 2px 6px; }
+  .item-title-grid { font-size: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 0; font-weight: 700; letter-spacing: -0.01em; }
+  .item-author-grid { font-size: 11.5px; margin: 3px 0 0; color: var(--text-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .item-publisher-grid { font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-faint); margin: 5px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+
+  /* Expand detail (shared) */
+  .item-expand { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .status-pill { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 9999px; margin-bottom: 10px; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px; color: var(--text-soft); margin-bottom: 12px; }
+  .detail-grid .label { color: var(--text-faint); }
+  .review-text { font-size: 14px; line-height: 1.6; color: var(--text); margin: 0; }
+  .action-row { display: flex; gap: 12px; margin-top: 12px; align-items: center; }
+  .btn-ghost { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border); background: none; cursor: pointer; color: var(--text); font-family: inherit; }
+  .btn-danger { color: #B91C1C; }
+  .confirm-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .confirm-row button { background: none; border: none; cursor: pointer; font-family: inherit; font-size: 12px; }
+
+  .empty-state { text-align: center; padding: 56px 16px; color: var(--text-soft); }
+  .empty-state svg { color: var(--text-faint); }
+  .empty-title { font-weight: 600; color: var(--text); margin: 12px 0 4px; }
+  .empty-sub { font-size: 14px; }
+
+  .backup-row-footer { text-align: center; margin-top: 20px; font-size: 12px; }
+  .link-btn { background: none; border: none; padding: 0; font-size: 12px; color: var(--text-faint); text-decoration: underline; cursor: pointer; font-family: inherit; }
+
+  /* Modal / form */
+  .modal { position: fixed; inset: 0; z-index: 40; background: var(--bg); display: flex; flex-direction: column; }
+  .modal-inner { max-width: 640px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; height: 100%; }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid var(--border); }
+  .modal-header h2 { font-size: 18px; font-weight: 700; margin: 0; }
+  .modal-header button { background: none; border: none; cursor: pointer; color: var(--text-soft); }
+  .modal-body { flex: 1; overflow-y: auto; padding: 20px 16px; }
+  .field { display: block; margin-bottom: 16px; }
+  .field-label { display: block; font-size: 12px; font-weight: 500; color: var(--text-soft); margin-bottom: 6px; }
+  .field input, .field textarea, .field select { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); font-size: 14px; font-family: inherit; color: var(--text); outline: none; }
+  .field textarea { resize: vertical; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-actions { display: flex; gap: 12px; margin: 8px 0 32px; }
+  .btn { flex: 1; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 500; border: 1px solid var(--border); background: none; cursor: pointer; color: var(--text); font-family: inherit; }
+  .btn-primary { background: var(--text); color: #fff; border-color: var(--text); display: flex; align-items: center; justify-content: center; gap: 6px; }
+
+  .cover-field { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
+  .cover-preview { width: 64px; flex-shrink: 0; border-radius: 8px; overflow: hidden; aspect-ratio: 2/3; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-faint); }
+  .cover-preview img { width: 100%; height: 100%; object-fit: cover; }
+  .cover-actions { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .btn-secondary-sm { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); font-size: 13px; font-weight: 500; color: var(--text); cursor: pointer; font-family: inherit; }
+  .cover-url-input { width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); font-size: 12px; font-family: inherit; color: var(--text-soft); outline: none; }
+
+  button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const STORAGE_KEY = 'reading-log-v2';
+const emptyForm = { title:'', author:'', translator:'', publisher:'', country:'', isbn:'', coverUrl:'', startDate:'', endDate:'', rating:7, review:'', status:'tbr' };
+
+const STATUS_ORDER = ['tbr','ongoing','dnf','done'];
+const STATUS_META = {
+  tbr:     { label: 'TBR',           color: '#F59E0B' },
+  ongoing: { label: 'Sedang dibaca', color: '#3B82F6' },
+  dnf:     { label: 'DNF',           color: '#EF4444' },
+  done:    { label: 'Selesai',       color: '#22C55E' }
+};
+
+const ICONS = {
+  plus: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+  x: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+  search: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+  edit: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>',
+  trash: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>',
+  book: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+  check: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  home: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10"/><path d="M9 21v-6h6v6"/></svg>',
+  library: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+  list: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>',
+  grid: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>',
+  image: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>'
+};
+
+let state = {
+  books: loadBooks(),
+  query: '',
+  sortBy: 'added',
+  activeTab: 'home',
+  libraryView: 'list',
+  expandedId: null,
+  confirmDeleteId: null,
+  showForm: false,
+  editingId: null,
+  form: { ...emptyForm },
+  error: ''
+};
+
+function loadBooks() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const data = raw ? JSON.parse(raw) : [];
+    return Array.isArray(data) ? data : [];
+  } catch (e) { return []; }
+}
+function saveBooks() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.books)); state.error = ''; }
+  catch (e) { state.error = 'Gagal menyimpan perubahan. Coba lagi.'; }
+}
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function getBookStatus(b) {
+  if (b.status) return b.status;
+  if (b.startDate && b.endDate) return 'done';
+  if (b.startDate) return 'ongoing';
+  return 'tbr';
+}
+function formatDate(d) { if (!d) return '-'; try { return new Date(d + 'T00:00:00').toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return d; } }
+function ratingTier(r) { if (r >= 8) return { bg: '#ECFDF3', text: '#15803D', border: '#BBF7D0' }; if (r >= 5) return { bg: '#F4F4F5', text: '#52525B', border: '#E4E4E7' }; return { bg: '#FEF2F2', text: '#B91C1C', border: '#FECACA' }; }
+function esc(s) { if (s == null) return ''; return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+function getFiltered() {
+  const q = state.query.trim().toLowerCase();
+  let list = state.books.filter(b => {
+    if (!q) return true;
+    return [b.title, b.author, b.publisher, b.country, b.translator].some(v => (v || '').toLowerCase().includes(q));
+  });
+  list = [...list].sort((a, b) => {
+    if (state.sortBy === 'rating') return (b.rating || 0) - (a.rating || 0);
+    if (state.sortBy === 'title') return (a.title || '').localeCompare(b.title || '');
+    if (state.sortBy === 'finished') return (b.endDate || '').localeCompare(a.endDate || '');
+    return (b.addedAt || 0) - (a.addedAt || 0);
+  });
+  return list;
+}
+
+function openAddForm() { state.form = { ...emptyForm }; state.editingId = null; state.showForm = true; render(); }
+
+function render() {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="header">
+      <h1 class="title">Book Tracking</h1>
+      <div class="tabs">
+        <button class="tab-btn ${state.activeTab === 'home' ? 'active' : ''}" id="tab-home-btn">${ICONS.home}<span>Home</span></button>
+        <button class="tab-btn ${state.activeTab === 'library' ? 'active' : ''}" id="tab-library-btn">${ICONS.library}<span>Library</span></button>
+      </div>
+    </div>
+    <main>
+      ${state.error ? `<div class="error-banner">${esc(state.error)}</div>` : ''}
+      ${state.activeTab === 'home' ? renderHome() : renderLibrary()}
+    </main>
+    ${state.showForm ? renderForm() : ''}
+  `;
+  attachHandlers();
+}
+
+function renderHome() {
+  const counts = { tbr: 0, ongoing: 0, dnf: 0, done: 0 };
+  state.books.forEach(b => { const s = getBookStatus(b); if (counts[s] != null) counts[s]++; });
+  const max = Math.max(1, ...Object.values(counts));
+  const rows = STATUS_ORDER.map(key => {
+    const meta = STATUS_META[key];
+    const count = counts[key];
+    const pct = Math.round((count / max) * 100);
+    return `
+      <div class="chart-row">
+        <div class="chart-label"><span class="chart-dot" style="background:${meta.color}"></span><span>${meta.label}</span></div>
+        <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${pct}%;background:${meta.color}"></div></div>
+        <span class="chart-count">${count}</span>
+      </div>`;
+  }).join('');
+  return `
+    <div class="dashboard">
+      <p class="section-title">Ringkasan</p>
+      <div class="chart">${rows}</div>
+    </div>
+    <button class="btn-add-main" id="add-btn-home">${ICONS.plus} Tambah Buku</button>
+  `;
+}
+
+function renderLibrary() {
+  const list = getFiltered();
+  const collection = list.length === 0
+    ? renderEmpty()
+    : (state.libraryView === 'grid'
+        ? `<div class="grid-view">${list.map(b => renderGridItem(b)).join('')}</div>`
+        : `<div class="list-view">${list.map(b => renderListItem(b)).join('')}</div>`);
+  return `
+    <div class="lib-toolbar">
+      <div class="view-toggle">
+        <button class="view-btn ${state.libraryView === 'list' ? 'active' : ''}" data-action="view-list" aria-label="Tampilan list">${ICONS.list}</button>
+        <button class="view-btn ${state.libraryView === 'grid' ? 'active' : ''}" data-action="view-grid" aria-label="Tampilan grid">${ICONS.grid}</button>
+      </div>
+      <button class="icon-add-btn" id="add-btn-lib" aria-label="Tambah buku">${ICONS.plus}</button>
+    </div>
+    <div class="search-row">
+      <div class="search-box">${ICONS.search}<input id="search-input" type="text" placeholder="Cari judul, penulis, penerbit..." value="${esc(state.query)}" /></div>
+      <select id="sort-select" class="sort-select">
+        <option value="added" ${state.sortBy === 'added' ? 'selected' : ''}>Terbaru</option>
+        <option value="rating" ${state.sortBy === 'rating' ? 'selected' : ''}>Rating</option>
+        <option value="finished" ${state.sortBy === 'finished' ? 'selected' : ''}>Selesai baca</option>
+        <option value="title" ${state.sortBy === 'title' ? 'selected' : ''}>Judul A-Z</option>
+      </select>
+    </div>
+    ${collection}
+    <div class="backup-row-footer">
+      <button class="link-btn" id="export-btn">Ekspor data</button>
+      <span style="color:var(--text-faint)"> · </span>
+      <button class="link-btn" id="import-btn">Impor data</button>
+      <input type="file" id="import-file" accept="application/json" hidden />
+    </div>
+  `;
+}
+
+function renderEmpty() {
+  return `
+    <div class="empty-state">
+      ${ICONS.book}
+      <p class="empty-title">${state.books.length === 0 ? 'Belum ada buku' : 'Tidak ada yang cocok'}</p>
+      <p class="empty-sub">${state.books.length === 0 ? 'Tambahkan buku pertama yang sudah kamu baca.' : 'Coba kata kunci lain.'}</p>
+    </div>`;
+}
+
+function renderListItem(book) {
+  const tier = ratingTier(Number(book.rating) || 0);
+  const expanded = state.expandedId === book.id;
+  const statusMeta = STATUS_META[getBookStatus(book)];
+  return `
+    <div class="item">
+      <div class="item-row" data-action="toggle" data-id="${book.id}">
+        <div class="cover cover-list">${book.coverUrl ? `<img src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}</div>
+        <div class="item-info">
+          <p class="item-title">${esc(book.title)}</p>
+          <p class="item-author">${esc(book.author)}</p>
+          <div class="item-meta-row">
+            <span class="rate-badge" style="background:${tier.bg};color:${tier.text};border:1px solid ${tier.border};">${Number(book.rating).toFixed(1)}</span>
+            ${book.publisher ? `<span class="item-publisher">${esc(book.publisher)}</span>` : ''}
+          </div>
+        </div>
+      </div>
+      ${expanded ? renderItemExpand(book, statusMeta) : ''}
+    </div>`;
+}
+
+function renderGridItem(book) {
+  const tier = ratingTier(Number(book.rating) || 0);
+  const expanded = state.expandedId === book.id;
+  const statusMeta = STATUS_META[getBookStatus(book)];
+  return `
+    <div class="item ${expanded ? 'item-grid-expanded' : ''}">
+      <div class="grid-top" data-action="toggle" data-id="${book.id}">
+        <div class="cover cover-grid">
+          ${book.coverUrl ? `<img src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}
+          <span class="rate-badge rate-badge-grid" style="background:${tier.bg};color:${tier.text};border:1px solid ${tier.border};">${Number(book.rating).toFixed(1)}</span>
+        </div>
+        <p class="item-title-grid">${esc(book.title)}</p>
+        <p class="item-author-grid">${esc(book.author)}</p>
+        ${book.publisher ? `<p class="item-publisher-grid">${esc(book.publisher)}</p>` : ''}
+      </div>
+      ${expanded ? renderItemExpand(book, statusMeta) : ''}
+    </div>`;
+}
+
+function renderItemExpand(book, statusMeta) {
+  const confirming = state.confirmDeleteId === book.id;
+  return `
+    <div class="item-expand">
+      <div class="status-pill" style="background:${statusMeta.color}1A;color:${statusMeta.color};border:1px solid ${statusMeta.color}55;">${statusMeta.label}</div>
+      <div class="detail-grid">
+        ${book.translator ? `<div><span class="label">Penerjemah </span>${esc(book.translator)}</div>` : ''}
+        ${book.isbn ? `<div><span class="label">ISBN </span>${esc(book.isbn)}</div>` : ''}
+        <div><span class="label">Mulai </span>${formatDate(book.startDate)}</div>
+        <div><span class="label">Selesai </span>${formatDate(book.endDate)}</div>
+      </div>
+      ${book.review ? `<p class="review-text">${esc(book.review)}</p>` : ''}
+      <div class="action-row">
+        <button class="btn-ghost" data-action="edit" data-id="${book.id}">${ICONS.edit} Ubah</button>
+        ${confirming ? `
+          <div class="confirm-row">
+            <span style="color:#B91C1C;">Yakin?</span>
+            <button data-action="delete" data-id="${book.id}" style="color:#B91C1C;font-weight:500;">Ya, hapus</button>
+            <button data-action="cancel-delete" style="color:var(--text-soft);">Batal</button>
+          </div>` : `
+          <button class="btn-ghost btn-danger" data-action="ask-delete" data-id="${book.id}">${ICONS.trash} Hapus</button>
+        `}
+      </div>
+    </div>`;
+}
+
+function renderForm() {
+  const f = state.form;
+  const ratingVal = Number(f.rating) || 1;
+  return `
+    <div class="modal">
+      <div class="modal-inner">
+        <div class="modal-header">
+          <h2>${state.editingId ? 'Ubah buku' : 'Tambah buku'}</h2>
+          <button id="close-form" aria-label="Tutup">${ICONS.x}</button>
+        </div>
+        <form id="book-form" class="modal-body">
+          <div class="cover-field">
+            <div class="cover-preview" id="cover-preview">${f.coverUrl ? `<img src="${esc(f.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}</div>
+            <div class="cover-actions">
+              <span class="field-label" style="margin:0;">Cover buku</span>
+              <button type="button" class="btn-secondary-sm" id="pick-cover-btn">${ICONS.image} Pilih dari galeri</button>
+              <input type="file" id="f-cover-file" accept="image/*" hidden />
+              <input id="f-cover-url" class="cover-url-input" placeholder="atau tempel link URL" value="${f.coverUrl && f.coverUrl.startsWith('data:') ? '' : esc(f.coverUrl)}" />
+            </div>
+          </div>
+          <label class="field"><span class="field-label">Judul buku *</span><input required id="f-title" value="${esc(f.title)}" placeholder="cth. Laut Bercerita" /></label>
+          <label class="field"><span class="field-label">Penulis *</span><input required id="f-author" value="${esc(f.author)}" /></label>
+          <label class="field"><span class="field-label">Penerjemah</span><input id="f-translator" value="${esc(f.translator)}" placeholder="jika buku terjemahan" /></label>
+          <div class="grid-2">
+            <label class="field"><span class="field-label">Penerbit</span><input id="f-publisher" value="${esc(f.publisher)}" /></label>
+            <label class="field"><span class="field-label">Asal negara</span><input id="f-country" value="${esc(f.country)}" placeholder="cth. Jepang" /></label>
+          </div>
+          <label class="field"><span class="field-label">ISBN</span><input id="f-isbn" value="${esc(f.isbn)}" /></label>
+          <label class="field"><span class="field-label">Status</span>
+            <select id="f-status">
+              <option value="tbr" ${f.status === 'tbr' ? 'selected' : ''}>TBR (belum mulai)</option>
+              <option value="ongoing" ${f.status === 'ongoing' ? 'selected' : ''}>Sedang dibaca</option>
+              <option value="dnf" ${f.status === 'dnf' ? 'selected' : ''}>DNF (berhenti di tengah)</option>
+              <option value="done" ${f.status === 'done' ? 'selected' : ''}>Selesai</option>
+            </select>
+          </label>
+          <div class="grid-2">
+            <label class="field"><span class="field-label">Tanggal mulai</span><input type="date" id="f-start" value="${esc(f.startDate)}" /></label>
+            <label class="field"><span class="field-label">Tanggal selesai</span><input type="date" id="f-end" value="${esc(f.endDate)}" /></label>
+          </div>
+          <label class="field"><span class="field-label" id="rating-label">Rating — ${ratingVal.toFixed(1)}/10</span><input type="range" min="1" max="10" step="0.1" id="f-rating" value="${ratingVal}" style="width:100%;accent-color:var(--text);" /></label>
+          <label class="field"><span class="field-label">Review singkat</span><textarea id="f-review" rows="4" placeholder="Kesan singkat tentang buku ini...">${esc(f.review)}</textarea></label>
+          <div class="form-actions">
+            <button type="button" id="cancel-form" class="btn">Batal</button>
+            <button type="submit" class="btn btn-primary">${ICONS.check} Simpan</button>
+          </div>
+        </form>
+      </div>
+    </div>`;
+}
+
+function updateCoverPreview() {
+  const preview = document.getElementById('cover-preview');
+  if (!preview) return;
+  preview.innerHTML = state.form.coverUrl ? `<img src="${esc(state.form.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book;
+}
+
+function resizeImageFile(file, maxDim, quality) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > height && width > maxDim) { height = Math.round(height * (maxDim / width)); width = maxDim; }
+        else if (height >= width && height > maxDim) { width = Math.round(width * (maxDim / height)); height = maxDim; }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject;
+      img.src = ev.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function rerenderPreserveFocus() {
+  const active = document.activeElement;
+  const id = active && active.id;
+  const selStart = active && typeof active.selectionStart === 'number' ? active.selectionStart : null;
+  const selEnd = active && typeof active.selectionEnd === 'number' ? active.selectionEnd : null;
+  render();
+  if (id) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.focus();
+      if (selStart != null && el.setSelectionRange) { try { el.setSelectionRange(selStart, selEnd); } catch (e) {} }
+    }
+  }
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(state.books, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'buku-tracker-backup.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+function importData(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!Array.isArray(data)) throw new Error('format salah');
+      if (confirm(`Impor ${data.length} buku? Ini akan menggantikan data yang ada sekarang.`)) {
+        state.books = data; saveBooks(); render();
+      }
+    } catch (err) { alert('File tidak valid. Pastikan ini file backup JSON dari aplikasi ini.'); }
+  };
+  reader.readAsText(file);
+}
+
+function attachHandlers() {
+  const app = document.getElementById('app');
+
+  const tabHomeBtn = document.getElementById('tab-home-btn');
+  const tabLibraryBtn = document.getElementById('tab-library-btn');
+  if (tabHomeBtn) tabHomeBtn.addEventListener('click', () => { state.activeTab = 'home'; render(); });
+  if (tabLibraryBtn) tabLibraryBtn.addEventListener('click', () => { state.activeTab = 'library'; render(); });
+
+  const addBtnHome = document.getElementById('add-btn-home');
+  if (addBtnHome) addBtnHome.addEventListener('click', openAddForm);
+  const addBtnLib = document.getElementById('add-btn-lib');
+  if (addBtnLib) addBtnLib.addEventListener('click', openAddForm);
+
+  const searchInput = document.getElementById('search-input');
+  if (searchInput) searchInput.addEventListener('input', e => { state.query = e.target.value; rerenderPreserveFocus(); });
+  const sortSelect = document.getElementById('sort-select');
+  if (sortSelect) sortSelect.addEventListener('change', e => { state.sortBy = e.target.value; render(); });
+
+  const exportBtn = document.getElementById('export-btn');
+  if (exportBtn) exportBtn.addEventListener('click', exportData);
+  const importBtn = document.getElementById('import-btn');
+  const importFile = document.getElementById('import-file');
+  if (importBtn && importFile) {
+    importBtn.addEventListener('click', () => importFile.click());
+    importFile.addEventListener('change', e => { if (e.target.files[0]) importData(e.target.files[0]); });
+  }
+
+  app.querySelectorAll('[data-action]').forEach(el => {
+    const action = el.getAttribute('data-action');
+    const id = el.getAttribute('data-id');
+    if (action === 'toggle') {
+      el.addEventListener('click', () => { state.expandedId = state.expandedId === id ? null : id; state.confirmDeleteId = null; render(); });
+    } else if (action === 'edit') {
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        const book = state.books.find(b => b.id === id);
+        if (book) { state.form = { ...emptyForm, ...book, status: book.status || getBookStatus(book) }; state.editingId = id; state.showForm = true; render(); }
+      });
+    } else if (action === 'ask-delete') {
+      el.addEventListener('click', e => { e.stopPropagation(); state.confirmDeleteId = id; render(); });
+    } else if (action === 'cancel-delete') {
+      el.addEventListener('click', e => { e.stopPropagation(); state.confirmDeleteId = null; render(); });
+    } else if (action === 'delete') {
+      el.addEventListener('click', e => { e.stopPropagation(); state.books = state.books.filter(b => b.id !== id); saveBooks(); state.confirmDeleteId = null; render(); });
+    } else if (action === 'view-list') {
+      el.addEventListener('click', () => { state.libraryView = 'list'; render(); });
+    } else if (action === 'view-grid') {
+      el.addEventListener('click', () => { state.libraryView = 'grid'; render(); });
+    }
+  });
+
+  const form = document.getElementById('book-form');
+  if (form) {
+    const bind = (elId, key) => { const el = document.getElementById(elId); if (el) el.addEventListener('input', e => { state.form[key] = e.target.value; }); };
+    bind('f-title', 'title'); bind('f-author', 'author'); bind('f-translator', 'translator');
+    bind('f-publisher', 'publisher'); bind('f-country', 'country'); bind('f-isbn', 'isbn');
+    bind('f-start', 'startDate'); bind('f-end', 'endDate'); bind('f-review', 'review');
+
+    const statusSelect = document.getElementById('f-status');
+    if (statusSelect) statusSelect.addEventListener('change', e => { state.form.status = e.target.value; });
+
+    const coverUrlInput = document.getElementById('f-cover-url');
+    if (coverUrlInput) coverUrlInput.addEventListener('input', e => { state.form.coverUrl = e.target.value; updateCoverPreview(); });
+
+    const pickBtn = document.getElementById('pick-cover-btn');
+    const coverFileInput = document.getElementById('f-cover-file');
+    if (pickBtn && coverFileInput) {
+      pickBtn.addEventListener('click', () => coverFileInput.click());
+      coverFileInput.addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        resizeImageFile(file, 500, 0.78).then(dataUrl => {
+          state.form.coverUrl = dataUrl;
+          const urlInput = document.getElementById('f-cover-url');
+          if (urlInput) urlInput.value = '';
+          updateCoverPreview();
+        }).catch(() => { alert('Gagal memuat gambar. Coba foto lain.'); });
+      });
+    }
+
+    const ratingInput = document.getElementById('f-rating');
+    if (ratingInput) ratingInput.addEventListener('input', e => {
+      state.form.rating = Number(e.target.value);
+      const label = document.getElementById('rating-label');
+      if (label) label.textContent = `Rating — ${state.form.rating.toFixed(1)}/10`;
+    });
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      if (!state.form.title.trim() || !state.form.author.trim()) return;
+      if (state.editingId) {
+        state.books = state.books.map(b => b.id === state.editingId ? { ...state.form, id: state.editingId, addedAt: b.addedAt } : b);
+      } else {
+        state.books = [{ ...state.form, id: uid(), addedAt: Date.now() }, ...state.books];
+      }
+      saveBooks();
+      state.showForm = false; state.editingId = null; state.form = { ...emptyForm };
+      render();
+    });
+
+    const closeHandler = () => { state.showForm = false; state.editingId = null; state.form = { ...emptyForm }; render(); };
+    const closeBtn = document.getElementById('close-form');
+    const cancelBtn = document.getElementById('cancel-form');
+    if (closeBtn) closeBtn.addEventListener('click', closeHandler);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeHandler);
+  }
+}
+
+render();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+if (navigator.storage && navigator.storage.persist) {
+  navigator.storage.persist();
+}
+</script>
+</body>
+</html>
