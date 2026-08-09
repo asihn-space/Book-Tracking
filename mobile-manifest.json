@@ -2,7 +2,7 @@
   "id": "/Book-Tracking/",
   "name": "Book Tracking",
   "short_name": "Book Tracking",
-  "description": "Pelacak buku pribadi",
+  "description": "Pelacak Buku Pribadi",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
