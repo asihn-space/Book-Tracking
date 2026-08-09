@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,7 +7,7 @@
 <link rel="manifest" href="manifest.json" />
 <meta name="theme-color" content="#18181B" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&family=Source+Serif+4:wght@600;700&family=Sacramento&display=swap" rel="stylesheet" />
 <style>
   :root {
     --bg: #FAFAFA;
@@ -16,21 +16,38 @@
     --text: #18181B;
     --text-soft: #71717A;
     --text-faint: #A1A1AA;
+    --accent: #0CBAA6;
+    --accent-rgb: 12, 186, 166;
+    --accent-contrast: #FFFFFF;
+    --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
+    --font-body: 'Outfit', system-ui, -apple-system, sans-serif;
+    --font-title: 'Playfair Display', Georgia, serif;
+    --font-title-home: 'Source Serif 4', Georgia, serif;
+    --font-script: 'Sacramento', cursive;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); }
+  body { margin: 0; font-family: var(--font-body); background: var(--bg); color: var(--text); }
   #app { max-width: 640px; margin: 0 auto; min-height: 100vh; }
   .header { position: sticky; top: 0; z-index: 20; background: var(--bg); border-bottom: 1px solid var(--border); padding: 20px 16px 14px; }
-  .title { font-size: 22px; font-weight: 800; margin: 0; letter-spacing: -0.02em; }
+  .title { font-family: var(--font-display); font-size: 21px; font-weight: 800; margin: 0; text-transform: uppercase; letter-spacing: 0.05em; }
+  .header-name { font-family: var(--font-script); font-size: 26px; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--accent); margin-left: 4px; vertical-align: middle; }
   .tabs { display: flex; gap: 4px; margin-top: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 4px; }
   .tab-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 0; border-radius: 8px; border: none; background: none; cursor: pointer; font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--text-soft); }
-  .tab-btn.active { background: var(--text); color: #fff; }
+  .tab-btn.active { background: var(--accent); color: var(--accent-contrast); }
+  .header-top-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .settings-btn { background: none; border: none; cursor: pointer; color: var(--text-soft); padding: 4px; margin-top: 1px; flex-shrink: 0; }
+  .swatch-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .swatch-btn { width: 100%; aspect-ratio: 1; border-radius: 9999px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; outline-offset: 3px; }
+  .swatch-btn.active { outline: 3px solid var(--text); }
+  .swatch-hint { font-size: 12.5px; color: var(--text-soft); margin: 14px 0 0; }
 
   main { padding: 16px 16px 40px; }
   .error-banner { margin-bottom: 16px; padding: 10px 12px; border-radius: 8px; font-size: 14px; background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
 
   /* Home / dashboard */
-  .section-title { font-size: 13px; font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 14px; }
+  .welcome-row { margin: 0 0 16px; font-size: 15px; color: var(--text); font-weight: 500; }
+  .welcome-name { font-family: var(--font-script); font-size: 26px; font-weight: 400; color: var(--accent); cursor: pointer; margin-left: 3px; }
+  .section-title { font-family: var(--font-display); font-size: 13px; font-weight: 800; color: var(--text); text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 14px; }
   .dashboard { padding: 18px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; }
   .chart { display: flex; flex-direction: column; gap: 14px; }
   .chart-row { display: flex; align-items: center; gap: 10px; }
@@ -38,51 +55,75 @@
   .chart-dot { width: 8px; height: 8px; border-radius: 9999px; flex-shrink: 0; }
   .chart-bar-track { flex: 1; height: 8px; border-radius: 9999px; background: var(--bg); overflow: hidden; }
   .chart-bar-fill { height: 100%; border-radius: 9999px; }
-  .chart-count { font-size: 13px; font-weight: 700; color: var(--text); width: 22px; text-align: right; font-variant-numeric: tabular-nums; }
-  .btn-add-main { margin-top: 18px; width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--text); color: #fff; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; font-family: inherit; }
+  .chart-count { font-size: 13px; font-weight: 600; color: var(--text-soft); width: 22px; text-align: right; font-variant-numeric: tabular-nums; }
+  .home-view { padding-bottom: 90px; }
+  .dashboard + .dashboard { margin-top: 14px; }
+  .reading-list { display: flex; flex-direction: column; gap: 16px; }
+  .reading-row { display: flex; gap: 10px; align-items: flex-start; }
+  .cover-reading { width: 44px; flex-shrink: 0; }
+  .reading-info { flex: 1; min-width: 0; }
+  .reading-row-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .reading-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .reading-pct { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+  .reading-author { font-size: 11.5px; color: var(--text-soft); margin: 2px 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .reading-pages { font-size: 11px; color: var(--text-faint); margin: 6px 0 0; }
+  .reading-empty { font-size: 13px; color: var(--text-soft); text-align: center; padding: 10px 0 2px; }
+  .btn-add-fab-square { position: fixed; bottom: 22px; right: max(18px, calc(50% - 302px)); width: 58px; height: 58px; border-radius: 18px; background: var(--accent); color: var(--accent-contrast); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 24px rgba(var(--accent-rgb), 0.32); z-index: 30; }
 
   /* Library toolbar */
   .lib-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
   .view-toggle { display: flex; gap: 3px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 3px; }
   .view-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; border: none; background: none; cursor: pointer; color: var(--text-faint); }
-  .view-btn.active { background: var(--text); color: #fff; }
-  .icon-add-btn { width: 36px; height: 36px; border-radius: 9999px; background: var(--text); color: #fff; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .view-btn.active { background: var(--accent); color: var(--accent-contrast); }
+  .icon-add-btn { width: 36px; height: 36px; border-radius: 9999px; background: var(--accent); color: var(--accent-contrast); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .search-row { display: flex; gap: 8px; margin-bottom: 14px; }
   .search-box { flex: 1; display: flex; align-items: center; gap: 8px; padding: 0 12px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); }
   .search-box input { border: none; outline: none; background: transparent; width: 100%; padding: 10px 0; font-size: 14px; font-family: inherit; color: var(--text); }
-  .sort-select { font-size: 13px; padding: 0 8px; border-radius: 8px; background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+  .sort-select { font-size: 13px; padding: 0 8px; border-radius: 8px; background: var(--surface); color: var(--text); border: 1px solid var(--border); font-family: inherit; }
 
   /* List view */
   .list-view { display: flex; flex-direction: column; gap: 10px; }
   .item { border-radius: 14px; padding: 12px; background: var(--surface); border: 1px solid var(--border); }
-  .item-row { display: flex; gap: 10px; cursor: pointer; }
+  .item-row { display: flex; gap: 10px; cursor: pointer; position: relative; }
   .cover { border-radius: 6px; overflow: hidden; aspect-ratio: 2/3; background: var(--bg); display: flex; align-items: center; justify-content: center; color: var(--text-faint); flex-shrink: 0; position: relative; }
   .cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .cover-list { width: 48px; }
-  .item-info { flex: 1; min-width: 0; }
-  .item-title { font-size: 14.5px; font-weight: 700; margin: 0; line-height: 1.3; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .item-info { flex: 1; min-width: 0; padding-right: 46px; }
+  .item-title { font-family: var(--font-display); font-size: 13px; font-weight: 700; margin: 0; line-height: 1.32; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .item-author { font-size: 12.5px; color: var(--text-soft); margin: 2px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .item-meta-row { display: flex; align-items: center; gap: 8px; margin-top: 7px; }
-  .rate-badge { font-size: 12px; font-weight: 700; padding: 2px 7px; border-radius: 9999px; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
-  .item-publisher { font-size: 10.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+  .rate-plain { display: inline-flex; align-items: center; gap: 3px; font-weight: 700; font-size: 12px; font-variant-numeric: tabular-nums; color: #CA8A04; position: absolute; top: 0; right: 0; }
+  .rate-plain svg { flex-shrink: 0; }
+  .item-publisher { font-size: 10.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; margin: 5px 0 0; }
 
   /* Grid view */
-  .grid-view { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  @media (min-width: 480px) { .grid-view { grid-template-columns: repeat(3, 1fr); } }
-  .item-grid-expanded { grid-column: 1 / -1; }
+  .grid-view { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .grid-view .item { padding: 5px; border-radius: 10px; min-width: 0; }
   .grid-top { cursor: pointer; }
-  .cover-grid { width: 100%; margin-bottom: 8px; }
-  .rate-badge-grid { position: absolute; top: 6px; right: 6px; font-size: 10.5px; padding: 2px 6px; }
-  .item-title-grid { font-size: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 0; font-weight: 700; letter-spacing: -0.01em; }
-  .item-author-grid { font-size: 11.5px; margin: 3px 0 0; color: var(--text-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .item-publisher-grid { font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-faint); margin: 5px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+  .cover-grid { width: 100%; margin-bottom: 5px; }
+  .rate-badge-grid { display: inline-flex; align-items: center; gap: 2px; font-weight: 700; font-size: 8.5px; font-variant-numeric: tabular-nums; color: #FBBF24; background: rgba(24,24,27,0.8); padding: 1.5px 5px; border-radius: 9999px; position: absolute; top: 4px; right: 4px; }
+  .rate-badge-grid svg { width: 8px; height: 8px; flex-shrink: 0; }
+  .item-title-grid { font-family: var(--font-display); font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; font-weight: 700; line-height: 1.3; }
+  .item-author-grid { font-size: 9.5px; margin: 2px 0 0; color: var(--text-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .item-publisher-grid { font-size: 9px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-faint); margin: 4px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+  .status-mini-grid { margin: 4px 0 0; font-size: 8.5px; padding: 1.5px 6px; }
 
-  /* Expand detail (shared) */
-  .item-expand { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
-  .status-pill { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 9999px; margin-bottom: 10px; }
-  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px; color: var(--text-soft); margin-bottom: 12px; }
-  .detail-grid .label { color: var(--text-faint); }
-  .review-text { font-size: 14px; line-height: 1.6; color: var(--text); margin: 0; }
+  /* Detail modal (shared) */
+  .status-mini { display: inline-block; font-size: 9.5px; font-weight: 700; padding: 2px 8px; border-radius: 9999px; margin-top: 5px; }
+  .status-mini-detail { font-size: 12px; padding: 4px 12px; margin-top: 0; }
+  .cover-detail { width: 106px; flex-shrink: 0; margin: 0; }
+  .detail-head { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 16px; }
+  .detail-head-info { flex: 1; min-width: 0; padding-top: 2px; }
+  .detail-book-title { font-family: var(--font-display); font-size: 17px; font-weight: 800; margin: 0 0 4px; line-height: 1.3; }
+  .detail-book-author { font-size: 13.5px; color: var(--accent); font-weight: 600; margin: 0 0 3px; }
+  .detail-book-translator { font-size: 12px; color: var(--text-faint); margin: 0 0 6px; }
+  .detail-book-publisher { font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-faint); font-weight: 600; margin: 0 0 8px; }
+  .detail-rating { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; font-size: 13px; color: #CA8A04; }
+  .detail-status-row { margin-top: 8px; }
+  .detail-info-grid { display: grid; grid-template-columns: 1fr 1fr; row-gap: 12px; column-gap: 10px; font-size: 12.5px; color: var(--text-soft); margin-bottom: 14px; padding: 14px; border: 1px solid var(--border); border-radius: 10px; }
+  .detail-info-grid .label { color: var(--text-faint); margin-right: 3px; }
+  .review-box { margin: 0 0 4px; padding: 14px; background: #F5F5F6; border: 1px solid var(--border); border-radius: 10px; }
+  .review-heading { font-size: 11px; font-weight: 700; color: var(--text-faint); letter-spacing: 0.02em; margin: 0 0 6px; }
+  .review-text { font-size: 13px; line-height: 1.6; color: var(--text); margin: 0; text-align: justify; }
   .action-row { display: flex; gap: 12px; margin-top: 12px; align-items: center; }
   .btn-ghost { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border); background: none; cursor: pointer; color: var(--text); font-family: inherit; }
   .btn-danger { color: #B91C1C; }
@@ -111,7 +152,7 @@
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .form-actions { display: flex; gap: 12px; margin: 8px 0 32px; }
   .btn { flex: 1; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 500; border: 1px solid var(--border); background: none; cursor: pointer; color: var(--text); font-family: inherit; }
-  .btn-primary { background: var(--text); color: #fff; border-color: var(--text); display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .btn-primary { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); display: flex; align-items: center; justify-content: center; gap: 6px; }
 
   .cover-field { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
   .cover-preview { width: 64px; flex-shrink: 0; border-radius: 8px; overflow: hidden; aspect-ratio: 2/3; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-faint); }
@@ -120,7 +161,7 @@
   .btn-secondary-sm { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); font-size: 13px; font-weight: 500; color: var(--text); cursor: pointer; font-family: inherit; }
   .cover-url-input { width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); font-size: 12px; font-family: inherit; color: var(--text-soft); outline: none; }
 
-  button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+  button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 </head>
@@ -128,14 +169,17 @@
 <div id="app"></div>
 <script>
 const STORAGE_KEY = 'reading-log-v2';
-const emptyForm = { title:'', author:'', translator:'', publisher:'', country:'', isbn:'', coverUrl:'', startDate:'', endDate:'', rating:7, review:'', status:'tbr' };
+const NAME_KEY = 'reading-log-v2-name';
+const emptyForm = { title:'', author:'', translator:'', publisher:'', country:'', originYear:'', isbn:'', coverUrl:'', startDate:'', endDate:'', currentPage:'', totalPages:'', rating:7, review:'', status:'tbr' };
+
+const ACCENT = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#0CBAA6';
 
 const STATUS_ORDER = ['tbr','ongoing','dnf','done'];
 const STATUS_META = {
-  tbr:     { label: 'TBR',           color: '#F59E0B' },
-  ongoing: { label: 'Sedang dibaca', color: '#3B82F6' },
-  dnf:     { label: 'DNF',           color: '#EF4444' },
-  done:    { label: 'Selesai',       color: '#22C55E' }
+  tbr:     { label: 'To be Read',     color: '#FFC118' },
+  ongoing: { label: 'Reading',        color: '#82c8e5' },
+  dnf:     { label: "Didn't Finish",  color: '#FF5555' },
+  done:    { label: 'Done',           color: ACCENT }
 };
 
 const ICONS = {
@@ -150,11 +194,51 @@ const ICONS = {
   library: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
   list: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>',
   grid: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>',
-  image: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>'
+  image: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
+  star: '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+  gear: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>'
 };
+
+const ACCENT_KEY = 'reading-log-v2-accent';
+const ACCENT_PRESETS = ['#0CBAA6', '#857686', '#E9A4A4', '#C1DCDC', '#F4A6B6', '#D0C5B1'];
+
+function loadAccent() {
+  try { return localStorage.getItem(ACCENT_KEY) || '#0CBAA6'; }
+  catch (e) { return '#0CBAA6'; }
+}
+function saveAccentToStorage(hex) {
+  try { localStorage.setItem(ACCENT_KEY, hex); } catch (e) {}
+}
+function hexToRgbString(hex) {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  return `${r}, ${g}, ${b}`;
+}
+function getContrastTextColor(hex) {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.substring(0, 2), 16) / 255;
+  const g = parseInt(h.substring(2, 4), 16) / 255;
+  const b = parseInt(h.substring(4, 6), 16) / 255;
+  const lin = c => c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  const lum = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+  return lum > 0.5 ? '#18181B' : '#FFFFFF';
+}
+function applyAccent(hex) {
+  document.documentElement.style.setProperty('--accent', hex);
+  document.documentElement.style.setProperty('--accent-rgb', hexToRgbString(hex));
+  document.documentElement.style.setProperty('--accent-contrast', getContrastTextColor(hex));
+}
+
+const SAVED_ACCENT = loadAccent();
+applyAccent(SAVED_ACCENT);
 
 let state = {
   books: loadBooks(),
+  userName: loadName(),
+  accentColor: SAVED_ACCENT,
+  showSettings: false,
   query: '',
   sortBy: 'added',
   activeTab: 'home',
@@ -174,9 +258,17 @@ function loadBooks() {
     return Array.isArray(data) ? data : [];
   } catch (e) { return []; }
 }
+function loadName() {
+  try { return localStorage.getItem(NAME_KEY) || 'Reader'; }
+  catch (e) { return 'Reader'; }
+}
+function saveName() {
+  try { localStorage.setItem(NAME_KEY, state.userName); }
+  catch (e) {}
+}
 function saveBooks() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.books)); state.error = ''; }
-  catch (e) { state.error = 'Gagal menyimpan perubahan. Coba lagi.'; }
+  catch (e) { state.error = 'Failed to save changes. Please try again.'; }
 }
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
 function getBookStatus(b) {
@@ -185,8 +277,7 @@ function getBookStatus(b) {
   if (b.startDate) return 'ongoing';
   return 'tbr';
 }
-function formatDate(d) { if (!d) return '-'; try { return new Date(d + 'T00:00:00').toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return d; } }
-function ratingTier(r) { if (r >= 8) return { bg: '#ECFDF3', text: '#15803D', border: '#BBF7D0' }; if (r >= 5) return { bg: '#F4F4F5', text: '#52525B', border: '#E4E4E7' }; return { bg: '#FEF2F2', text: '#B91C1C', border: '#FECACA' }; }
+function formatDate(d) { if (!d) return '-'; try { return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return d; } }
 function esc(s) { if (s == null) return ''; return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
 function getFiltered() {
@@ -210,7 +301,10 @@ function render() {
   const app = document.getElementById('app');
   app.innerHTML = `
     <div class="header">
-      <h1 class="title">Book Tracking</h1>
+      <div class="header-top-row">
+        <h1 class="title">Book Tracking<span class="header-name" data-action="edit-name">${esc(state.userName)}</span></h1>
+        <button class="settings-btn" id="settings-btn" aria-label="Settings">${ICONS.gear}</button>
+      </div>
       <div class="tabs">
         <button class="tab-btn ${state.activeTab === 'home' ? 'active' : ''}" id="tab-home-btn">${ICONS.home}<span>Home</span></button>
         <button class="tab-btn ${state.activeTab === 'library' ? 'active' : ''}" id="tab-library-btn">${ICONS.library}<span>Library</span></button>
@@ -220,6 +314,8 @@ function render() {
       ${state.error ? `<div class="error-banner">${esc(state.error)}</div>` : ''}
       ${state.activeTab === 'home' ? renderHome() : renderLibrary()}
     </main>
+    ${state.expandedId ? renderDetailModal(state.books.find(b => b.id === state.expandedId)) : ''}
+    ${state.showSettings ? renderSettingsModal() : ''}
     ${state.showForm ? renderForm() : ''}
   `;
   attachHandlers();
@@ -228,6 +324,7 @@ function render() {
 function renderHome() {
   const counts = { tbr: 0, ongoing: 0, dnf: 0, done: 0 };
   state.books.forEach(b => { const s = getBookStatus(b); if (counts[s] != null) counts[s]++; });
+  const total = state.books.length;
   const max = Math.max(1, ...Object.values(counts));
   const rows = STATUS_ORDER.map(key => {
     const meta = STATUS_META[key];
@@ -240,13 +337,53 @@ function renderHome() {
         <span class="chart-count">${count}</span>
       </div>`;
   }).join('');
+  const readingBooks = state.books.filter(b => getBookStatus(b) === 'ongoing');
+  const readingRows = readingBooks.map(b => {
+    const pct = getReadingPct(b);
+    const totalPages = Number(b.totalPages) || 0;
+    const currentPage = Math.min(Number(b.currentPage) || 0, totalPages || (Number(b.currentPage) || 0));
+    const barColor = getReadingBarColor(pct);
+    return `
+      <div class="reading-row">
+        <div class="cover cover-reading">${b.coverUrl ? `<img src="${esc(b.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}</div>
+        <div class="reading-info">
+          <div class="reading-row-top">
+            <span class="reading-title">${esc(b.title)}</span>
+            <span class="reading-pct" style="color:${barColor}">${pct}%</span>
+          </div>
+          <p class="reading-author">${esc(b.author)}</p>
+          <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+          <p class="reading-pages">${totalPages ? `${currentPage}/${totalPages} pages` : 'Total pages not set yet'}</p>
+        </div>
+      </div>`;
+  }).join('');
   return `
-    <div class="dashboard">
-      <p class="section-title">Ringkasan</p>
-      <div class="chart">${rows}</div>
+    <div class="home-view">
+      <p class="welcome-row">Welcome! <span class="welcome-name" data-action="edit-name">${esc(state.userName)}</span></p>
+      <div class="dashboard">
+        <p class="section-title">Summary</p>
+        <div class="chart">${rows}</div>
+      </div>
+      <div class="dashboard">
+        <p class="section-title">Reading</p>
+        ${readingBooks.length ? `<div class="reading-list">${readingRows}</div>` : `<p class="reading-empty">No books currently being read.</p>`}
+      </div>
     </div>
-    <button class="btn-add-main" id="add-btn-home">${ICONS.plus} Tambah Buku</button>
+    <button class="btn-add-fab-square" id="add-btn-home" aria-label="Add book">${ICONS.plus}</button>
   `;
+}
+
+function getReadingPct(book) {
+  const total = Number(book.totalPages) || 0;
+  const current = Number(book.currentPage) || 0;
+  if (!total || total <= 0) return 0;
+  return Math.max(0, Math.min(100, Math.round((current / total) * 100)));
+}
+
+function getReadingBarColor(pct) {
+  if (pct < 100 / 3) return '#FF5555';
+  if (pct <= 200 / 3) return '#FFC118';
+  return '#82c8e5';
 }
 
 function renderLibrary() {
@@ -259,25 +396,25 @@ function renderLibrary() {
   return `
     <div class="lib-toolbar">
       <div class="view-toggle">
-        <button class="view-btn ${state.libraryView === 'list' ? 'active' : ''}" data-action="view-list" aria-label="Tampilan list">${ICONS.list}</button>
-        <button class="view-btn ${state.libraryView === 'grid' ? 'active' : ''}" data-action="view-grid" aria-label="Tampilan grid">${ICONS.grid}</button>
+        <button class="view-btn ${state.libraryView === 'list' ? 'active' : ''}" data-action="view-list" aria-label="List view">${ICONS.list}</button>
+        <button class="view-btn ${state.libraryView === 'grid' ? 'active' : ''}" data-action="view-grid" aria-label="Grid view">${ICONS.grid}</button>
       </div>
-      <button class="icon-add-btn" id="add-btn-lib" aria-label="Tambah buku">${ICONS.plus}</button>
+      <button class="icon-add-btn" id="add-btn-lib" aria-label="Add book">${ICONS.plus}</button>
     </div>
     <div class="search-row">
-      <div class="search-box">${ICONS.search}<input id="search-input" type="text" placeholder="Cari judul, penulis, penerbit..." value="${esc(state.query)}" /></div>
+      <div class="search-box">${ICONS.search}<input id="search-input" type="text" placeholder="Search title, author, publisher..." value="${esc(state.query)}" /></div>
       <select id="sort-select" class="sort-select">
-        <option value="added" ${state.sortBy === 'added' ? 'selected' : ''}>Terbaru</option>
+        <option value="added" ${state.sortBy === 'added' ? 'selected' : ''}>Newest</option>
         <option value="rating" ${state.sortBy === 'rating' ? 'selected' : ''}>Rating</option>
-        <option value="finished" ${state.sortBy === 'finished' ? 'selected' : ''}>Selesai baca</option>
-        <option value="title" ${state.sortBy === 'title' ? 'selected' : ''}>Judul A-Z</option>
+        <option value="finished" ${state.sortBy === 'finished' ? 'selected' : ''}>Finished reading</option>
+        <option value="title" ${state.sortBy === 'title' ? 'selected' : ''}>Title A-Z</option>
       </select>
     </div>
     ${collection}
     <div class="backup-row-footer">
-      <button class="link-btn" id="export-btn">Ekspor data</button>
+      <button class="link-btn" id="export-btn">Export data</button>
       <span style="color:var(--text-faint)"> · </span>
-      <button class="link-btn" id="import-btn">Impor data</button>
+      <button class="link-btn" id="import-btn">Import data</button>
       <input type="file" id="import-file" accept="application/json" hidden />
     </div>
   `;
@@ -287,14 +424,12 @@ function renderEmpty() {
   return `
     <div class="empty-state">
       ${ICONS.book}
-      <p class="empty-title">${state.books.length === 0 ? 'Belum ada buku' : 'Tidak ada yang cocok'}</p>
-      <p class="empty-sub">${state.books.length === 0 ? 'Tambahkan buku pertama yang sudah kamu baca.' : 'Coba kata kunci lain.'}</p>
+      <p class="empty-title">${state.books.length === 0 ? 'No books yet' : 'No matches found'}</p>
+      <p class="empty-sub">${state.books.length === 0 ? 'Add the first book you\'ve read.' : 'Try a different keyword.'}</p>
     </div>`;
 }
 
 function renderListItem(book) {
-  const tier = ratingTier(Number(book.rating) || 0);
-  const expanded = state.expandedId === book.id;
   const statusMeta = STATUS_META[getBookStatus(book)];
   return `
     <div class="item">
@@ -303,57 +438,99 @@ function renderListItem(book) {
         <div class="item-info">
           <p class="item-title">${esc(book.title)}</p>
           <p class="item-author">${esc(book.author)}</p>
-          <div class="item-meta-row">
-            <span class="rate-badge" style="background:${tier.bg};color:${tier.text};border:1px solid ${tier.border};">${Number(book.rating).toFixed(1)}</span>
-            ${book.publisher ? `<span class="item-publisher">${esc(book.publisher)}</span>` : ''}
-          </div>
+          ${book.publisher ? `<p class="item-publisher">${esc(book.publisher)}</p>` : ''}
+          <span class="status-mini" style="background:${statusMeta.color}1A;color:${statusMeta.color};border:1px solid ${statusMeta.color}55;">${statusMeta.label}</span>
         </div>
+        <span class="rate-plain">${ICONS.star}${Number(book.rating).toFixed(1)}</span>
       </div>
-      ${expanded ? renderItemExpand(book, statusMeta) : ''}
     </div>`;
 }
 
 function renderGridItem(book) {
-  const tier = ratingTier(Number(book.rating) || 0);
-  const expanded = state.expandedId === book.id;
   const statusMeta = STATUS_META[getBookStatus(book)];
   return `
-    <div class="item ${expanded ? 'item-grid-expanded' : ''}">
+    <div class="item">
       <div class="grid-top" data-action="toggle" data-id="${book.id}">
         <div class="cover cover-grid">
           ${book.coverUrl ? `<img src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}
-          <span class="rate-badge rate-badge-grid" style="background:${tier.bg};color:${tier.text};border:1px solid ${tier.border};">${Number(book.rating).toFixed(1)}</span>
+          <span class="rate-badge-grid">${ICONS.star}${Number(book.rating).toFixed(1)}</span>
         </div>
         <p class="item-title-grid">${esc(book.title)}</p>
         <p class="item-author-grid">${esc(book.author)}</p>
-        ${book.publisher ? `<p class="item-publisher-grid">${esc(book.publisher)}</p>` : ''}
+        <span class="status-mini status-mini-grid" style="background:${statusMeta.color}1A;color:${statusMeta.color};border:1px solid ${statusMeta.color}55;">${statusMeta.label}</span>
       </div>
-      ${expanded ? renderItemExpand(book, statusMeta) : ''}
     </div>`;
 }
 
-function renderItemExpand(book, statusMeta) {
+function renderDetailModal(book) {
+  if (!book) return '';
+  const statusMeta = STATUS_META[getBookStatus(book)];
   const confirming = state.confirmDeleteId === book.id;
+  const totalPages = Number(book.totalPages) || 0;
+  const currentPage = Number(book.currentPage) || 0;
   return `
-    <div class="item-expand">
-      <div class="status-pill" style="background:${statusMeta.color}1A;color:${statusMeta.color};border:1px solid ${statusMeta.color}55;">${statusMeta.label}</div>
-      <div class="detail-grid">
-        ${book.translator ? `<div><span class="label">Penerjemah </span>${esc(book.translator)}</div>` : ''}
-        ${book.isbn ? `<div><span class="label">ISBN </span>${esc(book.isbn)}</div>` : ''}
-        <div><span class="label">Mulai </span>${formatDate(book.startDate)}</div>
-        <div><span class="label">Selesai </span>${formatDate(book.endDate)}</div>
+    <div class="modal">
+      <div class="modal-inner">
+        <div class="modal-header">
+          <h2>Book detail</h2>
+          <button data-action="close-detail" aria-label="Close">${ICONS.x}</button>
+        </div>
+        <div class="modal-body">
+          <div class="detail-head">
+            <div class="cover cover-detail">${book.coverUrl ? `<img src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}</div>
+            <div class="detail-head-info">
+              <p class="detail-book-title">${esc(book.title)}</p>
+              <p class="detail-book-author">${esc(book.author)}</p>
+              ${book.translator ? `<p class="detail-book-translator">Translated by ${esc(book.translator)}</p>` : ''}
+              ${book.publisher ? `<p class="detail-book-publisher">${esc(book.publisher)}</p>` : ''}
+              <span class="detail-rating">${ICONS.star}${Number(book.rating).toFixed(1)}</span>
+              <div class="detail-status-row"><span class="status-mini status-mini-detail" style="background:${statusMeta.color}1A;color:${statusMeta.color};border:1px solid ${statusMeta.color}55;">${statusMeta.label}</span></div>
+            </div>
+          </div>
+          <div class="detail-info-grid">
+            ${book.country ? `<div><span class="label">Origin</span> ${esc(book.country)}</div>` : ''}
+            ${book.originYear ? `<div><span class="label">Origin year</span> ${esc(book.originYear)}</div>` : ''}
+            ${book.isbn ? `<div><span class="label">ISBN</span> ${esc(book.isbn)}</div>` : ''}
+            ${totalPages ? `<div><span class="label">Pages</span> ${currentPage}/${totalPages} (${getReadingPct(book)}%)</div>` : ''}
+            <div><span class="label">Started</span> ${formatDate(book.startDate)}</div>
+            <div><span class="label">Finished</span> ${formatDate(book.endDate)}</div>
+          </div>
+          ${book.review ? `<div class="review-box"><p class="review-heading">What stayed</p><p class="review-text">${esc(book.review)}</p></div>` : ''}
+          <div class="action-row">
+            <button class="btn-ghost" data-action="edit" data-id="${book.id}">${ICONS.edit} Edit</button>
+            ${confirming ? `
+              <div class="confirm-row">
+                <span style="color:#B91C1C;">Are you sure?</span>
+                <button data-action="delete" data-id="${book.id}" style="color:#B91C1C;font-weight:500;">Yes, delete</button>
+                <button data-action="cancel-delete" style="color:var(--text-soft);">Cancel</button>
+              </div>` : `
+              <button class="btn-ghost btn-danger" data-action="ask-delete" data-id="${book.id}">${ICONS.trash} Delete</button>
+            `}
+          </div>
+        </div>
       </div>
-      ${book.review ? `<p class="review-text">${esc(book.review)}</p>` : ''}
-      <div class="action-row">
-        <button class="btn-ghost" data-action="edit" data-id="${book.id}">${ICONS.edit} Ubah</button>
-        ${confirming ? `
-          <div class="confirm-row">
-            <span style="color:#B91C1C;">Yakin?</span>
-            <button data-action="delete" data-id="${book.id}" style="color:#B91C1C;font-weight:500;">Ya, hapus</button>
-            <button data-action="cancel-delete" style="color:var(--text-soft);">Batal</button>
-          </div>` : `
-          <button class="btn-ghost btn-danger" data-action="ask-delete" data-id="${book.id}">${ICONS.trash} Hapus</button>
-        `}
+    </div>`;
+}
+
+function renderSettingsModal() {
+  return `
+    <div class="modal">
+      <div class="modal-inner">
+        <div class="modal-header">
+          <h2>Settings</h2>
+          <button id="close-settings" aria-label="Close">${ICONS.x}</button>
+        </div>
+        <div class="modal-body">
+          <p class="field-label" style="margin-bottom:12px;">Accent color</p>
+          <div class="swatch-grid">
+            ${ACCENT_PRESETS.map(hex => `
+              <button class="swatch-btn ${state.accentColor === hex ? 'active' : ''}" data-action="set-accent" data-hex="${hex}" style="background:${hex};color:${getContrastTextColor(hex)};" aria-label="${hex}">
+                ${state.accentColor === hex ? ICONS.check : ''}
+              </button>
+            `).join('')}
+          </div>
+          <p class="swatch-hint">Applies right away and stays saved on this device.</p>
+        </div>
       </div>
     </div>`;
 }
@@ -365,44 +542,50 @@ function renderForm() {
     <div class="modal">
       <div class="modal-inner">
         <div class="modal-header">
-          <h2>${state.editingId ? 'Ubah buku' : 'Tambah buku'}</h2>
-          <button id="close-form" aria-label="Tutup">${ICONS.x}</button>
+          <h2>${state.editingId ? 'Edit book' : 'Add book'}</h2>
+          <button id="close-form" aria-label="Close">${ICONS.x}</button>
         </div>
         <form id="book-form" class="modal-body">
           <div class="cover-field">
             <div class="cover-preview" id="cover-preview">${f.coverUrl ? `<img src="${esc(f.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}</div>
             <div class="cover-actions">
-              <span class="field-label" style="margin:0;">Cover buku</span>
-              <button type="button" class="btn-secondary-sm" id="pick-cover-btn">${ICONS.image} Pilih dari galeri</button>
+              <span class="field-label" style="margin:0;">Book cover</span>
+              <button type="button" class="btn-secondary-sm" id="pick-cover-btn">${ICONS.image} Choose from gallery</button>
               <input type="file" id="f-cover-file" accept="image/*" hidden />
-              <input id="f-cover-url" class="cover-url-input" placeholder="atau tempel link URL" value="${f.coverUrl && f.coverUrl.startsWith('data:') ? '' : esc(f.coverUrl)}" />
+              <input id="f-cover-url" class="cover-url-input" placeholder="or paste a URL" value="${f.coverUrl && f.coverUrl.startsWith('data:') ? '' : esc(f.coverUrl)}" />
             </div>
           </div>
-          <label class="field"><span class="field-label">Judul buku *</span><input required id="f-title" value="${esc(f.title)}" placeholder="cth. Laut Bercerita" /></label>
-          <label class="field"><span class="field-label">Penulis *</span><input required id="f-author" value="${esc(f.author)}" /></label>
-          <label class="field"><span class="field-label">Penerjemah</span><input id="f-translator" value="${esc(f.translator)}" placeholder="jika buku terjemahan" /></label>
+          <label class="field"><span class="field-label">Book title *</span><input required id="f-title" value="${esc(f.title)}" placeholder="e.g. The Great Gatsby" /></label>
+          <label class="field"><span class="field-label">Author *</span><input required id="f-author" value="${esc(f.author)}" /></label>
+          <label class="field"><span class="field-label">Translator</span><input id="f-translator" value="${esc(f.translator)}" placeholder="if a translated book" /></label>
+          <label class="field"><span class="field-label">Publisher</span><input id="f-publisher" value="${esc(f.publisher)}" /></label>
           <div class="grid-2">
-            <label class="field"><span class="field-label">Penerbit</span><input id="f-publisher" value="${esc(f.publisher)}" /></label>
-            <label class="field"><span class="field-label">Asal negara</span><input id="f-country" value="${esc(f.country)}" placeholder="cth. Jepang" /></label>
+            <label class="field"><span class="field-label">Country of origin</span><input id="f-country" value="${esc(f.country)}" placeholder="e.g. Japan" /></label>
+            <label class="field"><span class="field-label">Origin year</span><input type="number" id="f-origin-year" value="${esc(f.originYear)}" placeholder="e.g. 1811" /></label>
           </div>
           <label class="field"><span class="field-label">ISBN</span><input id="f-isbn" value="${esc(f.isbn)}" /></label>
           <label class="field"><span class="field-label">Status</span>
             <select id="f-status">
-              <option value="tbr" ${f.status === 'tbr' ? 'selected' : ''}>TBR (belum mulai)</option>
-              <option value="ongoing" ${f.status === 'ongoing' ? 'selected' : ''}>Sedang dibaca</option>
-              <option value="dnf" ${f.status === 'dnf' ? 'selected' : ''}>DNF (berhenti di tengah)</option>
-              <option value="done" ${f.status === 'done' ? 'selected' : ''}>Selesai</option>
+              <option value="tbr" ${f.status === 'tbr' ? 'selected' : ''}>To be Read</option>
+              <option value="ongoing" ${f.status === 'ongoing' ? 'selected' : ''}>Reading</option>
+              <option value="dnf" ${f.status === 'dnf' ? 'selected' : ''}>Didn't Finish</option>
+              <option value="done" ${f.status === 'done' ? 'selected' : ''}>Done</option>
             </select>
           </label>
           <div class="grid-2">
-            <label class="field"><span class="field-label">Tanggal mulai</span><input type="date" id="f-start" value="${esc(f.startDate)}" /></label>
-            <label class="field"><span class="field-label">Tanggal selesai</span><input type="date" id="f-end" value="${esc(f.endDate)}" /></label>
+            <label class="field"><span class="field-label">Start date</span><input type="date" id="f-start" value="${esc(f.startDate)}" /></label>
+            <label class="field"><span class="field-label">End date</span><input type="date" id="f-end" value="${esc(f.endDate)}" /></label>
           </div>
-          <label class="field"><span class="field-label" id="rating-label">Rating — ${ratingVal.toFixed(1)}/10</span><input type="range" min="1" max="10" step="0.1" id="f-rating" value="${ratingVal}" style="width:100%;accent-color:var(--text);" /></label>
-          <label class="field"><span class="field-label">Review singkat</span><textarea id="f-review" rows="4" placeholder="Kesan singkat tentang buku ini...">${esc(f.review)}</textarea></label>
+          ${f.status === 'ongoing' ? `
+          <div class="grid-2" id="pages-field-row">
+            <label class="field"><span class="field-label">Last page read</span><input type="number" min="0" id="f-current-page" value="${esc(f.currentPage)}" placeholder="e.g. 120" /></label>
+            <label class="field"><span class="field-label">Total pages</span><input type="number" min="0" id="f-total-pages" value="${esc(f.totalPages)}" placeholder="e.g. 320" /></label>
+          </div>` : ''}
+          <label class="field"><span class="field-label" id="rating-label">Rating — ${ratingVal.toFixed(1)}/10</span><input type="range" min="1" max="10" step="0.1" id="f-rating" value="${ratingVal}" style="width:100%;accent-color:var(--accent);" /></label>
+          <label class="field"><span class="field-label">Short review</span><textarea id="f-review" rows="4" placeholder="Your brief thoughts about this book...">${esc(f.review)}</textarea></label>
           <div class="form-actions">
-            <button type="button" id="cancel-form" class="btn">Batal</button>
-            <button type="submit" class="btn btn-primary">${ICONS.check} Simpan</button>
+            <button type="button" id="cancel-form" class="btn">Cancel</button>
+            <button type="submit" class="btn btn-primary">${ICONS.check} Save</button>
           </div>
         </form>
       </div>
@@ -457,7 +640,7 @@ function exportData() {
   const blob = new Blob([JSON.stringify(state.books, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = 'buku-tracker-backup.json';
+  a.href = url; a.download = 'book-tracker-backup.json';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
@@ -466,11 +649,11 @@ function importData(file) {
   reader.onload = (e) => {
     try {
       const data = JSON.parse(e.target.result);
-      if (!Array.isArray(data)) throw new Error('format salah');
-      if (confirm(`Impor ${data.length} buku? Ini akan menggantikan data yang ada sekarang.`)) {
+      if (!Array.isArray(data)) throw new Error('invalid format');
+      if (confirm(`Import ${data.length} books? This will replace your current data.`)) {
         state.books = data; saveBooks(); render();
       }
-    } catch (err) { alert('File tidak valid. Pastikan ini file backup JSON dari aplikasi ini.'); }
+    } catch (err) { alert('Invalid file. Make sure this is a JSON backup file from this app.'); }
   };
   reader.readAsText(file);
 }
@@ -487,6 +670,11 @@ function attachHandlers() {
   if (addBtnHome) addBtnHome.addEventListener('click', openAddForm);
   const addBtnLib = document.getElementById('add-btn-lib');
   if (addBtnLib) addBtnLib.addEventListener('click', openAddForm);
+
+  const settingsBtn = document.getElementById('settings-btn');
+  if (settingsBtn) settingsBtn.addEventListener('click', () => { state.showSettings = true; render(); });
+  const closeSettingsBtn = document.getElementById('close-settings');
+  if (closeSettingsBtn) closeSettingsBtn.addEventListener('click', () => { state.showSettings = false; render(); });
 
   const searchInput = document.getElementById('search-input');
   if (searchInput) searchInput.addEventListener('input', e => { state.query = e.target.value; rerenderPreserveFocus(); });
@@ -506,23 +694,44 @@ function attachHandlers() {
     const action = el.getAttribute('data-action');
     const id = el.getAttribute('data-id');
     if (action === 'toggle') {
-      el.addEventListener('click', () => { state.expandedId = state.expandedId === id ? null : id; state.confirmDeleteId = null; render(); });
+      el.addEventListener('click', () => { state.expandedId = id; state.confirmDeleteId = null; render(); });
+    } else if (action === 'close-detail') {
+      el.addEventListener('click', e => { e.stopPropagation(); state.expandedId = null; state.confirmDeleteId = null; render(); });
     } else if (action === 'edit') {
       el.addEventListener('click', e => {
         e.stopPropagation();
         const book = state.books.find(b => b.id === id);
-        if (book) { state.form = { ...emptyForm, ...book, status: book.status || getBookStatus(book) }; state.editingId = id; state.showForm = true; render(); }
+        if (book) { state.form = { ...emptyForm, ...book, status: book.status || getBookStatus(book) }; state.editingId = id; state.expandedId = null; state.showForm = true; render(); }
       });
     } else if (action === 'ask-delete') {
       el.addEventListener('click', e => { e.stopPropagation(); state.confirmDeleteId = id; render(); });
     } else if (action === 'cancel-delete') {
       el.addEventListener('click', e => { e.stopPropagation(); state.confirmDeleteId = null; render(); });
     } else if (action === 'delete') {
-      el.addEventListener('click', e => { e.stopPropagation(); state.books = state.books.filter(b => b.id !== id); saveBooks(); state.confirmDeleteId = null; render(); });
+      el.addEventListener('click', e => { e.stopPropagation(); state.books = state.books.filter(b => b.id !== id); saveBooks(); state.confirmDeleteId = null; state.expandedId = null; render(); });
     } else if (action === 'view-list') {
       el.addEventListener('click', () => { state.libraryView = 'list'; render(); });
     } else if (action === 'view-grid') {
       el.addEventListener('click', () => { state.libraryView = 'grid'; render(); });
+    } else if (action === 'edit-name') {
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        const newName = prompt('Your name:', state.userName === 'Reader' ? '' : state.userName);
+        if (newName != null) {
+          state.userName = newName.trim() || 'Reader';
+          saveName();
+          render();
+        }
+      });
+    } else if (action === 'set-accent') {
+      el.addEventListener('click', () => {
+        const hex = el.getAttribute('data-hex');
+        state.accentColor = hex;
+        applyAccent(hex);
+        STATUS_META.done.color = hex;
+        saveAccentToStorage(hex);
+        render();
+      });
     }
   });
 
@@ -530,11 +739,15 @@ function attachHandlers() {
   if (form) {
     const bind = (elId, key) => { const el = document.getElementById(elId); if (el) el.addEventListener('input', e => { state.form[key] = e.target.value; }); };
     bind('f-title', 'title'); bind('f-author', 'author'); bind('f-translator', 'translator');
-    bind('f-publisher', 'publisher'); bind('f-country', 'country'); bind('f-isbn', 'isbn');
+    bind('f-publisher', 'publisher'); bind('f-country', 'country'); bind('f-origin-year', 'originYear'); bind('f-isbn', 'isbn');
     bind('f-start', 'startDate'); bind('f-end', 'endDate'); bind('f-review', 'review');
+    bind('f-current-page', 'currentPage'); bind('f-total-pages', 'totalPages');
 
     const statusSelect = document.getElementById('f-status');
-    if (statusSelect) statusSelect.addEventListener('change', e => { state.form.status = e.target.value; });
+    if (statusSelect) statusSelect.addEventListener('change', e => {
+      state.form.status = e.target.value;
+      rerenderPreserveFocus();
+    });
 
     const coverUrlInput = document.getElementById('f-cover-url');
     if (coverUrlInput) coverUrlInput.addEventListener('input', e => { state.form.coverUrl = e.target.value; updateCoverPreview(); });
@@ -551,7 +764,7 @@ function attachHandlers() {
           const urlInput = document.getElementById('f-cover-url');
           if (urlInput) urlInput.value = '';
           updateCoverPreview();
-        }).catch(() => { alert('Gagal memuat gambar. Coba foto lain.'); });
+        }).catch(() => { alert('Failed to load image. Try another photo.'); });
       });
     }
 
