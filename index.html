@@ -42,12 +42,11 @@
   .swatch-hint { font-size: 12.5px; color: var(--text-soft); margin: 14px 0 0; }
 
   /* Dashboard modal */
-  .dash-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 6px; -webkit-overflow-scrolling: touch; }
-  .dash-tab-btn { flex-shrink: 0; padding: 7px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); font-size: 12.5px; font-weight: 600; color: var(--text-soft); cursor: pointer; font-family: inherit; white-space: nowrap; }
-  .dash-tab-btn.active { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); }
+  .dashboard-title { font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 800; font-size: 17px; margin: 0; }
+  .dash-select { width: 100%; font-size: 13.5px; font-weight: 600; padding: 10px 12px; border-radius: 8px; background: var(--surface); color: var(--text); border: 1px solid var(--border); font-family: inherit; margin-bottom: 14px; }
   .rank-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
   .rank-row:last-child { border-bottom: none; }
-  .rank-num { font-family: var(--font-display); font-weight: 800; font-size: 13px; color: var(--text-faint); width: 20px; flex-shrink: 0; }
+  .rank-num { display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 9999px; background: var(--accent); color: var(--accent-contrast); font-family: var(--font-display); font-weight: 800; font-size: 11px; flex-shrink: 0; }
   .rank-info { flex: 1; min-width: 0; }
   .rank-name { font-size: 13.5px; font-weight: 700; color: var(--text); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .rank-sub { font-size: 11.5px; color: var(--text-soft); margin: 2px 0 0; }
@@ -105,8 +104,8 @@
   .sort-select { font-size: 13px; padding: 0 8px; border-radius: 8px; background: var(--surface); color: var(--text); border: 1px solid var(--border); font-family: inherit; }
 
   /* List view */
-  .list-view { display: flex; flex-direction: column; gap: 10px; }
-  .item { border-radius: 14px; padding: 12px; background: var(--surface); border: 1px solid var(--border); }
+  .list-view { display: flex; flex-direction: column; gap: 6px; }
+  .item { border-radius: 14px; padding: 10px; background: var(--surface); border: 1px solid var(--border); }
   .item-row { display: flex; gap: 10px; cursor: pointer; position: relative; }
   .cover { border-radius: 6px; overflow: hidden; aspect-ratio: 2/3; background: var(--bg); display: flex; align-items: center; justify-content: center; color: var(--text-faint); flex-shrink: 0; position: relative; }
   .cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -123,8 +122,9 @@
   .grid-view .item { padding: 5px; border-radius: 10px; min-width: 0; }
   .grid-top { cursor: pointer; }
   .cover-grid { width: 100%; margin-bottom: 5px; }
-  .rate-badge-grid { display: inline-flex; align-items: center; gap: 2px; font-weight: 700; font-size: 8.5px; font-variant-numeric: tabular-nums; color: #FBBF24; background: rgba(24,24,27,0.8); padding: 1.5px 5px; border-radius: 9999px; position: absolute; top: 4px; right: 4px; }
+  .rate-badge-grid { display: inline-flex; align-items: center; gap: 2px; font-weight: 700; font-size: 8.5px; font-variant-numeric: tabular-nums; color: #CA8A04; background: #FFFFFF; padding: 1.5px 5px; border-radius: 9999px; position: absolute; top: 4px; right: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.15); }
   .rate-badge-grid svg { width: 8px; height: 8px; flex-shrink: 0; }
+  .lang-badge { position: absolute; top: 4px; left: 4px; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 8px; letter-spacing: 0.02em; color: var(--accent); background: #FFFFFF; padding: 1.5px 5px; border-radius: 9999px; line-height: 1.4; box-shadow: 0 1px 2px rgba(0,0,0,0.15); }
   .item-title-grid { font-family: var(--font-display); font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; font-weight: 700; line-height: 1.3; }
   .item-author-grid { font-size: 9.5px; margin: 2px 0 0; color: var(--text-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .item-publisher-grid { font-size: 9px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-faint); margin: 4px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
@@ -305,6 +305,31 @@ function getBookStatus(b) {
 }
 function formatDate(d) { if (!d) return '-'; try { return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return d; } }
 function esc(s) { if (s == null) return ''; return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function getLangBadge(lang) {
+  if (!lang) return '';
+  const key = lang.trim().toLowerCase();
+  const map = {
+    indonesian: 'ID', 'bahasa indonesia': 'ID', indonesia: 'ID',
+    english: 'ENG',
+    japanese: 'JP',
+    french: 'FR',
+    german: 'DE',
+    spanish: 'ES',
+    korean: 'KR',
+    chinese: 'CN', mandarin: 'CN',
+    arabic: 'AR',
+    russian: 'RU',
+    italian: 'IT',
+    portuguese: 'PT',
+    dutch: 'NL',
+    thai: 'TH',
+    vietnamese: 'VN',
+    hindi: 'HI',
+    turkish: 'TR'
+  };
+  if (map[key]) return map[key];
+  return lang.trim().slice(0, 3).toUpperCase();
+}
 
 function getPagesReadForBook(b) {
   const status = getBookStatus(b);
@@ -433,7 +458,7 @@ function renderHome() {
     const barColor = getReadingBarColor(pct);
     return `
       <div class="reading-row" data-action="toggle" data-id="${b.id}">
-        <div class="cover cover-reading">${b.coverUrl ? `<img src="${esc(b.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}</div>
+        <div class="cover cover-reading">${b.coverUrl ? `<img src="${esc(b.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}${b.language ? `<span class="lang-badge">${esc(getLangBadge(b.language))}</span>` : ''}</div>
         <div class="reading-info">
           <div class="reading-row-top">
             <span class="reading-title">${esc(b.title)}</span>
@@ -523,7 +548,7 @@ function renderListItem(book) {
   return `
     <div class="item">
       <div class="item-row" data-action="toggle" data-id="${book.id}">
-        <div class="cover cover-list">${book.coverUrl ? `<img src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}</div>
+        <div class="cover cover-list">${book.coverUrl ? `<img src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}${book.language ? `<span class="lang-badge">${esc(getLangBadge(book.language))}</span>` : ''}</div>
         <div class="item-info">
           <p class="item-title">${esc(book.title)}</p>
           <p class="item-author">${esc(book.author)}</p>
@@ -542,6 +567,7 @@ function renderGridItem(book) {
       <div class="grid-top" data-action="toggle" data-id="${book.id}">
         <div class="cover cover-grid">
           ${book.coverUrl ? `<img src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}
+          ${book.language ? `<span class="lang-badge">${esc(getLangBadge(book.language))}</span>` : ''}
           <span class="rate-badge-grid">${ICONS.star}${Number(book.rating).toFixed(1)}</span>
         </div>
         <p class="item-title-grid">${esc(book.title)}</p>
@@ -566,7 +592,7 @@ function renderDetailModal(book) {
         </div>
         <div class="modal-body">
           <div class="detail-head">
-            <div class="cover cover-detail">${book.coverUrl ? `<img src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}</div>
+            <div class="cover cover-detail">${book.coverUrl ? `<img src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}${book.language ? `<span class="lang-badge">${esc(getLangBadge(book.language))}</span>` : ''}</div>
             <div class="detail-head-info">
               <p class="detail-book-title">${esc(book.title)}</p>
               <p class="detail-book-author">${esc(book.author)}</p>
@@ -628,14 +654,14 @@ function renderSettingsModal() {
 function renderDashboardModal() {
   const cat = state.dashboardCategory;
   const tabs = [
-    { key: 'pagesPerDay', label: 'By Pages/Day' },
-    { key: 'writer', label: 'By Writer' },
-    { key: 'country', label: 'By Origin Country' },
-    { key: 'publisher', label: 'By Publisher' },
-    { key: 'language', label: 'By Language' },
-    { key: 'year', label: 'By Year' }
+    { key: 'pagesPerDay', label: 'Pages/Day' },
+    { key: 'writer', label: 'Writer' },
+    { key: 'country', label: 'Origin Country' },
+    { key: 'publisher', label: 'Publisher' },
+    { key: 'language', label: 'Language' },
+    { key: 'year', label: 'Year' }
   ];
-  const tabsHtml = tabs.map(t => `<button class="dash-tab-btn ${cat === t.key ? 'active' : ''}" data-action="dash-tab" data-key="${t.key}">${t.label}</button>`).join('');
+  const selectHtml = `<select id="dash-select" class="dash-select">${tabs.map(t => `<option value="${t.key}" ${cat === t.key ? 'selected' : ''}>${t.label}</option>`).join('')}</select>`;
   let content = '';
   if (cat === 'pagesPerDay') content = renderPagesPerDayRanking();
   else if (cat === 'writer') content = renderCountRanking(rankBy(state.books, b => b.author && b.author.trim()));
@@ -647,11 +673,11 @@ function renderDashboardModal() {
     <div class="modal">
       <div class="modal-inner">
         <div class="modal-header">
-          <h2>Dashboard</h2>
+          <h2 class="dashboard-title">Dashboard</h2>
           <button id="close-dashboard" aria-label="Close">${ICONS.x}</button>
         </div>
         <div class="modal-body">
-          <div class="dash-tabs">${tabsHtml}</div>
+          ${selectHtml}
           ${content}
         </div>
       </div>
@@ -741,11 +767,13 @@ function renderForm() {
             <label class="field"><span class="field-label">Start Date</span><input type="date" id="f-start" value="${esc(f.startDate)}" /></label>
             <label class="field"><span class="field-label">End Date</span><input type="date" id="f-end" value="${esc(f.endDate)}" /></label>
           </div>
-          ${f.status === 'ongoing' ? `
+          ${(f.status === 'ongoing' || f.status === 'dnf') ? `
           <div class="grid-2" id="pages-field-row">
             <label class="field"><span class="field-label">Last page read</span><input type="number" min="0" id="f-current-page" value="${esc(f.currentPage)}" placeholder="e.g. 120" /></label>
             <label class="field"><span class="field-label">Total pages</span><input type="number" min="0" id="f-total-pages" value="${esc(f.totalPages)}" placeholder="e.g. 320" /></label>
           </div>` : ''}
+          ${f.status === 'done' ? `
+          <label class="field"><span class="field-label">Total pages</span><input type="number" min="0" id="f-total-pages" value="${esc(f.totalPages)}" placeholder="e.g. 320" /></label>` : ''}
           <label class="field"><span class="field-label" id="rating-label">Rating — ${ratingVal.toFixed(1)}/10</span><input type="range" min="1" max="10" step="0.1" id="f-rating" value="${ratingVal}" style="width:100%;accent-color:var(--accent);" /></label>
           <label class="field"><span class="field-label">What Stayed</span><textarea id="f-review" rows="4" placeholder="Your brief thoughts about this book...">${esc(f.review)}</textarea></label>
           <div class="form-actions">
@@ -845,6 +873,8 @@ function attachHandlers() {
   if (dashboardBtn) dashboardBtn.addEventListener('click', () => { state.showDashboard = true; render(); });
   const closeDashboardBtn = document.getElementById('close-dashboard');
   if (closeDashboardBtn) closeDashboardBtn.addEventListener('click', () => { state.showDashboard = false; render(); });
+  const dashSelect = document.getElementById('dash-select');
+  if (dashSelect) dashSelect.addEventListener('change', e => { state.dashboardCategory = e.target.value; render(); });
 
   const searchInput = document.getElementById('search-input');
   if (searchInput) searchInput.addEventListener('input', e => { state.query = e.target.value; rerenderPreserveFocus(); });
@@ -893,8 +923,6 @@ function attachHandlers() {
           render();
         }
       });
-    } else if (action === 'dash-tab') {
-      el.addEventListener('click', () => { state.dashboardCategory = el.getAttribute('data-key'); render(); });
     } else if (action === 'set-accent') {
       el.addEventListener('click', () => {
         const hex = el.getAttribute('data-hex');
