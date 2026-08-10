@@ -445,6 +445,17 @@ function render() {
   attachHandlers();
 }
 
+function getStatusColor(key) {
+  return key === 'done' ? 'var(--accent)' : STATUS_META[key].color;
+}
+function getStatusPillStyle(key) {
+  if (key === 'done') {
+    return `background:rgba(var(--accent-rgb),0.1);color:var(--accent);border:1px solid rgba(var(--accent-rgb),0.33);`;
+  }
+  const c = STATUS_META[key].color;
+  return `background:${c}1A;color:${c};border:1px solid ${c}55;`;
+}
+
 function renderHome() {
   const counts = { tbr: 0, ongoing: 0, dnf: 0, done: 0 };
   state.books.forEach(b => { const s = getBookStatus(b); if (counts[s] != null) counts[s]++; });
@@ -452,12 +463,13 @@ function renderHome() {
   const max = Math.max(1, ...Object.values(counts));
   const rows = STATUS_ORDER.map(key => {
     const meta = STATUS_META[key];
+    const color = getStatusColor(key);
     const count = counts[key];
     const pct = Math.round((count / max) * 100);
     return `
       <div class="chart-row">
-        <div class="chart-label"><span class="chart-dot" style="background:${meta.color}"></span><span>${meta.label}</span></div>
-        <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${pct}%;background:${meta.color}"></div></div>
+        <div class="chart-label"><span class="chart-dot" style="background:${color}"></span><span>${meta.label}</span></div>
+        <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${pct}%;background:${color}"></div></div>
         <span class="chart-count">${count}</span>
       </div>`;
   }).join('');
@@ -564,7 +576,7 @@ function renderListItem(book) {
           <p class="item-title">${esc(book.title)}</p>
           <p class="item-author">${esc(book.author)}</p>
           ${book.publisher ? `<p class="item-publisher">${esc(book.publisher)}</p>` : ''}
-          <span class="status-mini" style="background:${statusMeta.color}1A;color:${statusMeta.color};border:1px solid ${statusMeta.color}55;">${statusMeta.label}</span>
+          <span class="status-mini" style="${getStatusPillStyle(getBookStatus(book))}">${statusMeta.label}</span>
         </div>
         <span class="rate-plain">${ICONS.star}${Number(book.rating).toFixed(1)}</span>
       </div>
@@ -583,7 +595,7 @@ function renderGridItem(book) {
         </div>
         <p class="item-title-grid">${esc(book.title)}</p>
         <p class="item-author-grid">${esc(book.author)}</p>
-        <span class="status-mini status-mini-grid" style="background:${statusMeta.color}1A;color:${statusMeta.color};border:1px solid ${statusMeta.color}55;">${statusMeta.label}</span>
+        <span class="status-mini status-mini-grid" style="${getStatusPillStyle(getBookStatus(book))}">${statusMeta.label}</span>
       </div>
     </div>`;
 }
@@ -610,7 +622,7 @@ function renderDetailModal(book) {
               ${book.translator ? `<p class="detail-book-translator">Translated by ${esc(book.translator)}</p>` : ''}
               ${book.publisher ? `<p class="detail-book-publisher">${esc(book.publisher)}</p>` : ''}
               <span class="detail-rating">${ICONS.star}${Number(book.rating).toFixed(1)}</span>
-              <div class="detail-status-row"><span class="status-mini status-mini-detail" style="background:${statusMeta.color}1A;color:${statusMeta.color};border:1px solid ${statusMeta.color}55;">${statusMeta.label}</span></div>
+              <div class="detail-status-row"><span class="status-mini status-mini-detail" style="${getStatusPillStyle(getBookStatus(book))}">${statusMeta.label}</span></div>
             </div>
           </div>
           <div class="detail-info-grid">
@@ -1020,3 +1032,4 @@ if (navigator.storage && navigator.storage.persist) {
 </script>
 </body>
 </html>
+
