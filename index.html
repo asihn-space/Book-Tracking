@@ -97,7 +97,9 @@
   .view-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; border: none; background: none; cursor: pointer; color: var(--text-faint); }
   .view-btn.active { background: var(--accent); color: var(--accent-contrast); }
   .icon-add-btn { width: 36px; height: 36px; border-radius: 9999px; background: var(--accent); color: var(--accent-contrast); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-  .search-row { display: flex; gap: 8px; margin-bottom: 14px; }
+  .search-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .filter-row { display: flex; gap: 8px; margin-bottom: 14px; }
+  .filter-row select { flex: 1; min-width: 0; }
   .search-box { flex: 1; display: flex; align-items: center; gap: 8px; padding: 0 12px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); }
   .search-box input { border: none; outline: none; background: transparent; width: 100%; padding: 10px 0; font-size: 14px; font-family: inherit; color: var(--text); }
   .sort-select { font-size: 13px; padding: 0 8px; border-radius: 8px; background: var(--surface); color: var(--text); border: 1px solid var(--border); font-family: inherit; }
@@ -110,11 +112,12 @@
   .cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .cover-list { width: 48px; }
   .item-info { flex: 1; min-width: 0; padding-right: 46px; }
-  .item-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; margin: 0; line-height: 1.32; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .item-title { font-family: var(--font-display); font-size: 13px; font-weight: 700; margin: 0; line-height: 1.32; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .item-author { font-size: 12.5px; color: var(--text-soft); margin: 2px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .rate-plain { display: inline-flex; align-items: center; gap: 3px; font-weight: 700; font-size: 12px; font-variant-numeric: tabular-nums; color: #CA8A04; position: absolute; top: 0; right: 0; }
   .rate-plain svg { flex-shrink: 0; }
   .item-publisher { font-size: 10.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; margin: 5px 0 0; }
+  .item-date-range { font-size: 10.5px; color: var(--text-faint); font-variant-numeric: tabular-nums; margin: 4px 0 0; }
 
   /* Grid view */
   .grid-view { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
@@ -125,7 +128,7 @@
   .rate-badge-grid svg { width: 9px; height: 9px; flex-shrink: 0; }
   .lang-badge { position: absolute; top: 4px; left: 4px; display: inline-flex; align-items: center; font-weight: 800; font-size: 8px; letter-spacing: 0.02em; color: #E4E4E7; background: rgba(0,0,0,0.55); padding: 2px 6px; border-radius: 9999px; line-height: 1.4; backdrop-filter: blur(2px); }
   .lang-badge-grid { position: absolute; top: 4px; left: 4px; display: inline-flex; align-items: center; font-weight: 800; font-size: 9.5px; letter-spacing: 0.02em; color: #E4E4E7; background: rgba(0,0,0,0.55); padding: 3px 8px; border-radius: 9999px; line-height: 1.4; backdrop-filter: blur(2px); }
-  .item-title-grid { font-family: var(--font-display); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; font-weight: 700; line-height: 1.3; }
+  .item-title-grid { font-family: var(--font-display); font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; font-weight: 700; line-height: 1.3; }
   .item-author-grid { font-size: 9.5px; margin: 2px 0 0; color: var(--text-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .item-publisher-grid { font-size: 9px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-faint); margin: 4px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
   .status-mini-grid { margin: 4px 0 0; font-size: 8.5px; padding: 1.5px 6px; }
@@ -278,6 +281,7 @@ let state = {
   dashboardCategory: 'pagesPerDay',
   query: '',
   sortBy: 'added',
+  statusFilter: 'all',
   activeTab: 'home',
   libraryView: 'list',
   expandedId: null,
@@ -403,6 +407,7 @@ function getYearGrouping(books) {
 function getFiltered() {
   const q = state.query.trim().toLowerCase();
   let list = state.books.filter(b => {
+    if (state.statusFilter !== 'all' && getBookStatus(b) !== state.statusFilter) return false;
     if (!q) return true;
     return [b.title, b.author, b.publisher, b.country, b.translator, b.language].some(v => (v || '').toLowerCase().includes(q));
   });
@@ -512,8 +517,9 @@ function renderHome() {
 
 function getReadingPct(book) {
   const total = Number(book.totalPages) || 0;
-  const current = Number(book.currentPage) || 0;
   if (!total || total <= 0) return 0;
+  if (getBookStatus(book) === 'done') return 100;
+  const current = Number(book.currentPage) || 0;
   return Math.max(0, Math.min(100, Math.round((current / total) * 100)));
 }
 
@@ -540,6 +546,15 @@ function renderLibrary() {
     </div>
     <div class="search-row">
       <div class="search-box">${ICONS.search}<input id="search-input" type="text" placeholder="Search title, author, publisher..." value="${esc(state.query)}" /></div>
+    </div>
+    <div class="filter-row">
+      <select id="status-filter-select" class="sort-select">
+        <option value="all" ${state.statusFilter === 'all' ? 'selected' : ''}>All</option>
+        <option value="tbr" ${state.statusFilter === 'tbr' ? 'selected' : ''}>To be Read</option>
+        <option value="ongoing" ${state.statusFilter === 'ongoing' ? 'selected' : ''}>Reading</option>
+        <option value="dnf" ${state.statusFilter === 'dnf' ? 'selected' : ''}>Didn't Finish</option>
+        <option value="done" ${state.statusFilter === 'done' ? 'selected' : ''}>Done</option>
+      </select>
       <select id="sort-select" class="sort-select">
         <option value="added" ${state.sortBy === 'added' ? 'selected' : ''}>Newest</option>
         <option value="rating" ${state.sortBy === 'rating' ? 'selected' : ''}>Rating</option>
@@ -566,8 +581,20 @@ function renderEmpty() {
     </div>`;
 }
 
+function formatDateShort(d) {
+  if (!d) return '';
+  try {
+    const dt = new Date(d + 'T00:00:00');
+    const y = dt.getFullYear();
+    const m = String(dt.getMonth() + 1).padStart(2, '0');
+    const day = String(dt.getDate()).padStart(2, '0');
+    return `${y}.${m}.${day}`;
+  } catch (e) { return ''; }
+}
+
 function renderListItem(book) {
   const statusMeta = STATUS_META[getBookStatus(book)];
+  const isDone = getBookStatus(book) === 'done';
   return `
     <div class="item">
       <div class="item-row" data-action="toggle" data-id="${book.id}">
@@ -577,6 +604,7 @@ function renderListItem(book) {
           <p class="item-author">${esc(book.author)}</p>
           ${book.publisher ? `<p class="item-publisher">${esc(book.publisher)}</p>` : ''}
           <span class="status-mini" style="${getStatusPillStyle(getBookStatus(book))}">${statusMeta.label}</span>
+          ${isDone && book.startDate && book.endDate ? `<p class="item-date-range">${formatDateShort(book.startDate)} - ${formatDateShort(book.endDate)}</p>` : ''}
         </div>
         <span class="rate-plain">${ICONS.star}${Number(book.rating).toFixed(1)}</span>
       </div>
@@ -605,7 +633,7 @@ function renderDetailModal(book) {
   const statusMeta = STATUS_META[getBookStatus(book)];
   const confirming = state.confirmDeleteId === book.id;
   const totalPages = Number(book.totalPages) || 0;
-  const currentPage = Number(book.currentPage) || 0;
+  const currentPage = getBookStatus(book) === 'done' ? totalPages : (Number(book.currentPage) || 0);
   return `
     <div class="modal">
       <div class="modal-inner">
@@ -903,6 +931,8 @@ function attachHandlers() {
   if (searchInput) searchInput.addEventListener('input', e => { state.query = e.target.value; rerenderPreserveFocus(); });
   const sortSelect = document.getElementById('sort-select');
   if (sortSelect) sortSelect.addEventListener('change', e => { state.sortBy = e.target.value; render(); });
+  const statusFilterSelect = document.getElementById('status-filter-select');
+  if (statusFilterSelect) statusFilterSelect.addEventListener('change', e => { state.statusFilter = e.target.value; render(); });
 
   const exportBtn = document.getElementById('export-btn');
   if (exportBtn) exportBtn.addEventListener('click', exportData);
@@ -1032,4 +1062,3 @@ if (navigator.storage && navigator.storage.persist) {
 </script>
 </body>
 </html>
-
