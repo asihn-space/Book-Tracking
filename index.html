@@ -753,11 +753,11 @@ function renderNameEditModal() {
     <div class="modal">
       <div class="modal-inner">
         <div class="modal-header">
-          <h2>Edit name</h2>
+          <h2>Edit Name</h2>
           <button id="close-name-edit" aria-label="Close">${ICONS.x}</button>
         </div>
         <div class="modal-body">
-          <label class="field"><span class="field-label">Your name</span><input id="f-name-edit" value="${esc(state.nameEditValue)}" placeholder="e.g. Olivia" /></label>
+          <label class="field"><span class="field-label">Your Name</span><input id="f-name-edit" value="${esc(state.nameEditValue)}" placeholder="e.g. Olivia" /></label>
           <div class="form-actions">
             <button type="button" id="cancel-name-edit" class="btn">Cancel</button>
             <button type="button" id="save-name-edit" class="btn btn-primary">${ICONS.check} Save</button>
@@ -774,13 +774,13 @@ function renderPresetEditModal() {
     <div class="modal">
       <div class="modal-inner">
         <div class="modal-header">
-          <h2>Edit color</h2>
+          <h2>Edit Color</h2>
           <button id="close-preset-edit" aria-label="Close">${ICONS.x}</button>
         </div>
         <div class="modal-body">
           <div class="preset-edit-preview" style="background:${preview};"></div>
           <label class="field">
-            <span class="field-label">Hex code</span>
+            <span class="field-label">Hex Code</span>
             <input id="f-preset-edit" value="${esc(state.presetEditValue)}" placeholder="#RRGGBB" maxlength="7" style="text-transform:uppercase;" />
           </label>
           ${state.presetEditError ? `<p class="preset-edit-error">${esc(state.presetEditError)}</p>` : ''}
@@ -802,7 +802,7 @@ function renderSettingsModal() {
           <button id="close-settings" aria-label="Close">${ICONS.x}</button>
         </div>
         <div class="modal-body">
-          <p class="field-label" style="margin-bottom:12px;">Accent color</p>
+          <p class="field-label" style="margin-bottom:12px;">Accent Color</p>
           <div class="swatch-grid">
             ${ACCENT_PRESETS.map((hex, i) => `
               <div class="swatch-wrap">
