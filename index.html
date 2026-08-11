@@ -97,12 +97,10 @@
   .view-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; border: none; background: none; cursor: pointer; color: var(--text-faint); }
   .view-btn.active { background: var(--accent); color: var(--accent-contrast); }
   .icon-add-btn { width: 36px; height: 36px; border-radius: 9999px; background: var(--accent); color: var(--accent-contrast); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-  .search-row { display: flex; gap: 8px; margin-bottom: 8px; }
-  .filter-row { display: flex; gap: 8px; margin-bottom: 14px; }
-  .filter-row select { flex: 1; min-width: 0; }
-  .search-box { flex: 1; display: flex; align-items: center; gap: 8px; padding: 0 12px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); }
+  .search-row { display: flex; gap: 8px; margin-bottom: 14px; }
+  .search-box { flex: 2; min-width: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); }
   .search-box input { border: none; outline: none; background: transparent; width: 100%; padding: 10px 0; font-size: 14px; font-family: inherit; color: var(--text); }
-  .sort-select { font-size: 13px; padding: 0 8px; border-radius: 8px; background: var(--surface); color: var(--text); border: 1px solid var(--border); font-family: inherit; }
+  .sort-select { flex: 1; min-width: 0; font-size: 12.5px; padding: 0 6px; border-radius: 8px; background: var(--surface); color: var(--text); border: 1px solid var(--border); font-family: inherit; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
   /* List view */
   .list-view { display: flex; flex-direction: column; gap: 6px; }
@@ -278,7 +276,7 @@ let state = {
   accentColor: SAVED_ACCENT,
   showSettings: false,
   showDashboard: false,
-  dashboardCategory: 'pagesPerDay',
+  dashboardCategory: 'year',
   query: '',
   sortBy: 'added',
   statusFilter: 'all',
@@ -414,7 +412,12 @@ function getFiltered() {
   list = [...list].sort((a, b) => {
     if (state.sortBy === 'rating') return (b.rating || 0) - (a.rating || 0);
     if (state.sortBy === 'title') return (a.title || '').localeCompare(b.title || '');
-    if (state.sortBy === 'finished') return (b.endDate || '').localeCompare(a.endDate || '');
+    if (state.sortBy === 'finished') {
+      const order = { done: 0, ongoing: 1, tbr: 2, dnf: 3 };
+      const diff = order[getBookStatus(a)] - order[getBookStatus(b)];
+      if (diff !== 0) return diff;
+      return (b.endDate || '').localeCompare(a.endDate || '');
+    }
     return (b.addedAt || 0) - (a.addedAt || 0);
   });
   return list;
@@ -546,8 +549,6 @@ function renderLibrary() {
     </div>
     <div class="search-row">
       <div class="search-box">${ICONS.search}<input id="search-input" type="text" placeholder="Search title, author, publisher..." value="${esc(state.query)}" /></div>
-    </div>
-    <div class="filter-row">
       <select id="status-filter-select" class="sort-select">
         <option value="all" ${state.statusFilter === 'all' ? 'selected' : ''}>All</option>
         <option value="tbr" ${state.statusFilter === 'tbr' ? 'selected' : ''}>To be Read</option>
@@ -558,13 +559,15 @@ function renderLibrary() {
       <select id="sort-select" class="sort-select">
         <option value="added" ${state.sortBy === 'added' ? 'selected' : ''}>Newest</option>
         <option value="rating" ${state.sortBy === 'rating' ? 'selected' : ''}>Rating</option>
-        <option value="finished" ${state.sortBy === 'finished' ? 'selected' : ''}>Finished reading</option>
+        <option value="finished" ${state.sortBy === 'finished' ? 'selected' : ''}>Finished Reading</option>
         <option value="title" ${state.sortBy === 'title' ? 'selected' : ''}>Title A-Z</option>
       </select>
     </div>
     ${collection}
     <div class="backup-row-footer">
       <button class="link-btn" id="export-btn">Export data</button>
+      <span style="color:var(--text-faint)"> · </span>
+      <button class="link-btn" id="export-csv-btn">Export to CSV</button>
       <span style="color:var(--text-faint)"> · </span>
       <button class="link-btn" id="import-btn">Import data</button>
       <input type="file" id="import-file" accept="application/json" hidden />
@@ -705,12 +708,12 @@ function renderSettingsModal() {
 function renderDashboardModal() {
   const cat = state.dashboardCategory;
   const tabs = [
+    { key: 'year', label: 'Year' },
     { key: 'pagesPerDay', label: 'Pages/Day' },
     { key: 'writer', label: 'Writer' },
     { key: 'country', label: 'Origin Country' },
     { key: 'publisher', label: 'Publisher' },
-    { key: 'language', label: 'Language' },
-    { key: 'year', label: 'Year' }
+    { key: 'language', label: 'Language' }
   ];
   const selectHtml = `<select id="dash-select" class="dash-select">${tabs.map(t => `<option value="${t.key}" ${cat === t.key ? 'selected' : ''}>${t.label}</option>`).join('')}</select>`;
   let content = '';
@@ -880,6 +883,27 @@ function rerenderPreserveFocus() {
   }
 }
 
+function csvEscape(val) {
+  if (val == null) return '';
+  const s = String(val);
+  if (/[",\n\r]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
+function exportCSV() {
+  const headers = ['Title', 'Author', 'Translator', 'Publisher', 'Origin Country', 'Origin Year', 'Language', 'ISBN', 'Rating', 'Status', 'Start Date', 'End Date', 'Current Page', 'Total Pages', 'Review'];
+  const rows = state.books.map(b => [
+    b.title, b.author, b.translator, b.publisher, b.country, b.originYear, b.language, b.isbn,
+    b.rating, STATUS_META[getBookStatus(b)].label,
+    b.startDate, b.endDate, b.currentPage, b.totalPages, b.review
+  ].map(csvEscape).join(','));
+  const csv = [headers.map(csvEscape).join(','), ...rows].join('\r\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'book-tracker-export.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 function exportData() {
   const blob = new Blob([JSON.stringify(state.books, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -936,6 +960,8 @@ function attachHandlers() {
 
   const exportBtn = document.getElementById('export-btn');
   if (exportBtn) exportBtn.addEventListener('click', exportData);
+  const exportCsvBtn = document.getElementById('export-csv-btn');
+  if (exportCsvBtn) exportCsvBtn.addEventListener('click', exportCSV);
   const importBtn = document.getElementById('import-btn');
   const importFile = document.getElementById('import-file');
   if (importBtn && importFile) {
@@ -1062,3 +1088,4 @@ if (navigator.storage && navigator.storage.persist) {
 </script>
 </body>
 </html>
+
