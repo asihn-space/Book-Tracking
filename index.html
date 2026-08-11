@@ -38,11 +38,17 @@
   .swatch-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
   .swatch-btn { width: 100%; aspect-ratio: 1; border-radius: 9999px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; outline-offset: 3px; }
   .swatch-btn.active { outline: 3px solid var(--text); }
+  .swatch-wrap { position: relative; }
+  .swatch-edit-btn { position: absolute; bottom: -3px; right: -3px; width: 20px; height: 20px; border-radius: 9999px; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-soft); cursor: pointer; padding: 0; }
+  .preset-edit-preview { width: 100%; height: 56px; border-radius: 12px; margin-bottom: 16px; border: 1px solid var(--border); }
+  .preset-edit-error { font-size: 12.5px; color: #B91C1C; margin: -8px 0 12px; }
   .swatch-hint { font-size: 12.5px; color: var(--text-soft); margin: 14px 0 0; }
 
   /* Dashboard modal */
   .dashboard-title { font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 800; font-size: 17px; margin: 0; }
-  .dash-select { width: 100%; font-size: 13.5px; font-weight: 600; padding: 10px 12px; border-radius: 8px; background: var(--surface); color: var(--text); border: 1px solid var(--border); font-family: inherit; margin-bottom: 14px; }
+  .dash-select-row { margin-bottom: 14px; }
+  .dash-select-row .custom-select-wrap { width: 100%; }
+  .dash-select-row .custom-select-trigger { padding: 10px 12px; font-size: 13.5px; font-weight: 600; }
   .rank-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
   .rank-row:last-child { border-bottom: none; }
   .rank-num { display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 9999px; background: var(--accent); color: var(--accent-contrast); font-family: var(--font-display); font-weight: 800; font-size: 11px; flex-shrink: 0; }
@@ -100,7 +106,16 @@
   .search-row { display: flex; gap: 8px; margin-bottom: 14px; }
   .search-box { flex: 2; min-width: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); }
   .search-box input { border: none; outline: none; background: transparent; width: 100%; padding: 10px 0; font-size: 14px; font-family: inherit; color: var(--text); }
-  .sort-select { flex: 1; min-width: 0; font-size: 12.5px; padding: 0 6px; border-radius: 8px; background: var(--surface); color: var(--text); border: 1px solid var(--border); font-family: inherit; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .custom-select-wrap { position: relative; flex: 1; min-width: 0; }
+  .custom-select-trigger { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 4px; font-size: 12.5px; padding: 0 8px; height: 100%; border-radius: 8px; background: var(--surface); color: var(--text); border: 1px solid var(--border); font-family: inherit; cursor: pointer; }
+  .custom-select-trigger svg { flex-shrink: 0; color: var(--text-faint); }
+  .custom-select-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .custom-select-menu { position: absolute; top: calc(100% + 6px); min-width: 168px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 10px 24px rgba(0,0,0,0.14); overflow: hidden; z-index: 35; }
+  .custom-select-menu-left { left: 0; }
+  .custom-select-menu-right { right: 0; }
+  .custom-select-option { display: block; width: 100%; text-align: left; padding: 10px 14px; font-size: 13.5px; font-family: inherit; background: none; border: none; color: var(--text); cursor: pointer; }
+  .custom-select-option + .custom-select-option { border-top: 1px solid var(--border); }
+  .custom-select-option.active { color: var(--accent); font-weight: 700; background: rgba(var(--accent-rgb), 0.08); }
 
   /* List view */
   .list-view { display: flex; flex-direction: column; gap: 6px; }
@@ -214,6 +229,7 @@ const ICONS = {
   trash: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>',
   book: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
   check: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  chevronDown: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>',
   home: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10"/><path d="M9 21v-6h6v6"/></svg>',
   library: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
   list: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>',
@@ -222,11 +238,29 @@ const ICONS = {
   star: '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
   gear: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
   chart: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
-  globe: '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>'
+  globe: '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+  pencil: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>'
 };
 
 const ACCENT_KEY = 'reading-log-v2-accent';
-const ACCENT_PRESETS = ['#0CBAA6', '#857686', '#E9A4A4', '#C1DCDC', '#F4A6B6', '#D0C5B1'];
+const ACCENT_PRESETS_KEY = 'reading-log-v2-accent-presets';
+const DEFAULT_ACCENT_PRESETS = ['#0CBAA6', '#857686', '#E9A4A4', '#C1DCDC', '#F4A6B6', '#D0C5B1'];
+
+function loadAccentPresets() {
+  try {
+    const raw = localStorage.getItem(ACCENT_PRESETS_KEY);
+    const arr = raw ? JSON.parse(raw) : null;
+    return Array.isArray(arr) && arr.length === 6 ? arr : [...DEFAULT_ACCENT_PRESETS];
+  } catch (e) { return [...DEFAULT_ACCENT_PRESETS]; }
+}
+function saveAccentPresets() {
+  try { localStorage.setItem(ACCENT_PRESETS_KEY, JSON.stringify(ACCENT_PRESETS)); } catch (e) {}
+}
+function isValidHex(hex) {
+  return /^#[0-9A-Fa-f]{6}$/.test(hex);
+}
+
+let ACCENT_PRESETS = loadAccentPresets();
 
 function loadAccent() {
   try { return localStorage.getItem(ACCENT_KEY) || '#0CBAA6'; }
@@ -278,8 +312,14 @@ let state = {
   showDashboard: false,
   dashboardCategory: 'year',
   query: '',
-  sortBy: 'added',
-  statusFilter: 'all',
+  sortBy: '',
+  statusFilter: '',
+  openDropdown: null,
+  showNameEdit: false,
+  nameEditValue: '',
+  editingPresetIndex: null,
+  presetEditValue: '',
+  presetEditError: '',
   activeTab: 'home',
   libraryView: 'list',
   expandedId: null,
@@ -402,10 +442,45 @@ function getYearGrouping(books) {
     }));
 }
 
+const FILTER_OPTIONS = [
+  { value: 'all', label: 'All' },
+  { value: 'tbr', label: 'To be Read' },
+  { value: 'ongoing', label: 'Reading' },
+  { value: 'dnf', label: "Didn't Finish" },
+  { value: 'done', label: 'Done' }
+];
+const SORT_OPTIONS = [
+  { value: 'added', label: 'Newest' },
+  { value: 'rating', label: 'Rating' },
+  { value: 'finished', label: 'Finished Reading' },
+  { value: 'title', label: 'Title A-Z' }
+];
+
+function renderCustomSelect(key, options, currentValue, align) {
+  const placeholder = key === 'filter' ? 'Filter by' : key === 'sort' ? 'Sort by' : 'Select';
+  const current = options.find(o => o.value === currentValue);
+  const label = current ? current.label : placeholder;
+  const isOpen = state.openDropdown === key;
+  return `
+    <div class="custom-select-wrap">
+      <button type="button" class="custom-select-trigger" data-action="toggle-dropdown" data-dropdown="${key}" aria-haspopup="listbox" aria-expanded="${isOpen}">
+        <span class="custom-select-label">${esc(label)}</span>
+        ${ICONS.chevronDown}
+      </button>
+      ${isOpen ? `
+        <div class="custom-select-menu custom-select-menu-${align}" role="listbox">
+          ${options.map(o => `
+            <button type="button" class="custom-select-option ${o.value === currentValue ? 'active' : ''}" data-action="pick-option" data-dropdown="${key}" data-value="${o.value}">
+              ${esc(o.label)}
+            </button>`).join('')}
+        </div>` : ''}
+    </div>`;
+}
+
 function getFiltered() {
   const q = state.query.trim().toLowerCase();
   let list = state.books.filter(b => {
-    if (state.statusFilter !== 'all' && getBookStatus(b) !== state.statusFilter) return false;
+    if (state.statusFilter && state.statusFilter !== 'all' && getBookStatus(b) !== state.statusFilter) return false;
     if (!q) return true;
     return [b.title, b.author, b.publisher, b.country, b.translator, b.language].some(v => (v || '').toLowerCase().includes(q));
   });
@@ -447,7 +522,9 @@ function render() {
     </main>
     ${state.expandedId ? renderDetailModal(state.books.find(b => b.id === state.expandedId)) : ''}
     ${state.showSettings ? renderSettingsModal() : ''}
+    ${state.editingPresetIndex !== null ? renderPresetEditModal() : ''}
     ${state.showDashboard ? renderDashboardModal() : ''}
+    ${state.showNameEdit ? renderNameEditModal() : ''}
     ${state.showForm ? renderForm() : ''}
   `;
   attachHandlers();
@@ -549,19 +626,8 @@ function renderLibrary() {
     </div>
     <div class="search-row">
       <div class="search-box">${ICONS.search}<input id="search-input" type="text" placeholder="Search title, author, publisher..." value="${esc(state.query)}" /></div>
-      <select id="status-filter-select" class="sort-select">
-        <option value="all" ${state.statusFilter === 'all' ? 'selected' : ''}>All</option>
-        <option value="tbr" ${state.statusFilter === 'tbr' ? 'selected' : ''}>To be Read</option>
-        <option value="ongoing" ${state.statusFilter === 'ongoing' ? 'selected' : ''}>Reading</option>
-        <option value="dnf" ${state.statusFilter === 'dnf' ? 'selected' : ''}>Didn't Finish</option>
-        <option value="done" ${state.statusFilter === 'done' ? 'selected' : ''}>Done</option>
-      </select>
-      <select id="sort-select" class="sort-select">
-        <option value="added" ${state.sortBy === 'added' ? 'selected' : ''}>Newest</option>
-        <option value="rating" ${state.sortBy === 'rating' ? 'selected' : ''}>Rating</option>
-        <option value="finished" ${state.sortBy === 'finished' ? 'selected' : ''}>Finished Reading</option>
-        <option value="title" ${state.sortBy === 'title' ? 'selected' : ''}>Title A-Z</option>
-      </select>
+      ${renderCustomSelect('filter', FILTER_OPTIONS, state.statusFilter, 'left')}
+      ${renderCustomSelect('sort', SORT_OPTIONS, state.sortBy, 'right')}
     </div>
     ${collection}
     <div class="backup-row-footer">
@@ -682,6 +748,51 @@ function renderDetailModal(book) {
     </div>`;
 }
 
+function renderNameEditModal() {
+  return `
+    <div class="modal">
+      <div class="modal-inner">
+        <div class="modal-header">
+          <h2>Edit name</h2>
+          <button id="close-name-edit" aria-label="Close">${ICONS.x}</button>
+        </div>
+        <div class="modal-body">
+          <label class="field"><span class="field-label">Your name</span><input id="f-name-edit" value="${esc(state.nameEditValue)}" placeholder="e.g. Olivia" /></label>
+          <div class="form-actions">
+            <button type="button" id="cancel-name-edit" class="btn">Cancel</button>
+            <button type="button" id="save-name-edit" class="btn btn-primary">${ICONS.check} Save</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderPresetEditModal() {
+  const i = state.editingPresetIndex;
+  const preview = isValidHex(state.presetEditValue) ? state.presetEditValue : ACCENT_PRESETS[i];
+  return `
+    <div class="modal">
+      <div class="modal-inner">
+        <div class="modal-header">
+          <h2>Edit color</h2>
+          <button id="close-preset-edit" aria-label="Close">${ICONS.x}</button>
+        </div>
+        <div class="modal-body">
+          <div class="preset-edit-preview" style="background:${preview};"></div>
+          <label class="field">
+            <span class="field-label">Hex code</span>
+            <input id="f-preset-edit" value="${esc(state.presetEditValue)}" placeholder="#RRGGBB" maxlength="7" style="text-transform:uppercase;" />
+          </label>
+          ${state.presetEditError ? `<p class="preset-edit-error">${esc(state.presetEditError)}</p>` : ''}
+          <div class="form-actions">
+            <button type="button" id="cancel-preset-edit" class="btn">Cancel</button>
+            <button type="button" id="save-preset-edit" class="btn btn-primary">${ICONS.check} Save</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
 function renderSettingsModal() {
   return `
     <div class="modal">
@@ -693,13 +804,16 @@ function renderSettingsModal() {
         <div class="modal-body">
           <p class="field-label" style="margin-bottom:12px;">Accent color</p>
           <div class="swatch-grid">
-            ${ACCENT_PRESETS.map(hex => `
-              <button class="swatch-btn ${state.accentColor === hex ? 'active' : ''}" data-action="set-accent" data-hex="${hex}" style="background:${hex};color:${getContrastTextColor(hex)};" aria-label="${hex}">
-                ${state.accentColor === hex ? ICONS.check : ''}
-              </button>
+            ${ACCENT_PRESETS.map((hex, i) => `
+              <div class="swatch-wrap">
+                <button class="swatch-btn ${state.accentColor === hex ? 'active' : ''}" data-action="set-accent" data-hex="${hex}" style="background:${hex};color:${getContrastTextColor(hex)};" aria-label="${hex}">
+                  ${state.accentColor === hex ? ICONS.check : ''}
+                </button>
+                <button class="swatch-edit-btn" data-action="edit-preset" data-index="${i}" aria-label="Edit this color">${ICONS.pencil}</button>
+              </div>
             `).join('')}
           </div>
-          <p class="swatch-hint">Applies right away and stays saved on this device.</p>
+          <p class="swatch-hint">Tap a color to apply it. Tap the pencil to set your own hex code.</p>
         </div>
       </div>
     </div>`;
@@ -715,7 +829,8 @@ function renderDashboardModal() {
     { key: 'publisher', label: 'Publisher' },
     { key: 'language', label: 'Language' }
   ];
-  const selectHtml = `<select id="dash-select" class="dash-select">${tabs.map(t => `<option value="${t.key}" ${cat === t.key ? 'selected' : ''}>${t.label}</option>`).join('')}</select>`;
+  const dashOptions = tabs.map(t => ({ value: t.key, label: t.label }));
+  const selectHtml = `<div class="dash-select-row">${renderCustomSelect('dashboard', dashOptions, cat, 'left')}</div>`;
   let content = '';
   if (cat === 'pagesPerDay') content = renderPagesPerDayRanking();
   else if (cat === 'writer') content = renderCountRanking(rankBy(state.books, b => b.author && b.author.trim()));
@@ -845,6 +960,13 @@ function updateCoverPreview() {
   preview.innerHTML = state.form.coverUrl ? `<img src="${esc(state.form.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book;
 }
 
+function updatePresetPreview() {
+  const preview = document.querySelector('.preset-edit-preview');
+  if (!preview) return;
+  const hex = isValidHex(state.presetEditValue) ? state.presetEditValue : ACCENT_PRESETS[state.editingPresetIndex];
+  preview.style.background = hex;
+}
+
 function resizeImageFile(file, maxDim, quality) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -948,15 +1070,80 @@ function attachHandlers() {
   if (dashboardBtn) dashboardBtn.addEventListener('click', () => { state.showDashboard = true; render(); });
   const closeDashboardBtn = document.getElementById('close-dashboard');
   if (closeDashboardBtn) closeDashboardBtn.addEventListener('click', () => { state.showDashboard = false; render(); });
-  const dashSelect = document.getElementById('dash-select');
-  if (dashSelect) dashSelect.addEventListener('change', e => { state.dashboardCategory = e.target.value; render(); });
+
+  const nameEditInput = document.getElementById('f-name-edit');
+  if (nameEditInput) nameEditInput.addEventListener('input', e => { state.nameEditValue = e.target.value; });
+  const saveNameBtn = document.getElementById('save-name-edit');
+  if (saveNameBtn) saveNameBtn.addEventListener('click', () => {
+    state.userName = state.nameEditValue.trim() || 'Reader';
+    saveName();
+    state.showNameEdit = false;
+    render();
+  });
+  const closeNameEditHandler = () => { state.showNameEdit = false; render(); };
+  const closeNameEditBtn = document.getElementById('close-name-edit');
+  if (closeNameEditBtn) closeNameEditBtn.addEventListener('click', closeNameEditHandler);
+  const cancelNameEditBtn = document.getElementById('cancel-name-edit');
+  if (cancelNameEditBtn) cancelNameEditBtn.addEventListener('click', closeNameEditHandler);
+
+  const presetEditInput = document.getElementById('f-preset-edit');
+  if (presetEditInput) presetEditInput.addEventListener('input', e => {
+    let v = e.target.value.trim();
+    if (v && !v.startsWith('#')) v = '#' + v;
+    state.presetEditValue = v.toUpperCase();
+    updatePresetPreview();
+  });
+  const closePresetEditHandler = () => { state.editingPresetIndex = null; state.presetEditError = ''; render(); };
+  const closePresetEditBtn = document.getElementById('close-preset-edit');
+  if (closePresetEditBtn) closePresetEditBtn.addEventListener('click', closePresetEditHandler);
+  const cancelPresetEditBtn = document.getElementById('cancel-preset-edit');
+  if (cancelPresetEditBtn) cancelPresetEditBtn.addEventListener('click', closePresetEditHandler);
+  const savePresetEditBtn = document.getElementById('save-preset-edit');
+  if (savePresetEditBtn) savePresetEditBtn.addEventListener('click', () => {
+    const hex = state.presetEditValue;
+    if (!isValidHex(hex)) {
+      state.presetEditError = 'Enter a valid hex code, like #4F46E5.';
+      render();
+      return;
+    }
+    const i = state.editingPresetIndex;
+    const wasActive = ACCENT_PRESETS[i] === state.accentColor;
+    ACCENT_PRESETS[i] = hex;
+    saveAccentPresets();
+    if (wasActive) {
+      state.accentColor = hex;
+      applyAccent(hex);
+      STATUS_META.done.color = hex;
+      saveAccentToStorage(hex);
+    }
+    state.editingPresetIndex = null;
+    state.presetEditError = '';
+    render();
+  });
 
   const searchInput = document.getElementById('search-input');
   if (searchInput) searchInput.addEventListener('input', e => { state.query = e.target.value; rerenderPreserveFocus(); });
-  const sortSelect = document.getElementById('sort-select');
-  if (sortSelect) sortSelect.addEventListener('change', e => { state.sortBy = e.target.value; render(); });
-  const statusFilterSelect = document.getElementById('status-filter-select');
-  if (statusFilterSelect) statusFilterSelect.addEventListener('change', e => { state.statusFilter = e.target.value; render(); });
+
+  document.querySelectorAll('[data-action="toggle-dropdown"]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      const key = el.getAttribute('data-dropdown');
+      state.openDropdown = state.openDropdown === key ? null : key;
+      render();
+    });
+  });
+  document.querySelectorAll('[data-action="pick-option"]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      const key = el.getAttribute('data-dropdown');
+      const value = el.getAttribute('data-value');
+      if (key === 'filter') state.statusFilter = value;
+      if (key === 'sort') state.sortBy = value;
+      if (key === 'dashboard') state.dashboardCategory = value;
+      state.openDropdown = null;
+      render();
+    });
+  });
 
   const exportBtn = document.getElementById('export-btn');
   if (exportBtn) exportBtn.addEventListener('click', exportData);
@@ -995,12 +1182,18 @@ function attachHandlers() {
     } else if (action === 'edit-name') {
       el.addEventListener('click', e => {
         e.stopPropagation();
-        const newName = prompt('Your name:', state.userName === 'Reader' ? '' : state.userName);
-        if (newName != null) {
-          state.userName = newName.trim() || 'Reader';
-          saveName();
-          render();
-        }
+        state.nameEditValue = state.userName === 'Reader' ? '' : state.userName;
+        state.showNameEdit = true;
+        render();
+      });
+    } else if (action === 'edit-preset') {
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        const i = Number(el.getAttribute('data-index'));
+        state.editingPresetIndex = i;
+        state.presetEditValue = ACCENT_PRESETS[i];
+        state.presetEditError = '';
+        render();
       });
     } else if (action === 'set-accent') {
       el.addEventListener('click', () => {
@@ -1075,6 +1268,13 @@ function attachHandlers() {
   }
 }
 
+document.addEventListener('click', () => {
+  if (state.openDropdown) {
+    state.openDropdown = null;
+    render();
+  }
+});
+
 render();
 
 if ('serviceWorker' in navigator) {
@@ -1088,4 +1288,3 @@ if (navigator.storage && navigator.storage.persist) {
 </script>
 </body>
 </html>
-
