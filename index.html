@@ -808,7 +808,7 @@ function renderAchievementModal() {
             <p class="achievement-sub">You've finished reading</p>
             <p class="achievement-title">${esc(book.title)}</p>
             <p class="achievement-author">${esc(book.author)}</p>
-            ${days != null ? `<div class="achievement-days-pill">${days} day${days === 1 ? '' : 's'} of reading</div>` : ''}
+            ${days != null ? `<div class="achievement-days-pill">${days} Day${days === 1 ? '' : 's'} of Reading</div>` : ''}
           </div>
           <div class="achievement-actions">
             <button type="button" class="btn-secondary-sm" id="replay-confetti-btn" style="width:100%;margin-bottom:10px;">${ICONS.repeat} Replay confetti</button>
@@ -1064,11 +1064,11 @@ function generateAchievementCanvas(book, days, callback) {
     function drawDynamicLayer() {
       ctx.textAlign = 'center';
 
-      ctx.font = '100px "Alex Brush", cursive';
+      ctx.font = '105px "Alex Brush", cursive';
       ctx.fillStyle = accent;
-      ctx.fillText('Congratulations!', cx, 225);
+      ctx.fillText('Congratulations!', cx, 275);
 
-      ctx.font = '500 50px Outfit, sans-serif';
+      ctx.font = '500 40px Outfit, sans-serif';
       ctx.fillStyle = '#3F3F46';
       ctx.fillText("You've finished reading", cx, 325);
 
@@ -1084,7 +1084,7 @@ function generateAchievementCanvas(book, days, callback) {
 
       const pillY = authorY + 88;
       if (days != null) {
-        const pillText = `${days} day${days === 1 ? '' : 's'} of reading`;
+        const pillText = `${days} Day${days === 1 ? '' : 's'} of Reading`;
         ctx.font = '600 32px Outfit, sans-serif';
         const pillWidth = Math.max(380, ctx.measureText(pillText).width + 80);
         ctx.fillStyle = accent;
