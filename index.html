@@ -1064,13 +1064,13 @@ function generateAchievementCanvas(book, days, callback) {
     function drawDynamicLayer() {
       ctx.textAlign = 'center';
 
-      ctx.font = '105px "Alex Brush", cursive';
+      ctx.font = '110px "Alex Brush", cursive';
       ctx.fillStyle = accent;
-      ctx.fillText('Congratulations!', cx, 275);
+      ctx.fillText('Congratulations!', cx, 285);
 
-      ctx.font = '500 40px Outfit, sans-serif';
+      ctx.font = '500 36px Outfit, sans-serif';
       ctx.fillStyle = '#3F3F46';
-      ctx.fillText("You've finished reading", cx, 325);
+      ctx.fillText("You've finished reading", cx, 340);
 
       const titleY = coverBox.y + coverBox.h + 100;
       ctx.font = '800 44px "Plus Jakarta Sans", sans-serif';
