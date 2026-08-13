@@ -827,11 +827,11 @@ function renderNameEditModal() {
     <div class="modal">
       <div class="modal-inner">
         <div class="modal-header">
-          <h2>Edit name</h2>
+          <h2>Edit Name</h2>
           <button id="close-name-edit" aria-label="Close">${ICONS.x}</button>
         </div>
         <div class="modal-body">
-          <label class="field"><span class="field-label">Your name</span><input id="f-name-edit" value="${esc(state.nameEditValue)}" placeholder="e.g. Olivia" /></label>
+          <label class="field"><span class="field-label">Your Name</span><input id="f-name-edit" value="${esc(state.nameEditValue)}" placeholder="e.g. Olivia" /></label>
           <div class="form-actions">
             <button type="button" id="cancel-name-edit" class="btn">Cancel</button>
             <button type="button" id="save-name-edit" class="btn btn-primary">${ICONS.check} Save</button>
@@ -1064,13 +1064,13 @@ function generateAchievementCanvas(book, days, callback) {
     function drawDynamicLayer() {
       ctx.textAlign = 'center';
 
-      ctx.font = '76px "Alex Brush", cursive';
+      ctx.font = '100px "Alex Brush", cursive';
       ctx.fillStyle = accent;
-      ctx.fillText('Congratulations!', cx, 175);
+      ctx.fillText('Congratulations!', cx, 225);
 
-      ctx.font = '500 32px Outfit, sans-serif';
+      ctx.font = '500 50px Outfit, sans-serif';
       ctx.fillStyle = '#3F3F46';
-      ctx.fillText("You've finished reading", cx, 225);
+      ctx.fillText("You've finished reading", cx, 325);
 
       const titleY = coverBox.y + coverBox.h + 100;
       ctx.font = '800 44px "Plus Jakarta Sans", sans-serif';
