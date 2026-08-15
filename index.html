@@ -7,7 +7,7 @@
 <link rel="manifest" href="mobile-manifest.json" />
 <meta name="theme-color" content="#18181B" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Outfit:wght@400;500;600;700;800&family=Sacramento&family=Alex+Brush&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Outfit:wght@400;500;600;700;800&family=Sacramento&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=Alex+Brush&display=swap" rel="stylesheet" />
 <style>
   :root {
     --bg: #FAFAFA;
@@ -20,7 +20,7 @@
     --accent-rgb: 12, 186, 166;
     --accent-contrast: #FFFFFF;
     --accent-dark: #077367;
-    --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
+    --font-display: 'STIX Two Text', system-ui, sans-serif;
     --font-body: 'Outfit', system-ui, -apple-system, sans-serif;
     --font-script: 'Sacramento', cursive;
   }
@@ -1076,7 +1076,7 @@ function generateAchievementCanvas(book, days, callback) {
       ctx.fillText("You've finished reading", cx, 355);
 
       const titleY = coverBox.y + coverBox.h + 100;
-      ctx.font = '800 48px "Plus Jakarta Sans", sans-serif';
+      ctx.font = '800 48px "STIX Two Text", sans-serif';
       ctx.fillStyle = accent;
       wrapCanvasText(ctx, book.title.toUpperCase(), cx, titleY, 900, 52);
 
