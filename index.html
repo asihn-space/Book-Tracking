@@ -20,7 +20,7 @@
     --accent-rgb: 12, 186, 166;
     --accent-contrast: #FFFFFF;
     --accent-dark: #077367;
-    --font-display: 'STIX Two Text', system-ui, sans-serif;
+    --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
     --font-body: 'Outfit', system-ui, -apple-system, sans-serif;
     --font-script: 'Sacramento', cursive;
   }
@@ -1076,7 +1076,7 @@ function generateAchievementCanvas(book, days, callback) {
       ctx.fillText("You've finished reading", cx, 355);
 
       const titleY = coverBox.y + coverBox.h + 100;
-      ctx.font = '800 48px "STIX Two Text", sans-serif';
+      ctx.font = '800 48px "Plus Jakarta Sans", sans-serif';
       ctx.fillStyle = accent;
       wrapCanvasText(ctx, book.title.toUpperCase(), cx, titleY, 900, 52);
 
