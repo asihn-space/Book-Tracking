@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Book Tracking</title>
+<link rel="manifest" href="mobile-manifest.json" />
+<meta name="theme-color" content="#18181B" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Outfit:wght@400;500;600;700;800&family=Sacramento&family=Alex+Brush&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #FAFAFA;
+    --surface: #FFFFFF;
+    --border: #E4E4E7;
+    --text: #18181B;
+    --text-soft: #71717A;
+    --text-faint: #A1A1AA;
+    --accent: #0CBAA6;
+    --accent-rgb: 12, 186, 166;
+    --accent-contrast: #FFFFFF;
+    --accent-dark: #077367;
+    --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
+    --font-body: 'Outfit', system-ui, -apple-system, sans-serif;
+    --font-script: 'Sacramento', cursive;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--font-body); background: var(--bg); color: var(--text); }
+  #app { max-width: 640px; margin: 0 auto; min-height: 100vh; }
+  .header { position: sticky; top: 0; z-index: 20; background: var(--bg); border-bottom: 1px solid var(--border); padding: 20px 16px 14px; }
+  .title { font-family: var(--font-display); font-size: 21px; font-weight: 800; margin: 0; text-transform: uppercase; letter-spacing: 0.05em; }
+  .header-name { font-family: var(--font-script); font-size: 26px; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--accent); margin-left: 4px; vertical-align: middle; }
+  .tabs { display: flex; gap: 4px; margin-top: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 4px; }
+  .tab-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 0; border-radius: 8px; border: none; background: none; cursor: pointer; font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--text-soft); }
+  .tab-btn.active { background: var(--accent); color: var(--accent-contrast); }
+  .header-top-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .settings-btn { background: none; border: none; cursor: pointer; color: var(--text-soft); padding: 4px; margin-top: 1px; flex-shrink: 0; }
+  .swatch-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .swatch-btn { width: 100%; aspect-ratio: 1; border-radius: 9999px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; outline-offset: 3px; }
+  .swatch-btn.active { outline: 3px solid var(--text); }
+  .swatch-wrap { position: relative; }
+  .swatch-edit-btn { position: absolute; bottom: -3px; right: -3px; width: 20px; height: 20px; border-radius: 9999px; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-soft); cursor: pointer; padding: 0; }
+  .preset-edit-preview { width: 100%; height: 56px; border-radius: 12px; margin-bottom: 16px; border: 1px solid var(--border); }
+  .preset-edit-error { font-size: 12.5px; color: #B91C1C; margin: -8px 0 12px; }
+  .swatch-hint { font-size: 12.5px; color: var(--text-soft); margin: 14px 0 0; }
+
+  /* Dashboard modal */
+  .dashboard-title { font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 800; font-size: 17px; margin: 0; }
+  .dash-select-row { margin-bottom: 14px; }
+  .dash-select-row .custom-select-wrap { width: 100%; }
+  .dash-select-row .custom-select-trigger { padding: 10px 12px; font-size: 13.5px; font-weight: 600; }
+  .rank-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .bar-rank-row { margin-bottom: 14px; }
+  .bar-rank-label { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; gap: 8px; }
+  .bar-rank-name { font-size: 13.5px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-rank-count { font-size: 12px; font-weight: 700; color: var(--text-soft); font-variant-numeric: tabular-nums; flex-shrink: 0; }
+  .bar-track { height: 10px; background: var(--bg); border-radius: 9999px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 9999px; }
+  .rank-row:last-child { border-bottom: none; }
+  .rank-num { display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 9999px; background: var(--accent); color: var(--accent-contrast); font-family: var(--font-display); font-weight: 800; font-size: 11px; flex-shrink: 0; }
+  .rank-info { flex: 1; min-width: 0; }
+  .rank-name { font-size: 13.5px; font-weight: 700; color: var(--text); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rank-sub { font-size: 11.5px; color: var(--text-soft); margin: 2px 0 0; }
+  .rank-value { font-size: 13px; font-weight: 700; color: var(--accent); flex-shrink: 0; white-space: nowrap; }
+  .rank-value-rating { display: inline-flex; align-items: center; gap: 3px; font-weight: 700; font-size: 13px; color: #CA8A04; flex-shrink: 0; }
+  .year-group { margin-bottom: 18px; padding: 14px; border: 1px solid var(--border); border-radius: 10px; }
+  .year-group:last-child { margin-bottom: 0; }
+  .year-group-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px; margin-bottom: 4px; }
+  .year-group-title { font-family: var(--font-display); font-weight: 800; font-size: 15px; margin: 0; }
+  .year-group-stats { font-size: 11.5px; color: var(--text-soft); }
+  .month-chart { display: flex; align-items: flex-end; gap: 4px; margin-top: 14px; }
+  .month-col { flex: 1; display: flex; flex-direction: column; align-items: center; }
+  .month-col-count { font-size: 10px; font-weight: 700; color: var(--text-soft); height: 13px; font-variant-numeric: tabular-nums; }
+  .month-col-track { width: 100%; max-width: 18px; height: 84px; display: flex; align-items: flex-end; background: var(--bg); border-radius: 4px; overflow: hidden; }
+  .month-col-fill { width: 100%; background: var(--accent); border-radius: 3px 3px 0 0; min-height: 0; }
+  .month-col-label { font-size: 9.5px; color: var(--text-faint); margin-top: 4px; }
+  .year-top5-heading { font-size: 11px; font-weight: 700; color: var(--text-faint); letter-spacing: 0.02em; margin: 10px 0 2px; text-transform: uppercase; }
+  .dash-empty { font-size: 13px; color: var(--text-soft); text-align: center; padding: 30px 0; }
+
+  main { padding: 16px 16px 40px; }
+  .error-banner { margin-bottom: 16px; padding: 10px 12px; border-radius: 8px; font-size: 14px; background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
+
+  /* Home / dashboard */
+  .welcome-row { margin: 0 0 4px; font-size: 22px; color: var(--text); font-weight: 500; }
+  .welcome-name { font-family: var(--font-script); font-size: 30px; font-weight: 400; color: var(--accent); cursor: pointer; margin-left: 3px; }
+  .pages-read-row { margin: 0 0 16px; font-size: 13.5px; color: var(--text-soft); }
+  .pages-read-row strong { color: var(--accent); font-weight: 800; }
+  .header-actions { display: flex; gap: 2px; }
+  .section-title { font-family: var(--font-display); font-size: 15px; font-weight: 800; color: var(--text); text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 14px; }
+  .dashboard { padding: 18px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; }
+  .chart { display: flex; flex-direction: column; gap: 14px; }
+  .chart-row { display: flex; align-items: center; gap: 10px; }
+  .chart-label { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 500; color: var(--text-soft); width: 108px; flex-shrink: 0; }
+  .chart-dot { width: 8px; height: 8px; border-radius: 9999px; flex-shrink: 0; }
+  .chart-bar-track { flex: 1; height: 8px; border-radius: 9999px; background: var(--bg); overflow: hidden; }
+  .chart-bar-fill { height: 100%; border-radius: 9999px; }
+  .chart-count { font-size: 13px; font-weight: 600; color: var(--text-soft); width: 22px; text-align: right; font-variant-numeric: tabular-nums; }
+  .home-view { padding-bottom: 90px; }
+  .dashboard + .dashboard { margin-top: 14px; }
+  .reading-list { display: flex; flex-direction: column; gap: 16px; }
+  .reading-row { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
+  .cover-reading { width: 44px; flex-shrink: 0; }
+  .reading-info { flex: 1; min-width: 0; }
+  .reading-row-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .reading-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .reading-pct { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+  .reading-author { font-size: 11.5px; color: var(--text-soft); margin: 2px 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .reading-pages { font-size: 11px; color: var(--text-faint); margin: 6px 0 0; }
+  .reading-empty { font-size: 13px; color: var(--text-soft); text-align: center; padding: 10px 0 2px; }
+  .btn-add-fab-square { position: fixed; bottom: 22px; right: max(18px, calc(50% - 302px)); width: 58px; height: 58px; border-radius: 18px; background: var(--accent); color: var(--accent-contrast); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 24px rgba(var(--accent-rgb), 0.32); z-index: 30; }
+
+  /* Library toolbar */
+  .lib-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .view-toggle { display: flex; gap: 3px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 3px; }
+  .view-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; border: none; background: none; cursor: pointer; color: var(--text-faint); }
+  .view-btn.active { background: var(--accent); color: var(--accent-contrast); }
+  .icon-add-btn { width: 36px; height: 36px; border-radius: 9999px; background: var(--accent); color: var(--accent-contrast); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .search-row { display: flex; gap: 8px; margin-bottom: 14px; }
+  .search-box { flex: 2; min-width: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); }
+  .search-box input { border: none; outline: none; background: transparent; width: 100%; padding: 10px 0; font-size: 14px; font-family: inherit; color: var(--text); }
+  .custom-select-wrap { position: relative; flex: 1; min-width: 0; }
+  .custom-select-trigger { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 4px; font-size: 12.5px; padding: 0 8px; height: 100%; border-radius: 8px; background: var(--surface); color: var(--text); border: 1px solid var(--border); font-family: inherit; cursor: pointer; }
+  .custom-select-trigger svg { flex-shrink: 0; color: var(--text-faint); }
+  .custom-select-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .custom-select-menu { position: absolute; top: calc(100% + 6px); min-width: 168px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 10px 24px rgba(0,0,0,0.14); overflow: hidden; z-index: 35; }
+  .custom-select-menu-left { left: 0; }
+  .custom-select-menu-right { right: 0; }
+  .custom-select-option { display: block; width: 100%; text-align: left; padding: 10px 14px; font-size: 13.5px; font-family: inherit; background: none; border: none; color: var(--text); cursor: pointer; }
+  .custom-select-option + .custom-select-option { border-top: 1px solid var(--border); }
+  .custom-select-option.active { color: var(--accent); font-weight: 700; background: rgba(var(--accent-rgb), 0.08); }
+
+  /* List view */
+  .list-view { display: flex; flex-direction: column; gap: 6px; }
+  .item { border-radius: 14px; padding: 10px; background: var(--surface); border: 1px solid var(--border); }
+  .item-row { display: flex; gap: 10px; cursor: pointer; position: relative; }
+  .cover { border-radius: 6px; overflow: hidden; aspect-ratio: 2/3; background: var(--bg); display: flex; align-items: center; justify-content: center; color: var(--text-faint); flex-shrink: 0; position: relative; }
+  .cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cover-list { width: 48px; }
+  .item-info { flex: 1; min-width: 0; padding-right: 46px; }
+  .item-title { font-family: var(--font-display); font-size: 13px; font-weight: 700; margin: 0; line-height: 1.32; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .item-author { font-size: 12.5px; color: var(--text-soft); margin: 2px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rate-plain { display: inline-flex; align-items: center; gap: 3px; font-weight: 700; font-size: 12px; font-variant-numeric: tabular-nums; color: #CA8A04; position: absolute; top: 0; right: 0; }
+  .rate-plain svg { flex-shrink: 0; }
+  .item-publisher { font-size: 10.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; margin: 5px 0 0; }
+  .item-date-range { font-size: 10.5px; color: var(--text-faint); font-variant-numeric: tabular-nums; margin: 4px 0 0; }
+
+  /* Grid view */
+  .grid-view { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .grid-view .item { padding: 5px; border-radius: 10px; min-width: 0; }
+  .grid-top { cursor: pointer; }
+  .cover-grid { width: 100%; margin-bottom: 5px; }
+  .rate-badge-grid { display: inline-flex; align-items: center; gap: 3px; font-weight: 700; font-size: 9.5px; font-variant-numeric: tabular-nums; color: #FCD34D; background: rgba(0,0,0,0.55); padding: 2.5px 7px; border-radius: 9999px; position: absolute; top: 4px; right: 4px; backdrop-filter: blur(2px); }
+  .rate-badge-grid svg { width: 9px; height: 9px; flex-shrink: 0; }
+  .lang-badge { position: absolute; top: 4px; left: 4px; display: inline-flex; align-items: center; font-weight: 800; font-size: 8px; letter-spacing: 0.02em; color: #E4E4E7; background: rgba(0,0,0,0.55); padding: 2px 6px; border-radius: 9999px; line-height: 1.4; backdrop-filter: blur(2px); }
+  .lang-badge-grid { position: absolute; top: 4px; left: 4px; display: inline-flex; align-items: center; font-weight: 800; font-size: 9.5px; letter-spacing: 0.02em; color: #E4E4E7; background: rgba(0,0,0,0.55); padding: 3px 8px; border-radius: 9999px; line-height: 1.4; backdrop-filter: blur(2px); }
+  .item-title-grid { font-family: var(--font-display); font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; font-weight: 700; line-height: 1.3; }
+  .item-author-grid { font-size: 9.5px; margin: 2px 0 0; color: var(--text-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .item-publisher-grid { font-size: 9px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-faint); margin: 4px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+  .status-mini-grid { margin: 4px 0 0; font-size: 8.5px; padding: 1.5px 6px; }
+
+  /* Detail modal (shared) */
+  .status-mini { display: inline-block; font-size: 9.5px; font-weight: 700; padding: 2px 8px; border-radius: 9999px; margin-top: 5px; }
+  .status-mini-detail { font-size: 12px; padding: 4px 12px; margin-top: 0; }
+  .cover-detail { width: 106px; flex-shrink: 0; margin: 0; }
+  .detail-head { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 16px; }
+  .detail-head-info { flex: 1; min-width: 0; padding-top: 2px; }
+  .detail-book-title { font-family: var(--font-display); font-size: 17px; font-weight: 800; margin: 0 0 4px; line-height: 1.3; }
+  .detail-book-author { font-size: 13.5px; color: var(--accent); font-weight: 600; margin: 0 0 3px; }
+  .detail-book-translator { font-size: 12px; color: var(--text-faint); margin: 0 0 6px; }
+  .detail-book-publisher { font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-faint); font-weight: 600; margin: 0 0 8px; }
+  .detail-rating { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; font-size: 13px; color: #CA8A04; }
+  .detail-status-row { margin-top: 8px; }
+  .detail-info-grid { display: grid; grid-template-columns: 1fr 1fr; row-gap: 12px; column-gap: 10px; font-size: 12.5px; color: var(--text-soft); margin-bottom: 14px; padding: 14px; border: 1px solid var(--border); border-radius: 10px; }
+  .detail-info-grid .label { color: var(--text-faint); margin-right: 3px; }
+  .review-box { margin: 0 0 4px; padding: 14px; background: #F5F5F6; border: 1px solid var(--border); border-radius: 10px; }
+  .review-heading { font-size: 11px; font-weight: 700; color: var(--text-faint); letter-spacing: 0.02em; margin: 0 0 6px; }
+  .review-text { font-size: 13px; line-height: 1.6; color: var(--text); margin: 0; text-align: justify; }
+  .action-row { display: flex; gap: 12px; margin-top: 12px; align-items: center; }
+  .btn-ghost { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border); background: none; cursor: pointer; color: var(--text); font-family: inherit; }
+  .btn-danger { color: #B91C1C; }
+  .confirm-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .confirm-row button { background: none; border: none; cursor: pointer; font-family: inherit; font-size: 12px; }
+
+  .empty-state { text-align: center; padding: 56px 16px; color: var(--text-soft); }
+  .empty-state svg { color: var(--text-faint); }
+  .empty-title { font-weight: 600; color: var(--text); margin: 12px 0 4px; }
+  .empty-sub { font-size: 14px; }
+
+  .backup-row-footer { text-align: center; margin-top: 20px; font-size: 12px; }
+  .link-btn { background: none; border: none; padding: 0; font-size: 12px; color: var(--text-faint); text-decoration: underline; cursor: pointer; font-family: inherit; }
+
+  /* Modal / form */
+  .modal { position: fixed; inset: 0; z-index: 40; background: var(--bg); display: flex; flex-direction: column; }
+  .modal-inner { max-width: 640px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; height: 100%; }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid var(--border); }
+  .modal-header h2 { font-size: 18px; font-weight: 700; margin: 0; }
+  .modal-header button { background: none; border: none; cursor: pointer; color: var(--text-soft); }
+  .modal-body { flex: 1; overflow-y: auto; padding: 20px 16px; }
+  .field { display: block; margin-bottom: 16px; }
+  .field-label { display: block; font-size: 12px; font-weight: 500; color: var(--text-soft); margin-bottom: 6px; }
+  .field input, .field textarea, .field select { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); font-size: 14px; font-family: inherit; color: var(--text); outline: none; }
+  .field textarea { resize: vertical; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-actions { display: flex; gap: 12px; margin: 8px 0 32px; }
+  .btn { flex: 1; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 500; border: 1px solid var(--border); background: none; cursor: pointer; color: var(--text); font-family: inherit; }
+  .btn-primary { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); display: flex; align-items: center; justify-content: center; gap: 6px; }
+
+  .cover-field { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
+  .cover-preview { width: 64px; flex-shrink: 0; border-radius: 8px; overflow: hidden; aspect-ratio: 2/3; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-faint); }
+  .cover-preview img { width: 100%; height: 100%; object-fit: cover; }
+  .cover-actions { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .btn-secondary-sm { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); font-size: 13px; font-weight: 500; color: var(--text); cursor: pointer; font-family: inherit; }
+  .cover-url-input { width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); font-size: 12px; font-family: inherit; color: var(--text-soft); outline: none; }
+
+  button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .celebration-overlay { position: absolute; inset: 0; z-index: 15; pointer-events: none; overflow: hidden; border-radius: inherit; }
+  .confetti-piece { position: absolute; opacity: 0; animation-name: confetti-fall; animation-timing-function: cubic-bezier(0.25,0.46,0.45,0.94); animation-fill-mode: forwards; }
+  @keyframes confetti-fall {
+    0% { transform: translate(-50%, -50%) translateY(0) rotate(0deg) scale(0.5); opacity: 0; }
+    10% { opacity: 1; }
+    40% { transform: translate(-50%, -50%) translateY(var(--peak, -30vh)) translateX(calc(var(--drift, 0px) * 0.35)) rotate(calc(var(--spin, 540deg) * 0.4)) scale(1); }
+    100% { transform: translate(-50%, -50%) translateY(85vh) translateX(var(--drift, 0px)) rotate(var(--spin, 540deg)) scale(1); opacity: 0.85; }
+  }
+  .achievement-body { display: flex; flex-direction: column; align-items: center; padding: 24px 20px 32px; position: relative; overflow: hidden; }
+  .achievement-card { position: relative; z-index: 6; width: 100%; max-width: 320px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 28px 20px 24px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.12); }
+  .achievement-cover { width: 150px; aspect-ratio: 2/3; margin: 0 auto 16px; border-radius: 12px; overflow: hidden; box-shadow: 0 14px 32px rgba(0,0,0,0.22); background: var(--bg); display: flex; align-items: center; justify-content: center; color: var(--text-faint); }
+  .achievement-cover img { width: 100%; height: 100%; object-fit: cover; }
+  .achievement-emoji { font-size: 40px; margin: 0 0 6px; animation: celebration-bounce 0.7s ease-in-out; }
+  .achievement-heading { font-family: var(--font-display); font-weight: 800; font-size: 19px; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 0.03em; }
+  .achievement-sub { font-size: 13px; color: var(--text-soft); margin: 0 0 10px; }
+  .achievement-title { font-weight: 700; font-size: 18px; margin: 0 0 2px; line-height: 1.3; }
+  .achievement-author { font-size: 13px; color: var(--text-soft); margin: 0 0 16px; }
+  .achievement-days-pill { display: inline-block; background: var(--accent); color: var(--accent-contrast); font-weight: 700; font-size: 13px; padding: 8px 18px; border-radius: 9999px; }
+  .achievement-actions { position: relative; z-index: 6; margin-top: 18px; width: 100%; max-width: 320px; }
+  @keyframes celebration-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const STORAGE_KEY = 'reading-log-v2';
+const NAME_KEY = 'reading-log-v2-name';
+const emptyForm = { title:'', author:'', translator:'', publisher:'', language:'', country:'', originYear:'', isbn:'', coverUrl:'', startDate:'', endDate:'', currentPage:'', totalPages:'', rating:7, review:'', status:'tbr' };
+
+const ACCENT = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#0CBAA6';
+
+const STATUS_ORDER = ['tbr','ongoing','dnf','done'];
+const STATUS_META = {
+  tbr:     { label: 'To be Read',     color: '#FFC118' },
+  ongoing: { label: 'Reading',        color: '#82c8e5' },
+  dnf:     { label: "Didn't Finish",  color: '#FF5555' },
+  done:    { label: 'Done',           color: ACCENT }
+};
+
+const ICONS = {
+  plus: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+  x: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+  search: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+  edit: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>',
+  trash: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>',
+  book: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+  check: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  chevronDown: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>',
+  home: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10"/><path d="M9 21v-6h6v6"/></svg>',
+  library: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+  list: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>',
+  grid: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>',
+  image: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
+  star: '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+  gear: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+  chart: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+  globe: '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+  pencil: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>',
+  repeat: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>',
+  share: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>',
+  download: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>'
+};
+
+const ACCENT_KEY = 'reading-log-v2-accent';
+const ACCENT_PRESETS_KEY = 'reading-log-v2-accent-presets';
+const DEFAULT_ACCENT_PRESETS = ['#0CBAA6', '#857686', '#E9A4A4', '#C1DCDC', '#F4A6B6', '#D0C5B1'];
+
+function loadAccentPresets() {
+  try {
+    const raw = localStorage.getItem(ACCENT_PRESETS_KEY);
+    const arr = raw ? JSON.parse(raw) : null;
+    return Array.isArray(arr) && arr.length === 6 ? arr : [...DEFAULT_ACCENT_PRESETS];
+  } catch (e) { return [...DEFAULT_ACCENT_PRESETS]; }
+}
+function saveAccentPresets() {
+  try { localStorage.setItem(ACCENT_PRESETS_KEY, JSON.stringify(ACCENT_PRESETS)); } catch (e) {}
+}
+function isValidHex(hex) {
+  return /^#[0-9A-Fa-f]{6}$/.test(hex);
+}
+
+let ACCENT_PRESETS = loadAccentPresets();
+
+function loadAccent() {
+  try { return localStorage.getItem(ACCENT_KEY) || '#0CBAA6'; }
+  catch (e) { return '#0CBAA6'; }
+}
+function saveAccentToStorage(hex) {
+  try { localStorage.setItem(ACCENT_KEY, hex); } catch (e) {}
+}
+function hexToRgbString(hex) {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  return `${r}, ${g}, ${b}`;
+}
+function getContrastTextColor(hex) {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.substring(0, 2), 16) / 255;
+  const g = parseInt(h.substring(2, 4), 16) / 255;
+  const b = parseInt(h.substring(4, 6), 16) / 255;
+  const lin = c => c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  const lum = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+  return lum > 0.5 ? '#18181B' : '#FFFFFF';
+}
+function darkenHex(hex, factor) {
+  factor = factor == null ? 0.62 : factor;
+  const h = hex.replace('#', '');
+  const clamp = v => Math.max(0, Math.min(255, Math.round(v)));
+  const r = clamp(parseInt(h.substring(0, 2), 16) * factor);
+  const g = clamp(parseInt(h.substring(2, 4), 16) * factor);
+  const b = clamp(parseInt(h.substring(4, 6), 16) * factor);
+  return `#${[r, g, b].map(v => v.toString(16).padStart(2, '0')).join('')}`;
+}
+function applyAccent(hex) {
+  document.documentElement.style.setProperty('--accent', hex);
+  document.documentElement.style.setProperty('--accent-rgb', hexToRgbString(hex));
+  document.documentElement.style.setProperty('--accent-contrast', getContrastTextColor(hex));
+  document.documentElement.style.setProperty('--accent-dark', darkenHex(hex));
+}
+
+const SAVED_ACCENT = loadAccent();
+applyAccent(SAVED_ACCENT);
+
+let state = {
+  books: loadBooks(),
+  userName: loadName(),
+  accentColor: SAVED_ACCENT,
+  showSettings: false,
+  showDashboard: false,
+  dashboardCategory: 'all',
+  query: '',
+  sortBy: '',
+  statusFilter: '',
+  openDropdown: null,
+  showNameEdit: false,
+  nameEditValue: '',
+  editingPresetIndex: null,
+  presetEditValue: '',
+  presetEditError: '',
+  showAchievement: false,
+  achievementBook: null,
+  activeTab: 'home',
+  libraryView: 'list',
+  expandedId: null,
+  confirmDeleteId: null,
+  showForm: false,
+  editingId: null,
+  form: { ...emptyForm },
+  error: ''
+};
+
+function loadBooks() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const data = raw ? JSON.parse(raw) : [];
+    return Array.isArray(data) ? data : [];
+  } catch (e) { return []; }
+}
+function loadName() {
+  try { return localStorage.getItem(NAME_KEY) || 'Reader'; }
+  catch (e) { return 'Reader'; }
+}
+function saveName() {
+  try { localStorage.setItem(NAME_KEY, state.userName); }
+  catch (e) {}
+}
+function saveBooks() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.books)); state.error = ''; }
+  catch (e) { state.error = 'Failed to save changes. Please try again.'; }
+}
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function getBookStatus(b) {
+  if (b.status) return b.status;
+  if (b.startDate && b.endDate) return 'done';
+  if (b.startDate) return 'ongoing';
+  return 'tbr';
+}
+function formatDate(d) { if (!d) return '-'; try { return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return d; } }
+function esc(s) { if (s == null) return ''; return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function getLangBadge(lang) {
+  if (!lang) return '';
+  const key = lang.trim().toLowerCase();
+  const map = {
+    indonesian: 'ID', 'bahasa indonesia': 'ID', indonesia: 'ID',
+    english: 'EN',
+    japanese: 'JP',
+    french: 'FR',
+    german: 'DE',
+    spanish: 'ES',
+    korean: 'KR',
+    chinese: 'CN', mandarin: 'CN',
+    arabic: 'AR',
+    russian: 'RU',
+    italian: 'IT',
+    portuguese: 'PT',
+    dutch: 'NL',
+    thai: 'TH',
+    vietnamese: 'VN',
+    hindi: 'HI',
+    turkish: 'TR'
+  };
+  if (map[key]) return map[key];
+  return lang.trim().slice(0, 3).toUpperCase();
+}
+
+function getPagesReadForBook(b) {
+  const status = getBookStatus(b);
+  const total = Number(b.totalPages) || 0;
+  const current = Number(b.currentPage) || 0;
+  if (status === 'done') return total;
+  if (status === 'ongoing' || status === 'dnf') return total ? Math.min(current, total) : current;
+  return 0;
+}
+function getTotalPagesRead(books) {
+  return books.reduce((sum, b) => sum + getPagesReadForBook(b), 0);
+}
+function daysBetween(start, end) {
+  try {
+    const d1 = new Date(start + 'T00:00:00');
+    const d2 = new Date(end + 'T00:00:00');
+    const diff = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+    return Math.max(1, diff + 1);
+  } catch (e) { return 1; }
+}
+function rankBy(books, keyFn) {
+  const map = new Map();
+  books.forEach(b => {
+    const key = keyFn(b);
+    if (!key) return;
+    map.set(key, (map.get(key) || 0) + 1);
+  });
+  return [...map.entries()].sort((a, b) => b[1] - a[1]);
+}
+function getPagesPerDayRanking(books) {
+  return books
+    .filter(b => getBookStatus(b) === 'done' && b.startDate && b.endDate && Number(b.totalPages) > 0)
+    .map(b => {
+      const days = daysBetween(b.startDate, b.endDate);
+      return { title: b.title, author: b.author, pages: Number(b.totalPages), days, rate: Number(b.totalPages) / days };
+    })
+    .sort((a, b) => b.rate - a.rate);
+}
+function getYearGrouping(books) {
+  const map = new Map();
+  books.forEach(b => {
+    if (getBookStatus(b) !== 'done' || !b.endDate) return;
+    const year = b.endDate.slice(0, 4);
+    if (!map.has(year)) map.set(year, { year, books: [], totalPages: 0 });
+    const entry = map.get(year);
+    entry.books.push(b);
+    entry.totalPages += Number(b.totalPages) || 0;
+  });
+  return [...map.values()]
+    .sort((a, b) => b.year.localeCompare(a.year))
+    .map(e => ({
+      year: e.year,
+      count: e.books.length,
+      totalPages: e.totalPages,
+      perDay: e.totalPages / 365,
+      top5: [...e.books].sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0)).slice(0, 5)
+    }));
+}
+
+const FILTER_OPTIONS = [
+  { value: 'all', label: 'All' },
+  { value: 'tbr', label: 'To be Read' },
+  { value: 'ongoing', label: 'Reading' },
+  { value: 'dnf', label: "Didn't Finish" },
+  { value: 'done', label: 'Done' }
+];
+const SORT_OPTIONS = [
+  { value: 'added', label: 'Newest' },
+  { value: 'rating', label: 'Rating' },
+  { value: 'finished', label: 'Finished Reading' },
+  { value: 'title', label: 'Title A-Z' }
+];
+
+function renderCustomSelect(key, options, currentValue, align) {
+  const placeholder = key === 'filter' ? 'Filter by' : key === 'sort' ? 'Sort by' : 'Select';
+  const current = options.find(o => o.value === currentValue);
+  const label = current ? current.label : placeholder;
+  const isOpen = state.openDropdown === key;
+  return `
+    <div class="custom-select-wrap">
+      <button type="button" class="custom-select-trigger" data-action="toggle-dropdown" data-dropdown="${key}" aria-haspopup="listbox" aria-expanded="${isOpen}">
+        <span class="custom-select-label">${esc(label)}</span>
+        ${ICONS.chevronDown}
+      </button>
+      ${isOpen ? `
+        <div class="custom-select-menu custom-select-menu-${align}" role="listbox">
+          ${options.map(o => `
+            <button type="button" class="custom-select-option ${o.value === currentValue ? 'active' : ''}" data-action="pick-option" data-dropdown="${key}" data-value="${o.value}">
+              ${esc(o.label)}
+            </button>`).join('')}
+        </div>` : ''}
+    </div>`;
+}
+
+function getFiltered() {
+  const q = state.query.trim().toLowerCase();
+  let list = state.books.filter(b => {
+    if (state.statusFilter && state.statusFilter !== 'all' && getBookStatus(b) !== state.statusFilter) return false;
+    if (!q) return true;
+    return [b.title, b.author, b.publisher, b.country, b.translator, b.language].some(v => (v || '').toLowerCase().includes(q));
+  });
+  list = [...list].sort((a, b) => {
+    if (state.sortBy === 'rating') return (b.rating || 0) - (a.rating || 0);
+    if (state.sortBy === 'title') return (a.title || '').localeCompare(b.title || '');
+    if (state.sortBy === 'finished') {
+      const order = { done: 0, ongoing: 1, tbr: 2, dnf: 3 };
+      const diff = order[getBookStatus(a)] - order[getBookStatus(b)];
+      if (diff !== 0) return diff;
+      return (b.endDate || '').localeCompare(a.endDate || '');
+    }
+    return (b.addedAt || 0) - (a.addedAt || 0);
+  });
+  return list;
+}
+
+function openAddForm() { state.form = { ...emptyForm }; state.editingId = null; state.showForm = true; render(); }
+
+function render() {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="header">
+      <div class="header-top-row">
+        <h1 class="title">Book Tracking<span class="header-name" data-action="edit-name">${esc(state.userName)}</span></h1>
+        <div class="header-actions">
+          <button class="settings-btn" id="dashboard-btn" aria-label="Dashboard">${ICONS.chart}</button>
+          <button class="settings-btn" id="settings-btn" aria-label="Settings">${ICONS.gear}</button>
+        </div>
+      </div>
+      <div class="tabs">
+        <button class="tab-btn ${state.activeTab === 'home' ? 'active' : ''}" id="tab-home-btn">${ICONS.home}<span>Home</span></button>
+        <button class="tab-btn ${state.activeTab === 'library' ? 'active' : ''}" id="tab-library-btn">${ICONS.library}<span>Library</span></button>
+      </div>
+    </div>
+    <main>
+      ${state.error ? `<div class="error-banner">${esc(state.error)}</div>` : ''}
+      ${state.activeTab === 'home' ? renderHome() : renderLibrary()}
+    </main>
+    ${state.expandedId ? renderDetailModal(state.books.find(b => b.id === state.expandedId)) : ''}
+    ${state.showSettings ? renderSettingsModal() : ''}
+    ${state.editingPresetIndex !== null ? renderPresetEditModal() : ''}
+    ${state.showDashboard ? renderDashboardModal() : ''}
+    ${state.showNameEdit ? renderNameEditModal() : ''}
+    ${state.showAchievement ? renderAchievementModal() : ''}
+    ${state.showForm ? renderForm() : ''}
+  `;
+  attachHandlers();
+}
+
+function getStatusColor(key) {
+  return key === 'done' ? 'var(--accent)' : STATUS_META[key].color;
+}
+function getStatusPillStyle(key) {
+  if (key === 'done') {
+    return `background:rgba(var(--accent-rgb),0.1);color:var(--accent);border:1px solid rgba(var(--accent-rgb),0.33);`;
+  }
+  const c = STATUS_META[key].color;
+  return `background:${c}1A;color:${c};border:1px solid ${c}55;`;
+}
+
+function renderHome() {
+  const counts = { tbr: 0, ongoing: 0, dnf: 0, done: 0 };
+  state.books.forEach(b => { const s = getBookStatus(b); if (counts[s] != null) counts[s]++; });
+  const total = state.books.length;
+  const max = Math.max(1, ...Object.values(counts));
+  const rows = STATUS_ORDER.map(key => {
+    const meta = STATUS_META[key];
+    const color = getStatusColor(key);
+    const count = counts[key];
+    const pct = Math.round((count / max) * 100);
+    return `
+      <div class="chart-row">
+        <div class="chart-label"><span class="chart-dot" style="background:${color}"></span><span>${meta.label}</span></div>
+        <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${pct}%;background:${color}"></div></div>
+        <span class="chart-count">${count}</span>
+      </div>`;
+  }).join('');
+  const readingBooks = state.books.filter(b => getBookStatus(b) === 'ongoing');
+  const readingRows = readingBooks.map(b => {
+    const pct = getReadingPct(b);
+    const totalPages = Number(b.totalPages) || 0;
+    const currentPage = Math.min(Number(b.currentPage) || 0, totalPages || (Number(b.currentPage) || 0));
+    const barColor = getReadingBarColor(pct);
+    return `
+      <div class="reading-row" data-action="toggle" data-id="${b.id}">
+        <div class="cover cover-reading">${b.coverUrl ? `<img src="${esc(b.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}${b.language ? `<span class="lang-badge">${esc(getLangBadge(b.language))}</span>` : ''}</div>
+        <div class="reading-info">
+          <div class="reading-row-top">
+            <span class="reading-title">${esc(b.title)}</span>
+            <span class="reading-pct" style="color:${barColor}">${pct}%</span>
+          </div>
+          <p class="reading-author">${esc(b.author)}</p>
+          <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+          <p class="reading-pages">${totalPages ? `${currentPage}/${totalPages} pages` : 'Total pages not set yet'}</p>
+        </div>
+      </div>`;
+  }).join('');
+  return `
+    <div class="home-view">
+      <p class="welcome-row">Welcome! <span class="welcome-name" data-action="edit-name">${esc(state.userName)}</span></p>
+      <p class="pages-read-row">You've read <strong>${getTotalPagesRead(state.books)}</strong> pages so far</p>
+      <div class="dashboard">
+        <p class="section-title">Summary</p>
+        <div class="chart">${rows}</div>
+      </div>
+      <div class="dashboard">
+        <p class="section-title">Reading</p>
+        ${readingBooks.length ? `<div class="reading-list">${readingRows}</div>` : `<p class="reading-empty">No books currently being read.</p>`}
+      </div>
+    </div>
+    <button class="btn-add-fab-square" id="add-btn-home" aria-label="Add Book">${ICONS.plus}</button>
+  `;
+}
+
+function getReadingPct(book) {
+  const total = Number(book.totalPages) || 0;
+  if (!total || total <= 0) return 0;
+  if (getBookStatus(book) === 'done') return 100;
+  const current = Number(book.currentPage) || 0;
+  return Math.max(0, Math.min(100, Math.round((current / total) * 100)));
+}
+
+function getReadingBarColor(pct) {
+  if (pct < 100 / 3) return '#FF5555';
+  if (pct <= 200 / 3) return '#FFC118';
+  return '#82c8e5';
+}
+
+function renderLibrary() {
+  const list = getFiltered();
+  const collection = list.length === 0
+    ? renderEmpty()
+    : (state.libraryView === 'grid'
+        ? `<div class="grid-view">${list.map(b => renderGridItem(b)).join('')}</div>`
+        : `<div class="list-view">${list.map(b => renderListItem(b)).join('')}</div>`);
+  return `
+    <div class="lib-toolbar">
+      <div class="view-toggle">
+        <button class="view-btn ${state.libraryView === 'list' ? 'active' : ''}" data-action="view-list" aria-label="List view">${ICONS.list}</button>
+        <button class="view-btn ${state.libraryView === 'grid' ? 'active' : ''}" data-action="view-grid" aria-label="Grid view">${ICONS.grid}</button>
+      </div>
+      <button class="icon-add-btn" id="add-btn-lib" aria-label="Add Book">${ICONS.plus}</button>
+    </div>
+    <div class="search-row">
+      <div class="search-box">${ICONS.search}<input id="search-input" type="text" placeholder="Search title, author, publisher..." value="${esc(state.query)}" /></div>
+      ${renderCustomSelect('filter', FILTER_OPTIONS, state.statusFilter, 'left')}
+      ${renderCustomSelect('sort', SORT_OPTIONS, state.sortBy, 'right')}
+    </div>
+    ${collection}
+    <div class="backup-row-footer">
+      <button class="link-btn" id="export-btn">Export data</button>
+      <span style="color:var(--text-faint)"> · </span>
+      <button class="link-btn" id="export-csv-btn">Export to CSV</button>
+      <span style="color:var(--text-faint)"> · </span>
+      <button class="link-btn" id="import-btn">Import data</button>
+      <input type="file" id="import-file" accept="application/json" hidden />
+    </div>
+  `;
+}
+
+function renderEmpty() {
+  return `
+    <div class="empty-state">
+      ${ICONS.book}
+      <p class="empty-title">${state.books.length === 0 ? 'No books yet' : 'No matches found'}</p>
+      <p class="empty-sub">${state.books.length === 0 ? 'Add the first book you\'ve read.' : 'Try a different keyword.'}</p>
+    </div>`;
+}
+
+function formatDateShort(d) {
+  if (!d) return '';
+  try {
+    const dt = new Date(d + 'T00:00:00');
+    const y = dt.getFullYear();
+    const m = String(dt.getMonth() + 1).padStart(2, '0');
+    const day = String(dt.getDate()).padStart(2, '0');
+    return `${y}.${m}.${day}`;
+  } catch (e) { return ''; }
+}
+
+function renderListItem(book) {
+  const statusMeta = STATUS_META[getBookStatus(book)];
+  const isDone = getBookStatus(book) === 'done';
+  return `
+    <div class="item">
+      <div class="item-row" data-action="toggle" data-id="${book.id}">
+        <div class="cover cover-list">${book.coverUrl ? `<img src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}${book.language ? `<span class="lang-badge">${esc(getLangBadge(book.language))}</span>` : ''}</div>
+        <div class="item-info">
+          <p class="item-title">${esc(book.title)}</p>
+          <p class="item-author">${esc(book.author)}</p>
+          ${book.publisher ? `<p class="item-publisher">${esc(book.publisher)}</p>` : ''}
+          <span class="status-mini" style="${getStatusPillStyle(getBookStatus(book))}">${statusMeta.label}</span>
+          ${isDone && book.startDate && book.endDate ? `<p class="item-date-range">${formatDateShort(book.startDate)} - ${formatDateShort(book.endDate)}</p>` : ''}
+        </div>
+        <span class="rate-plain">${ICONS.star}${Number(book.rating).toFixed(1)}</span>
+      </div>
+    </div>`;
+}
+
+function renderGridItem(book) {
+  const statusMeta = STATUS_META[getBookStatus(book)];
+  return `
+    <div class="item">
+      <div class="grid-top" data-action="toggle" data-id="${book.id}">
+        <div class="cover cover-grid">
+          ${book.coverUrl ? `<img src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}
+          ${book.language ? `<span class="lang-badge-grid">${esc(getLangBadge(book.language))}</span>` : ''}
+          <span class="rate-badge-grid">${ICONS.star}${Number(book.rating).toFixed(1)}</span>
+        </div>
+        <p class="item-title-grid">${esc(book.title)}</p>
+        <p class="item-author-grid">${esc(book.author)}</p>
+        <span class="status-mini status-mini-grid" style="${getStatusPillStyle(getBookStatus(book))}">${statusMeta.label}</span>
+      </div>
+    </div>`;
+}
+
+function renderDetailModal(book) {
+  if (!book) return '';
+  const statusMeta = STATUS_META[getBookStatus(book)];
+  const confirming = state.confirmDeleteId === book.id;
+  const totalPages = Number(book.totalPages) || 0;
+  const currentPage = getBookStatus(book) === 'done' ? totalPages : (Number(book.currentPage) || 0);
+  return `
+    <div class="modal">
+      <div class="modal-inner">
+        <div class="modal-header">
+          <h2>Book Details</h2>
+          <button data-action="close-detail" aria-label="Close">${ICONS.x}</button>
+        </div>
+        <div class="modal-body">
+          <div class="detail-head">
+            <div class="cover cover-detail">${book.coverUrl ? `<img src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}${book.language ? `<span class="lang-badge">${esc(getLangBadge(book.language))}</span>` : ''}</div>
+            <div class="detail-head-info">
+              <p class="detail-book-title">${esc(book.title)}</p>
+              <p class="detail-book-author">${esc(book.author)}</p>
+              ${book.translator ? `<p class="detail-book-translator">Translated by ${esc(book.translator)}</p>` : ''}
+              ${book.publisher ? `<p class="detail-book-publisher">${esc(book.publisher)}</p>` : ''}
+              <span class="detail-rating">${ICONS.star}${Number(book.rating).toFixed(1)}</span>
+              <div class="detail-status-row"><span class="status-mini status-mini-detail" style="${getStatusPillStyle(getBookStatus(book))}">${statusMeta.label}</span></div>
+            </div>
+          </div>
+          <div class="detail-info-grid">
+            ${book.country ? `<div><span class="label">Origin Country</span> ${esc(book.country)}</div>` : ''}
+            ${book.originYear ? `<div><span class="label">Origin Year</span> ${esc(book.originYear)}</div>` : ''}
+            ${book.language ? `<div><span class="label">Language</span> ${esc(book.language)}</div>` : ''}
+            ${book.isbn ? `<div><span class="label">ISBN</span> ${esc(book.isbn)}</div>` : ''}
+            ${totalPages ? `<div><span class="label">Pages</span> ${currentPage}/${totalPages} (${getReadingPct(book)}%)</div>` : ''}
+            <div><span class="label">Started</span> ${formatDate(book.startDate)}</div>
+            <div><span class="label">Finished</span> ${formatDate(book.endDate)}</div>
+          </div>
+          ${book.review ? `<div class="review-box"><p class="review-heading">What Stayed</p><p class="review-text">${esc(book.review)}</p></div>` : ''}
+          <div class="action-row">
+            <button class="btn-ghost" data-action="edit" data-id="${book.id}">${ICONS.edit} Edit</button>
+            ${confirming ? `
+              <div class="confirm-row">
+                <span style="color:#B91C1C;">Are you sure?</span>
+                <button data-action="delete" data-id="${book.id}" style="color:#B91C1C;font-weight:500;">Yes, delete</button>
+                <button data-action="cancel-delete" style="color:var(--text-soft);">Cancel</button>
+              </div>` : `
+              <button class="btn-ghost btn-danger" data-action="ask-delete" data-id="${book.id}">${ICONS.trash} Delete</button>
+            `}
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderConfettiPieces(count) {
+  const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#0CBAA6';
+  const colors = ['#F59E0B', '#22C55E', '#3B82F6', '#EC4899', '#EF4444', '#8B5CF6', '#FACC15', accent];
+  const shapes = ['square', 'circle', 'ribbon', 'star'];
+  const starClip = 'polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)';
+  let html = '';
+  for (let i = 0; i < count; i++) {
+    const left = 25 + Math.random() * 50;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const shape = shapes[Math.floor(Math.random() * shapes.length)];
+    const delay = (Math.random() * 0.5).toFixed(2);
+    const duration = (2.2 + Math.random() * 1.4).toFixed(2);
+    const drift = (Math.random() * 160 - 80).toFixed(0);
+    const spin = (360 + Math.random() * 720).toFixed(0);
+    const peak = -(20 + Math.random() * 28).toFixed(0);
+    let shapeCss;
+    if (shape === 'circle') {
+      const d = 7 + Math.random() * 8;
+      shapeCss = `width:${d}px;height:${d}px;border-radius:9999px;`;
+    } else if (shape === 'ribbon') {
+      const w = 3 + Math.random() * 2;
+      const h = 22 + Math.random() * 18;
+      shapeCss = `width:${w}px;height:${h}px;border-radius:2px;`;
+    } else if (shape === 'star') {
+      const d = 13 + Math.random() * 8;
+      shapeCss = `width:${d}px;height:${d}px;clip-path:${starClip};`;
+    } else {
+      const w = 6 + Math.random() * 8;
+      const h = w * 0.6;
+      shapeCss = `width:${w}px;height:${h}px;border-radius:2px;`;
+    }
+    html += `<div class="confetti-piece" style="left:${left}%;top:55%;${shapeCss}background:${color};animation-delay:${delay}s;animation-duration:${duration}s;--drift:${drift}px;--spin:${spin}deg;--peak:${peak}vh;"></div>`;
+  }
+  return html;
+}
+
+function renderAchievementModal() {
+  const book = state.achievementBook;
+  if (!book) return '';
+  const days = (book.startDate && book.endDate) ? daysBetween(book.startDate, book.endDate) : null;
+  return `
+    <div class="modal">
+      <div class="modal-inner">
+        <div class="modal-header">
+          <h2>Achievement Unlocked</h2>
+          <button id="close-achievement" aria-label="Close">${ICONS.x}</button>
+        </div>
+        <div class="modal-body achievement-body">
+          <div class="celebration-overlay" id="achievement-confetti">${renderConfettiPieces(90)}</div>
+          <div class="achievement-card">
+            <div class="achievement-cover">${book.coverUrl ? `<img src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}</div>
+            <p class="achievement-heading">Congratulations!</p>
+            <p class="achievement-sub">You've finished reading</p>
+            <p class="achievement-title">${esc(book.title)}</p>
+            <p class="achievement-author">${esc(book.author)}</p>
+            ${days != null ? `<div class="achievement-days-pill">${days} Day${days === 1 ? '' : 's'} of Reading</div>` : ''}
+          </div>
+          <div class="achievement-actions">
+            <button type="button" class="btn-secondary-sm" id="replay-confetti-btn" style="width:100%;margin-bottom:10px;">${ICONS.repeat} Replay Confetti</button>
+            <div class="form-actions" style="margin:0;">
+              <button type="button" class="btn" id="save-achievement-btn">${ICONS.download} Save image</button>
+              <button type="button" class="btn btn-primary" id="share-achievement-btn">${ICONS.share} Share</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderNameEditModal() {
+  return `
+    <div class="modal">
+      <div class="modal-inner">
+        <div class="modal-header">
+          <h2>Edit Name</h2>
+          <button id="close-name-edit" aria-label="Close">${ICONS.x}</button>
+        </div>
+        <div class="modal-body">
+          <label class="field"><span class="field-label">Your Name</span><input id="f-name-edit" value="${esc(state.nameEditValue)}" placeholder="e.g. Olivia" /></label>
+          <div class="form-actions">
+            <button type="button" id="cancel-name-edit" class="btn">Cancel</button>
+            <button type="button" id="save-name-edit" class="btn btn-primary">${ICONS.check} Save</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderPresetEditModal() {
+  const i = state.editingPresetIndex;
+  const preview = isValidHex(state.presetEditValue) ? state.presetEditValue : ACCENT_PRESETS[i];
+  return `
+    <div class="modal">
+      <div class="modal-inner">
+        <div class="modal-header">
+          <h2>Edit color</h2>
+          <button id="close-preset-edit" aria-label="Close">${ICONS.x}</button>
+        </div>
+        <div class="modal-body">
+          <div class="preset-edit-preview" style="background:${preview};"></div>
+          <label class="field">
+            <span class="field-label">Hex code</span>
+            <input id="f-preset-edit" value="${esc(state.presetEditValue)}" placeholder="#RRGGBB" maxlength="7" style="text-transform:uppercase;" />
+          </label>
+          ${state.presetEditError ? `<p class="preset-edit-error">${esc(state.presetEditError)}</p>` : ''}
+          <div class="form-actions">
+            <button type="button" id="cancel-preset-edit" class="btn">Cancel</button>
+            <button type="button" id="save-preset-edit" class="btn btn-primary">${ICONS.check} Save</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderSettingsModal() {
+  return `
+    <div class="modal">
+      <div class="modal-inner">
+        <div class="modal-header">
+          <h2>Settings</h2>
+          <button id="close-settings" aria-label="Close">${ICONS.x}</button>
+        </div>
+        <div class="modal-body">
+          <p class="field-label" style="margin-bottom:12px;">Accent color</p>
+          <div class="swatch-grid">
+            ${ACCENT_PRESETS.map((hex, i) => `
+              <div class="swatch-wrap">
+                <button class="swatch-btn ${state.accentColor === hex ? 'active' : ''}" data-action="set-accent" data-hex="${hex}" style="background:${hex};color:${getContrastTextColor(hex)};" aria-label="${hex}">
+                  ${state.accentColor === hex ? ICONS.check : ''}
+                </button>
+                <button class="swatch-edit-btn" data-action="edit-preset" data-index="${i}" aria-label="Edit this color">${ICONS.pencil}</button>
+              </div>
+            `).join('')}
+          </div>
+          <p class="swatch-hint">Tap a color to apply it. Tap the pencil to set your own hex code.</p>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderDashboardModal() {
+  const cat = state.dashboardCategory;
+  const tabs = [
+    { key: 'all', label: 'All' },
+    { key: 'year', label: 'Year' },
+    { key: 'pagesPerDay', label: 'Pages/Day' },
+    { key: 'writer', label: 'Writer' },
+    { key: 'country', label: 'Origin Country' },
+    { key: 'publisher', label: 'Publisher' },
+    { key: 'language', label: 'Language' }
+  ];
+  const dashOptions = tabs.map(t => ({ value: t.key, label: t.label }));
+  const selectHtml = `<div class="dash-select-row">${renderCustomSelect('dashboard', dashOptions, cat, 'left')}</div>`;
+  let content = '';
+  if (cat === 'pagesPerDay') content = renderPagesPerDayRanking();
+  else if (cat === 'writer') content = renderCountRanking(rankBy(state.books, b => b.author && b.author.trim()));
+  else if (cat === 'country') content = renderCountRanking(rankBy(state.books, b => b.country && b.country.trim()));
+  else if (cat === 'publisher') content = renderCountRanking(rankBy(state.books, b => b.publisher && b.publisher.trim()));
+  else if (cat === 'language') content = renderCountRanking(rankBy(state.books, b => b.language && b.language.trim()));
+  else if (cat === 'all') content = renderYearGrouping();
+  else if (cat === 'year') content = renderYearMonthlyBreakdown();
+  return `
+    <div class="modal">
+      <div class="modal-inner">
+        <div class="modal-header">
+          <h2 class="dashboard-title">Dashboard</h2>
+          <button id="close-dashboard" aria-label="Close">${ICONS.x}</button>
+        </div>
+        <div class="modal-body">
+          ${selectHtml}
+          ${content}
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderCountRanking(entries) {
+  if (!entries.length) return `<p class="dash-empty">No data yet.</p>`;
+  const max = Math.max(...entries.map(([, count]) => count));
+  return entries.map(([name, count]) => {
+    const pct = Math.round((count / max) * 100);
+    const opacity = (0.3 + 0.7 * (count / max)).toFixed(2);
+    return `
+      <div class="bar-rank-row">
+        <div class="bar-rank-label">
+          <span class="bar-rank-name">${esc(name)}</span>
+          <span class="bar-rank-count">${count} book${count === 1 ? '' : 's'}</span>
+        </div>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:rgba(var(--accent-rgb),${opacity});"></div></div>
+      </div>`;
+  }).join('');
+}
+
+function renderPagesPerDayRanking() {
+  const list = getPagesPerDayRanking(state.books);
+  if (!list.length) return `<p class="dash-empty">No data yet. Set Start Date, End Date, and total pages on a book.</p>`;
+  return list.map((b, i) => `
+    <div class="rank-row">
+      <span class="rank-num">${i + 1}</span>
+      <div class="rank-info"><p class="rank-name">${esc(b.title)}</p><p class="rank-sub">${esc(b.author)} · ${b.days} day${b.days === 1 ? '' : 's'}</p></div>
+      <span class="rank-value">${b.rate.toFixed(1)} pg/day</span>
+    </div>`).join('');
+}
+
+function renderYearGrouping() {
+  const groups = getYearGrouping(state.books);
+  if (!groups.length) return `<p class="dash-empty">No data yet. Set an End Date on a book.</p>`;
+  return groups.map(g => `
+    <div class="year-group">
+      <div class="year-group-head">
+        <span class="year-group-title">${esc(g.year)}</span>
+        <span class="year-group-stats">${g.count} book${g.count === 1 ? '' : 's'} · ${g.totalPages} pages · ${g.perDay.toFixed(1)} pg/day avg</span>
+      </div>
+      ${g.top5.length ? `<p class="year-top5-heading">Top ${g.top5.length} by rating</p>${g.top5.map((b, i) => `
+        <div class="rank-row">
+          <span class="rank-num">${i + 1}</span>
+          <div class="rank-info"><p class="rank-name">${esc(b.title)}</p><p class="rank-sub">${esc(b.author)}</p></div>
+          <span class="rank-value-rating">${ICONS.star}${Number(b.rating).toFixed(1)}</span>
+        </div>`).join('')}` : ''}
+    </div>`).join('');
+}
+
+function getYearMonthlyBreakdown(books) {
+  const map = new Map();
+  books.forEach(b => {
+    if (getBookStatus(b) !== 'done' || !b.endDate) return;
+    const year = b.endDate.slice(0, 4);
+    const month = parseInt(b.endDate.slice(5, 7), 10) - 1;
+    if (!map.has(year)) map.set(year, new Array(12).fill(0));
+    if (month >= 0 && month < 12) map.get(year)[month]++;
+  });
+  return [...map.entries()]
+    .sort((a, b) => b[0].localeCompare(a[0]))
+    .map(([year, counts]) => ({ year, counts, total: counts.reduce((s, c) => s + c, 0) }));
+}
+
+function renderYearMonthlyBreakdown() {
+  const groups = getYearMonthlyBreakdown(state.books);
+  if (!groups.length) return `<p class="dash-empty">No data yet. Set an End Date on a book.</p>`;
+  const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return groups.map(g => {
+    const max = Math.max(1, ...g.counts);
+    const bars = g.counts.map((c, i) => {
+      const pct = Math.max(c > 0 ? 6 : 0, Math.round((c / max) * 100));
+      return `
+        <div class="month-col">
+          <span class="month-col-count">${c || ''}</span>
+          <div class="month-col-track"><div class="month-col-fill" style="height:${pct}%;"></div></div>
+          <span class="month-col-label">${monthLabels[i]}</span>
+        </div>`;
+    }).join('');
+    return `
+      <div class="year-group">
+        <div class="year-group-head">
+          <span class="year-group-title">${esc(g.year)}</span>
+          <span class="year-group-stats">${g.total} book${g.total === 1 ? '' : 's'} done</span>
+        </div>
+        <div class="month-chart">${bars}</div>
+      </div>`;
+  }).join('');
+}
+
+function renderForm() {
+  const f = state.form;
+  const ratingVal = Number(f.rating) || 1;
+  return `
+    <div class="modal">
+      <div class="modal-inner">
+        <div class="modal-header">
+          <h2>${state.editingId ? 'Edit book' : 'Add Book'}</h2>
+          <button id="close-form" aria-label="Close">${ICONS.x}</button>
+        </div>
+        <form id="book-form" class="modal-body">
+          <div class="cover-field">
+            <div class="cover-preview" id="cover-preview">${f.coverUrl ? `<img src="${esc(f.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}</div>
+            <div class="cover-actions">
+              <span class="field-label" style="margin:0;">Book Cover</span>
+              <button type="button" class="btn-secondary-sm" id="pick-cover-btn">${ICONS.image} Choose from gallery</button>
+              <input type="file" id="f-cover-file" accept="image/*" hidden />
+              <input id="f-cover-url" class="cover-url-input" placeholder="or paste a URL" value="${f.coverUrl && f.coverUrl.startsWith('data:') ? '' : esc(f.coverUrl)}" />
+            </div>
+          </div>
+          <label class="field"><span class="field-label">Book Title *</span><input required id="f-title" value="${esc(f.title)}" placeholder="e.g. The Great Gatsby" /></label>
+          <label class="field"><span class="field-label">Author *</span><input required id="f-author" value="${esc(f.author)}" /></label>
+          <label class="field"><span class="field-label">Translator</span><input id="f-translator" value="${esc(f.translator)}" placeholder="if a translated book" /></label>
+          <div class="grid-2">
+            <label class="field"><span class="field-label">Publisher</span><input id="f-publisher" value="${esc(f.publisher)}" /></label>
+            <label class="field"><span class="field-label">Language</span><input id="f-language" value="${esc(f.language)}" placeholder="e.g. English" /></label>
+          </div>
+          <div class="grid-2">
+            <label class="field"><span class="field-label">Origin Country</span><input id="f-country" value="${esc(f.country)}" placeholder="e.g. Japan" /></label>
+            <label class="field"><span class="field-label">Origin Year</span><input type="number" id="f-origin-year" value="${esc(f.originYear)}" placeholder="e.g. 1811" /></label>
+          </div>
+          <label class="field"><span class="field-label">ISBN</span><input id="f-isbn" value="${esc(f.isbn)}" /></label>
+          <label class="field"><span class="field-label">Status</span>
+            <select id="f-status">
+              <option value="tbr" ${f.status === 'tbr' ? 'selected' : ''}>To be Read</option>
+              <option value="ongoing" ${f.status === 'ongoing' ? 'selected' : ''}>Reading</option>
+              <option value="dnf" ${f.status === 'dnf' ? 'selected' : ''}>Didn't Finish</option>
+              <option value="done" ${f.status === 'done' ? 'selected' : ''}>Done</option>
+            </select>
+          </label>
+          <div class="grid-2">
+            <label class="field"><span class="field-label">Start Date</span><input type="date" id="f-start" value="${esc(f.startDate)}" /></label>
+            <label class="field"><span class="field-label">End Date</span><input type="date" id="f-end" value="${esc(f.endDate)}" /></label>
+          </div>
+          ${(f.status === 'ongoing' || f.status === 'dnf') ? `
+          <div class="grid-2" id="pages-field-row">
+            <label class="field"><span class="field-label">Last page read</span><input type="number" min="0" id="f-current-page" value="${esc(f.currentPage)}" placeholder="e.g. 120" /></label>
+            <label class="field"><span class="field-label">Total pages</span><input type="number" min="0" id="f-total-pages" value="${esc(f.totalPages)}" placeholder="e.g. 320" /></label>
+          </div>` : ''}
+          ${f.status === 'done' ? `
+          <label class="field"><span class="field-label">Total pages</span><input type="number" min="0" id="f-total-pages" value="${esc(f.totalPages)}" placeholder="e.g. 320" /></label>` : ''}
+          <label class="field"><span class="field-label" id="rating-label">Rating — ${ratingVal.toFixed(1)}/10</span><input type="range" min="1" max="10" step="0.1" id="f-rating" value="${ratingVal}" style="width:100%;accent-color:var(--accent);" /></label>
+          <label class="field"><span class="field-label">What Stayed</span><textarea id="f-review" rows="4" placeholder="Your brief thoughts about this book...">${esc(f.review)}</textarea></label>
+          <div class="form-actions">
+            <button type="button" id="cancel-form" class="btn">Cancel</button>
+            <button type="submit" class="btn btn-primary">${ICONS.check} Save</button>
+          </div>
+        </form>
+      </div>
+    </div>`;
+}
+
+const ACHIEVEMENT_BG = 'data:image/jpeg;base64,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
