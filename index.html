@@ -1174,10 +1174,10 @@ function renderYearChipRow() {
 function renderDashboardModal() {
   const cat = state.dashboardCategory;
   const tabs = [
-    { key: 'all', label: 'S' },
-    { key: 'year', label: 'Achievement' },
-    { key: 'pace', label: 'Reading Pace' },
-    { key: 'statistics', label: 'Statistics' }
+    { key: 'all', label: 'SUMMARY' },
+    { key: 'year', label: 'ACHIEVEMENT' },
+    { key: 'pace', label: 'READING PACE' },
+    { key: 'statistics', label: 'STATISTICS' }
   ];
   const catRow = `<div class="dash-cat-row">${tabs.map(t => `<button type="button" class="dash-cat-chip ${t.key === cat ? 'active' : ''}" data-action="pick-dashboard-cat" data-cat="${t.key}">${t.label}</button>`).join('')}</div>`;
   const yearChipRow = (cat === 'all' || cat === 'year') ? renderYearChipRow() : '';
