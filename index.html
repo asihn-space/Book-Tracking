@@ -20,6 +20,10 @@
     --accent-rgb: 12, 186, 166;
     --accent-contrast: #FFFFFF;
     --accent-dark: #077367;
+    --accent2: #0C87BA;
+    --accent2-rgb: 12, 135, 186;
+    --accent3: #BA5E0C;
+    --accent3-rgb: 186, 94, 12;
     --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
     --font-body: 'Outfit', system-ui, -apple-system, sans-serif;
     --font-script: 'Sacramento', cursive;
@@ -46,11 +50,10 @@
 
   /* Dashboard modal */
   .dashboard-title { font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 800; font-size: 17px; margin: 0; }
-  .dash-select-row { margin-bottom: 14px; }
-  .dash-select-row .custom-select-wrap { width: 100%; }
-  .field .custom-select-wrap { width: 100%; }
-  .field .custom-select-trigger { padding: 10px 12px; font-size: 14px; }
-  .dash-select-row .custom-select-trigger { padding: 10px 12px; font-size: 13.5px; font-weight: 600; }
+  .dash-cat-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 16px; scrollbar-width: none; }
+  .dash-cat-row::-webkit-scrollbar { display: none; }
+  .dash-cat-chip { flex-shrink: 0; padding: 10px 16px; border-radius: 14px; background: var(--surface); border: 1.5px solid var(--border); font-size: 13px; font-weight: 700; color: var(--text-soft); cursor: pointer; font-family: var(--font-display); white-space: nowrap; letter-spacing: 0.01em; }
+  .dash-cat-chip.active { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); box-shadow: 0 3px 10px rgba(var(--accent-rgb), 0.28); }
   .rank-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
   .bar-rank-row { margin-bottom: 14px; }
   .bar-rank-label { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; gap: 8px; }
@@ -78,20 +81,9 @@
   .month-col-label { font-size: 9.5px; color: var(--text-faint); margin-top: 4px; }
   .year-top5-heading { font-size: 11px; font-weight: 700; color: var(--text-faint); letter-spacing: 0.02em; margin: 10px 0 2px; text-transform: uppercase; }
   .dash-empty { font-size: 13px; color: var(--text-soft); text-align: center; padding: 30px 0; }
-  .year-filter-trigger { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 9999px; background: var(--surface); border: 1px solid var(--border); font-size: 13px; font-weight: 600; color: var(--text); font-family: inherit; cursor: pointer; margin-bottom: 14px; }
-  .year-filter-trigger svg { color: var(--text-faint); flex-shrink: 0; }
-  .bottom-sheet-backdrop { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,0.4); display: flex; align-items: flex-end; }
-  .bottom-sheet { width: 100%; max-width: 640px; margin: 0 auto; background: var(--surface); border-radius: 20px 20px 0 0; padding: 10px 20px 28px; max-height: 70vh; overflow-y: auto; animation: sheet-slide-up 0.25s ease-out; }
-  @keyframes sheet-slide-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
-  .bottom-sheet-handle { width: 40px; height: 4px; border-radius: 9999px; background: var(--border); margin: 0 auto 16px; }
-  .bottom-sheet-title { font-family: var(--font-display); font-weight: 800; font-size: 16px; margin: 0 0 12px; }
-  .bottom-sheet-list { display: flex; flex-direction: column; }
-  .bottom-sheet-option { width: 100%; text-align: left; padding: 13px 4px; font-size: 15px; font-weight: 500; color: var(--text); background: none; border: none; border-bottom: 1px solid var(--border); cursor: pointer; font-family: inherit; }
-  .bottom-sheet-option:last-child { border-bottom: none; }
-  .bottom-sheet-option.active { color: var(--accent); font-weight: 700; }
-  .stat-chip-row { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 16px; scrollbar-width: none; }
+  .stat-chip-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 16px; scrollbar-width: none; }
   .stat-chip-row::-webkit-scrollbar { display: none; }
-  .stat-chip { flex-shrink: 0; padding: 8px 14px; border-radius: 9999px; background: var(--surface); border: 1px solid var(--border); font-size: 12.5px; font-weight: 600; color: var(--text-soft); cursor: pointer; font-family: inherit; white-space: nowrap; }
+  .stat-chip { flex-shrink: 0; padding: 8px 14px; border-radius: 14px; background: var(--surface); border: 1px solid var(--border); font-size: 12px; font-weight: 600; color: var(--text-soft); cursor: pointer; font-family: inherit; white-space: nowrap; }
   .stat-chip.active { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); }
   .pie-chart-svg { width: 100%; height: auto; display: block; margin: 4px auto 0; }
 
@@ -116,8 +108,12 @@
   .home-view { padding-bottom: 90px; }
   .dashboard + .dashboard { margin-top: 14px; }
   .dash-summary-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
-  .dash-summary-tile { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 12px 8px; text-align: center; }
+  .dash-summary-tile { background: rgba(var(--accent-rgb), 0.1); border: 1px solid rgba(var(--accent-rgb), 0.22); border-radius: 14px; padding: 12px 8px; text-align: center; }
+  .dash-summary-strip .dash-summary-tile:nth-child(2) { background: rgba(var(--accent2-rgb), 0.1); border-color: rgba(var(--accent2-rgb), 0.22); }
+  .dash-summary-strip .dash-summary-tile:nth-child(3) { background: rgba(var(--accent3-rgb), 0.1); border-color: rgba(var(--accent3-rgb), 0.22); }
   .dash-summary-value { font-family: var(--font-display); font-size: 15px; font-weight: 800; color: var(--accent); margin: 0; line-height: 1.2; }
+  .dash-summary-strip .dash-summary-tile:nth-child(2) .dash-summary-value { color: var(--accent2); }
+  .dash-summary-strip .dash-summary-tile:nth-child(3) .dash-summary-value { color: var(--accent3); }
   .dash-summary-value-text { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
   .dash-summary-label { font-size: 10px; font-weight: 600; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.02em; margin: 3px 0 0; line-height: 1.3; }
   .reading-list { display: flex; flex-direction: column; gap: 16px; }
@@ -147,6 +143,8 @@
   .custom-select-trigger { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 4px; font-size: 12.5px; padding: 0 10px; height: 100%; border-radius: 8px; background: var(--surface); color: var(--text); border: 1px solid var(--border); font-family: inherit; cursor: pointer; }
   .custom-select-trigger svg { flex-shrink: 0; color: var(--text-faint); }
   .custom-select-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .field .custom-select-wrap { width: 100%; }
+  .field .custom-select-trigger { padding: 10px 12px; font-size: 14px; }
   .custom-select-menu { position: absolute; top: calc(100% + 6px); min-width: 168px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 10px 24px rgba(0,0,0,0.14); overflow: hidden; z-index: 35; }
   .custom-select-menu-left { left: 0; }
   .custom-select-menu-right { right: 0; }
@@ -181,12 +179,10 @@
   .grid-view .item { padding: 5px; border-radius: 10px; min-width: 0; }
   .grid-top { cursor: pointer; }
   .cover-grid { width: 100%; margin-bottom: 5px; }
-  .rate-badge-grid { display: inline-flex; align-items: center; gap: 3px; font-weight: 700; font-size: 9.5px; font-variant-numeric: tabular-nums; color: var(--accent-dark); background: rgba(255,255,255,0.88); padding: 2.5px 7px; border-radius: 9999px; position: absolute; top: 4px; right: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); z-index: 3; }
+  .rate-badge-grid { display: inline-flex; align-items: center; gap: 3px; font-weight: 700; font-size: 9.5px; font-variant-numeric: tabular-nums; color: var(--accent-dark); background: rgba(255,255,255,0.92); padding: 2.5px 7px; border-radius: 9999px; position: absolute; top: 4px; right: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.18); border: 1px solid rgba(0,0,0,0.06); z-index: 3; }
   .rate-badge-grid svg { width: 9px; height: 9px; flex-shrink: 0; color: #E0A800; }
-  .lang-badge { position: absolute; top: 4px; left: 4px; display: inline-flex; align-items: center; gap: 2px; font-weight: 800; font-size: 8px; letter-spacing: 0.02em; color: var(--accent-dark); background: rgba(255,255,255,0.88); padding: 2px 6px; border-radius: 9999px; line-height: 1.4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); z-index: 3; }
-  .lang-badge svg { width: 7px; height: 7px; flex-shrink: 0; }
-  .lang-badge-grid { position: absolute; top: 4px; left: 4px; display: inline-flex; align-items: center; gap: 3px; font-weight: 800; font-size: 9.5px; letter-spacing: 0.02em; color: var(--accent-dark); background: rgba(255,255,255,0.88); padding: 3px 8px; border-radius: 9999px; line-height: 1.4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); z-index: 3; }
-  .lang-badge-grid svg { width: 9px; height: 9px; flex-shrink: 0; }
+  .lang-badge { position: absolute; top: 4px; left: 4px; display: inline-flex; align-items: center; gap: 2px; font-weight: 800; font-size: 8px; letter-spacing: 0.02em; color: var(--accent-dark); background: rgba(255,255,255,0.92); padding: 2px 6px; border-radius: 9999px; line-height: 1.4; box-shadow: 0 1px 4px rgba(0,0,0,0.18); border: 1px solid rgba(0,0,0,0.06); z-index: 3; }
+  .lang-badge-grid { position: absolute; top: 4px; left: 4px; display: inline-flex; align-items: center; gap: 3px; font-weight: 800; font-size: 9.5px; letter-spacing: 0.02em; color: var(--accent-dark); background: rgba(255,255,255,0.92); padding: 3px 8px; border-radius: 9999px; line-height: 1.4; box-shadow: 0 1px 4px rgba(0,0,0,0.18); border: 1px solid rgba(0,0,0,0.06); z-index: 3; }
   .item-title-grid { font-family: var(--font-display); font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; font-weight: 700; line-height: 1.3; }
   .item-author-grid { font-size: 9.5px; margin: 2px 0 0; color: var(--text-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .item-publisher-grid { font-size: 9px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-faint); margin: 4px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
@@ -370,11 +366,56 @@ function darkenHex(hex, factor) {
   const b = clamp(parseInt(h.substring(4, 6), 16) * factor);
   return `#${[r, g, b].map(v => v.toString(16).padStart(2, '0')).join('')}`;
 }
+function hexToHsl(hex) {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.substring(0, 2), 16) / 255;
+  const g = parseInt(h.substring(2, 4), 16) / 255;
+  const b = parseInt(h.substring(4, 6), 16) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let hh = 0, s = 0; const l = (max + min) / 2;
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r: hh = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: hh = (b - r) / d + 2; break;
+      default: hh = (r - g) / d + 4;
+    }
+    hh /= 6;
+  }
+  return { h: hh * 360, s: s * 100, l: l * 100 };
+}
+function hslToHex(h, s, l) {
+  h = ((h % 360) + 360) % 360; s = s / 100; l = l / 100;
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+  const m = l - c / 2;
+  let r = 0, g = 0, b = 0;
+  if (h < 60) { r = c; g = x; b = 0; }
+  else if (h < 120) { r = x; g = c; b = 0; }
+  else if (h < 180) { r = 0; g = c; b = x; }
+  else if (h < 240) { r = 0; g = x; b = c; }
+  else if (h < 300) { r = x; g = 0; b = c; }
+  else { r = c; g = 0; b = x; }
+  const toHex = v => Math.round((v + m) * 255).toString(16).padStart(2, '0');
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+function hueShiftHex(hex, degrees) {
+  const { h, s, l } = hexToHsl(hex);
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+  return hslToHex(h + degrees, clamp(s, 40, 78), clamp(l, 42, 62));
+}
 function applyAccent(hex) {
   document.documentElement.style.setProperty('--accent', hex);
   document.documentElement.style.setProperty('--accent-rgb', hexToRgbString(hex));
   document.documentElement.style.setProperty('--accent-contrast', getContrastTextColor(hex));
   document.documentElement.style.setProperty('--accent-dark', darkenHex(hex));
+  const variant2 = hueShiftHex(hex, 34);
+  const variant3 = hueShiftHex(hex, -30);
+  document.documentElement.style.setProperty('--accent2', variant2);
+  document.documentElement.style.setProperty('--accent2-rgb', hexToRgbString(variant2));
+  document.documentElement.style.setProperty('--accent3', variant3);
+  document.documentElement.style.setProperty('--accent3-rgb', hexToRgbString(variant3));
 }
 
 const SAVED_ACCENT = loadAccent();
@@ -388,7 +429,6 @@ let state = {
   showDashboard: false,
   dashboardCategory: 'all',
   dashboardYearFilter: '',
-  showYearPicker: false,
   statisticsField: 'writer',
   query: '',
   sortBy: '',
@@ -669,7 +709,7 @@ function renderHome() {
     .slice(0, 3);
   const recentRows = recentDone.map(b => `
       <div class="reading-row" data-action="toggle" data-id="${b.id}">
-        <div class="cover cover-reading">${renderCoverPlaceholder(b.title)}${b.coverUrl ? `<img class="cover-img-layer" src="${esc(b.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}${b.language ? `<span class="lang-badge">${ICONS.globe}${esc(getLangBadge(b.language))}</span>` : ''}</div>
+        <div class="cover cover-reading">${renderCoverPlaceholder(b.title)}${b.coverUrl ? `<img class="cover-img-layer" src="${esc(b.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}${b.language ? `<span class="lang-badge">${esc(getLangBadge(b.language))}</span>` : ''}</div>
         <div class="reading-info">
           <div class="reading-row-top">
             <span class="reading-title">${esc(b.title)}</span>
@@ -687,7 +727,7 @@ function renderHome() {
     const barColor = getReadingBarColor(pct);
     return `
       <div class="reading-row" data-action="toggle" data-id="${b.id}">
-        <div class="cover cover-reading">${renderCoverPlaceholder(b.title)}${b.coverUrl ? `<img class="cover-img-layer" src="${esc(b.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}${b.language ? `<span class="lang-badge">${ICONS.globe}${esc(getLangBadge(b.language))}</span>` : ''}</div>
+        <div class="cover cover-reading">${renderCoverPlaceholder(b.title)}${b.coverUrl ? `<img class="cover-img-layer" src="${esc(b.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}${b.language ? `<span class="lang-badge">${esc(getLangBadge(b.language))}</span>` : ''}</div>
         <div class="reading-info">
           <div class="reading-row-top">
             <span class="reading-title">${esc(b.title)}</span>
@@ -793,7 +833,7 @@ function renderListItem(book) {
   return `
     <div class="item">
       <div class="item-row" data-action="toggle" data-id="${book.id}">
-        <div class="cover cover-list">${renderCoverPlaceholder(book.title)}${book.coverUrl ? `<img class="cover-img-layer" src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}${book.language ? `<span class="lang-badge">${ICONS.globe}${esc(getLangBadge(book.language))}</span>` : ''}</div>
+        <div class="cover cover-list">${renderCoverPlaceholder(book.title)}${book.coverUrl ? `<img class="cover-img-layer" src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}${book.language ? `<span class="lang-badge">${esc(getLangBadge(book.language))}</span>` : ''}</div>
         <div class="item-info">
           <p class="item-title">${esc(book.title)}</p>
           <p class="item-author">${esc(book.author)}</p>
@@ -813,7 +853,7 @@ function renderGridItem(book) {
       <div class="grid-top" data-action="toggle" data-id="${book.id}">
         <div class="cover cover-grid">
           ${renderCoverPlaceholder(book.title)}${book.coverUrl ? `<img class="cover-img-layer" src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}
-          ${book.language ? `<span class="lang-badge-grid">${ICONS.globe}${esc(getLangBadge(book.language))}</span>` : ''}
+          ${book.language ? `<span class="lang-badge-grid">${esc(getLangBadge(book.language))}</span>` : ''}
           <span class="rate-badge-grid">${ICONS.star}${Number(book.rating).toFixed(1)}</span>
         </div>
         <p class="item-title-grid">${esc(book.title)}</p>
@@ -835,7 +875,7 @@ function renderDetailModal(book) {
         <div class="detail-sheet-handle"></div>
         <button class="detail-sheet-close-btn" data-action="close-detail" aria-label="Close">${ICONS.x}</button>
         <div class="detail-head">
-          <div class="cover cover-detail">${renderCoverPlaceholder(book.title)}${book.coverUrl ? `<img class="cover-img-layer" src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}${book.language ? `<span class="lang-badge">${ICONS.globe}${esc(getLangBadge(book.language))}</span>` : ''}</div>
+          <div class="cover cover-detail">${renderCoverPlaceholder(book.title)}${book.coverUrl ? `<img class="cover-img-layer" src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}${book.language ? `<span class="lang-badge">${esc(getLangBadge(book.language))}</span>` : ''}</div>
           <div class="detail-head-info">
             <p class="detail-book-title">${esc(book.title)}</p>
             <p class="detail-book-author">${esc(book.author)}</p>
@@ -1122,35 +1162,25 @@ function renderPieChart(entries) {
   return `<svg viewBox="0 0 400 400" class="pie-chart-svg">${arcs.join('')}${labelsSvg}</svg>`;
 }
 
-function renderYearPickerSheet() {
+function renderYearChipRow() {
   const years = getAvailableYears();
-  return `
-    <div class="bottom-sheet-backdrop" data-action="close-year-picker">
-      <div class="bottom-sheet">
-        <div class="bottom-sheet-handle"></div>
-        <p class="bottom-sheet-title">Select Year</p>
-        <div class="bottom-sheet-list">
-          <button type="button" class="bottom-sheet-option ${!state.dashboardYearFilter ? 'active' : ''}" data-action="pick-year" data-year="">All years</button>
-          ${years.map(y => `<button type="button" class="bottom-sheet-option ${state.dashboardYearFilter === y ? 'active' : ''}" data-action="pick-year" data-year="${y}">${y}</button>`).join('')}
-        </div>
-      </div>
-    </div>`;
+  const chips = [
+    `<button type="button" class="stat-chip ${!state.dashboardYearFilter ? 'active' : ''}" data-action="pick-year" data-year="">ALL</button>`,
+    ...years.map(y => `<button type="button" class="stat-chip ${state.dashboardYearFilter === y ? 'active' : ''}" data-action="pick-year" data-year="${y}">${y}</button>`)
+  ].join('');
+  return `<div class="stat-chip-row">${chips}</div>`;
 }
 
 function renderDashboardModal() {
   const cat = state.dashboardCategory;
   const tabs = [
-    { key: 'all', label: 'All' },
-    { key: 'year', label: 'Year' },
+    { key: 'all', label: 'S' },
+    { key: 'year', label: 'Achievement' },
     { key: 'pace', label: 'Reading Pace' },
     { key: 'statistics', label: 'Statistics' }
   ];
-  const dashOptions = tabs.map(t => ({ value: t.key, label: t.label }));
-  const selectHtml = `<div class="dash-select-row">${renderCustomSelect('dashboard', dashOptions, cat, 'left')}</div>`;
-  const yearFilterLabel = state.dashboardYearFilter || 'All years';
-  const yearPickerBtn = (cat === 'all' || cat === 'year')
-    ? `<button type="button" class="year-filter-trigger" data-action="open-year-picker">${esc(yearFilterLabel)} ${ICONS.chevronDown}</button>`
-    : '';
+  const catRow = `<div class="dash-cat-row">${tabs.map(t => `<button type="button" class="dash-cat-chip ${t.key === cat ? 'active' : ''}" data-action="pick-dashboard-cat" data-cat="${t.key}">${t.label}</button>`).join('')}</div>`;
+  const yearChipRow = (cat === 'all' || cat === 'year') ? renderYearChipRow() : '';
   let content = '';
   if (cat === 'pace') content = renderPagesPerDayRanking();
   else if (cat === 'statistics') content = renderStatisticsSection();
@@ -1165,12 +1195,11 @@ function renderDashboardModal() {
         </div>
         <div class="modal-body">
           ${renderDashboardSummaryStrip()}
-          ${selectHtml}
-          ${yearPickerBtn}
+          ${catRow}
+          ${yearChipRow}
           ${content}
         </div>
       </div>
-      ${state.showYearPicker ? renderYearPickerSheet() : ''}
     </div>`;
 }
 
@@ -1701,7 +1730,6 @@ function attachHandlers() {
       const value = el.getAttribute('data-value');
       if (key === 'filter') state.statusFilter = value;
       if (key === 'sort') state.sortBy = value;
-      if (key === 'dashboard') state.dashboardCategory = value;
       if (key === 'formStatus') {
         state.form.status = value;
         if (value !== 'done') state.form.endDate = '';
@@ -1772,22 +1800,15 @@ function attachHandlers() {
         saveAccentToStorage(hex);
         render();
       });
-    } else if (action === 'open-year-picker') {
-      el.addEventListener('click', e => {
-        e.stopPropagation();
-        state.showYearPicker = true;
-        render();
-      });
-    } else if (action === 'close-year-picker') {
+    } else if (action === 'pick-dashboard-cat') {
       el.addEventListener('click', () => {
-        state.showYearPicker = false;
+        state.dashboardCategory = el.getAttribute('data-cat');
         render();
       });
     } else if (action === 'pick-year') {
       el.addEventListener('click', e => {
         e.stopPropagation();
         state.dashboardYearFilter = el.getAttribute('data-year') || '';
-        state.showYearPicker = false;
         render();
       });
     } else if (action === 'pick-stat-field') {
