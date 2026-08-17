@@ -48,6 +48,8 @@
   .dashboard-title { font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 800; font-size: 17px; margin: 0; }
   .dash-select-row { margin-bottom: 14px; }
   .dash-select-row .custom-select-wrap { width: 100%; }
+  .field .custom-select-wrap { width: 100%; }
+  .field .custom-select-trigger { padding: 10px 12px; font-size: 14px; }
   .dash-select-row .custom-select-trigger { padding: 10px 12px; font-size: 13.5px; font-weight: 600; }
   .rank-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
   .bar-rank-row { margin-bottom: 14px; }
@@ -76,6 +78,22 @@
   .month-col-label { font-size: 9.5px; color: var(--text-faint); margin-top: 4px; }
   .year-top5-heading { font-size: 11px; font-weight: 700; color: var(--text-faint); letter-spacing: 0.02em; margin: 10px 0 2px; text-transform: uppercase; }
   .dash-empty { font-size: 13px; color: var(--text-soft); text-align: center; padding: 30px 0; }
+  .year-filter-trigger { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 9999px; background: var(--surface); border: 1px solid var(--border); font-size: 13px; font-weight: 600; color: var(--text); font-family: inherit; cursor: pointer; margin-bottom: 14px; }
+  .year-filter-trigger svg { color: var(--text-faint); flex-shrink: 0; }
+  .bottom-sheet-backdrop { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,0.4); display: flex; align-items: flex-end; }
+  .bottom-sheet { width: 100%; max-width: 640px; margin: 0 auto; background: var(--surface); border-radius: 20px 20px 0 0; padding: 10px 20px 28px; max-height: 70vh; overflow-y: auto; animation: sheet-slide-up 0.25s ease-out; }
+  @keyframes sheet-slide-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .bottom-sheet-handle { width: 40px; height: 4px; border-radius: 9999px; background: var(--border); margin: 0 auto 16px; }
+  .bottom-sheet-title { font-family: var(--font-display); font-weight: 800; font-size: 16px; margin: 0 0 12px; }
+  .bottom-sheet-list { display: flex; flex-direction: column; }
+  .bottom-sheet-option { width: 100%; text-align: left; padding: 13px 4px; font-size: 15px; font-weight: 500; color: var(--text); background: none; border: none; border-bottom: 1px solid var(--border); cursor: pointer; font-family: inherit; }
+  .bottom-sheet-option:last-child { border-bottom: none; }
+  .bottom-sheet-option.active { color: var(--accent); font-weight: 700; }
+  .stat-chip-row { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 16px; scrollbar-width: none; }
+  .stat-chip-row::-webkit-scrollbar { display: none; }
+  .stat-chip { flex-shrink: 0; padding: 8px 14px; border-radius: 9999px; background: var(--surface); border: 1px solid var(--border); font-size: 12.5px; font-weight: 600; color: var(--text-soft); cursor: pointer; font-family: inherit; white-space: nowrap; }
+  .stat-chip.active { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); }
+  .pie-chart-svg { width: 100%; height: auto; display: block; margin: 4px auto 0; }
 
   main { padding: 16px 16px 40px; }
   .error-banner { margin-bottom: 16px; padding: 10px 12px; border-radius: 8px; font-size: 14px; background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
@@ -97,6 +115,11 @@
   .chart-count { font-size: 13px; font-weight: 600; color: var(--text-soft); width: 22px; text-align: right; font-variant-numeric: tabular-nums; }
   .home-view { padding-bottom: 90px; }
   .dashboard + .dashboard { margin-top: 14px; }
+  .dash-summary-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+  .dash-summary-tile { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 12px 8px; text-align: center; }
+  .dash-summary-value { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: var(--accent); margin: 0; line-height: 1.2; }
+  .dash-summary-value-text { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+  .dash-summary-label { font-size: 10px; font-weight: 600; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.02em; margin: 3px 0 0; line-height: 1.3; }
   .reading-list { display: flex; flex-direction: column; gap: 16px; }
   .reading-row { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
   .cover-reading { width: 44px; flex-shrink: 0; }
@@ -104,6 +127,8 @@
   .reading-row-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
   .reading-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .reading-pct { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+  .recent-rating { display: inline-flex; align-items: center; gap: 3px; font-size: 12.5px; font-weight: 700; font-variant-numeric: tabular-nums; color: #CA8A04; flex-shrink: 0; }
+  .recent-rating svg { width: 11px; height: 11px; }
   .reading-author { font-size: 11.5px; color: var(--text-soft); margin: 2px 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .reading-pages { font-size: 11px; color: var(--text-faint); margin: 6px 0 0; }
   .reading-empty { font-size: 13px; color: var(--text-soft); text-align: center; padding: 10px 0 2px; }
@@ -116,10 +141,10 @@
   .view-btn.active { background: var(--accent); color: var(--accent-contrast); }
   .icon-add-btn { width: 36px; height: 36px; border-radius: 9999px; background: var(--accent); color: var(--accent-contrast); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .search-row { display: flex; gap: 8px; margin-bottom: 14px; }
-  .search-box { flex: 2; min-width: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); }
+  .search-box { flex: 1.3; min-width: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); }
   .search-box input { border: none; outline: none; background: transparent; width: 100%; padding: 10px 0; font-size: 14px; font-family: inherit; color: var(--text); }
   .custom-select-wrap { position: relative; flex: 1; min-width: 0; }
-  .custom-select-trigger { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 4px; font-size: 12.5px; padding: 0 8px; height: 100%; border-radius: 8px; background: var(--surface); color: var(--text); border: 1px solid var(--border); font-family: inherit; cursor: pointer; }
+  .custom-select-trigger { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 4px; font-size: 12.5px; padding: 0 10px; height: 100%; border-radius: 8px; background: var(--surface); color: var(--text); border: 1px solid var(--border); font-family: inherit; cursor: pointer; }
   .custom-select-trigger svg { flex-shrink: 0; color: var(--text-faint); }
   .custom-select-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .custom-select-menu { position: absolute; top: calc(100% + 6px); min-width: 168px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 10px 24px rgba(0,0,0,0.14); overflow: hidden; z-index: 35; }
@@ -135,6 +160,13 @@
   .item-row { display: flex; gap: 10px; cursor: pointer; position: relative; }
   .cover { border-radius: 6px; overflow: hidden; aspect-ratio: 2/3; background: var(--bg); display: flex; align-items: center; justify-content: center; color: var(--text-faint); flex-shrink: 0; position: relative; }
   .cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cover-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .cover-placeholder-letter { font-family: var(--font-display); font-weight: 800; color: rgba(24,24,27,0.38); position: relative; z-index: 1; line-height: 1; }
+  .cover-placeholder-icon { position: absolute; width: 62%; height: 62%; color: rgba(255,255,255,0.4); z-index: 0; }
+  .cover-img-layer { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; z-index: 2; }
+  .cover-list .cover-placeholder-letter, .cover-reading .cover-placeholder-letter { font-size: 16px; }
+  .cover-grid .cover-placeholder-letter { font-size: 24px; }
+  .cover-detail .cover-placeholder-letter { font-size: 30px; }
   .cover-list { width: 48px; }
   .item-info { flex: 1; min-width: 0; padding-right: 46px; }
   .item-title { font-family: var(--font-display); font-size: 13px; font-weight: 700; margin: 0; line-height: 1.32; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -149,14 +181,22 @@
   .grid-view .item { padding: 5px; border-radius: 10px; min-width: 0; }
   .grid-top { cursor: pointer; }
   .cover-grid { width: 100%; margin-bottom: 5px; }
-  .rate-badge-grid { display: inline-flex; align-items: center; gap: 3px; font-weight: 700; font-size: 9.5px; font-variant-numeric: tabular-nums; color: #FCD34D; background: rgba(0,0,0,0.55); padding: 2.5px 7px; border-radius: 9999px; position: absolute; top: 4px; right: 4px; backdrop-filter: blur(2px); }
-  .rate-badge-grid svg { width: 9px; height: 9px; flex-shrink: 0; }
-  .lang-badge { position: absolute; top: 4px; left: 4px; display: inline-flex; align-items: center; font-weight: 800; font-size: 8px; letter-spacing: 0.02em; color: #E4E4E7; background: rgba(0,0,0,0.55); padding: 2px 6px; border-radius: 9999px; line-height: 1.4; backdrop-filter: blur(2px); }
-  .lang-badge-grid { position: absolute; top: 4px; left: 4px; display: inline-flex; align-items: center; font-weight: 800; font-size: 9.5px; letter-spacing: 0.02em; color: #E4E4E7; background: rgba(0,0,0,0.55); padding: 3px 8px; border-radius: 9999px; line-height: 1.4; backdrop-filter: blur(2px); }
+  .rate-badge-grid { display: inline-flex; align-items: center; gap: 3px; font-weight: 700; font-size: 9.5px; font-variant-numeric: tabular-nums; color: var(--accent-dark); background: rgba(255,255,255,0.88); padding: 2.5px 7px; border-radius: 9999px; position: absolute; top: 4px; right: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .rate-badge-grid svg { width: 9px; height: 9px; flex-shrink: 0; color: #E0A800; }
+  .lang-badge { position: absolute; top: 4px; left: 4px; display: inline-flex; align-items: center; gap: 2px; font-weight: 800; font-size: 8px; letter-spacing: 0.02em; color: var(--accent-dark); background: rgba(255,255,255,0.88); padding: 2px 6px; border-radius: 9999px; line-height: 1.4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .lang-badge svg { width: 7px; height: 7px; flex-shrink: 0; }
+  .lang-badge-grid { position: absolute; top: 4px; left: 4px; display: inline-flex; align-items: center; gap: 3px; font-weight: 800; font-size: 9.5px; letter-spacing: 0.02em; color: var(--accent-dark); background: rgba(255,255,255,0.88); padding: 3px 8px; border-radius: 9999px; line-height: 1.4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .lang-badge-grid svg { width: 9px; height: 9px; flex-shrink: 0; }
   .item-title-grid { font-family: var(--font-display); font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; font-weight: 700; line-height: 1.3; }
   .item-author-grid { font-size: 9.5px; margin: 2px 0 0; color: var(--text-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .item-publisher-grid { font-size: 9px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-faint); margin: 4px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
   .status-mini-grid { margin: 4px 0 0; font-size: 8.5px; padding: 1.5px 6px; }
+
+  /* Detail sheet */
+  .detail-sheet-backdrop { position: fixed; inset: 0; z-index: 40; background: rgba(0,0,0,0.42); display: flex; align-items: flex-end; }
+  .detail-sheet { position: relative; width: 100%; max-width: 640px; margin: 0 auto; background: var(--surface); border-radius: 22px 22px 0 0; max-height: 88vh; overflow-y: auto; padding: 12px 16px 26px; animation: sheet-slide-up 0.25s ease-out; }
+  .detail-sheet-handle { width: 40px; height: 4px; border-radius: 9999px; background: var(--border); margin: 0 auto 14px; }
+  .detail-sheet-close-btn { position: absolute; top: 12px; right: 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 9999px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-soft); padding: 0; }
 
   /* Detail modal (shared) */
   .status-mini { display: inline-block; font-size: 9.5px; font-weight: 700; padding: 2px 8px; border-radius: 9999px; margin-top: 5px; }
@@ -260,6 +300,7 @@ const ICONS = {
   edit: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>',
   trash: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>',
   book: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+  bookOutline: '<svg class="cover-placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
   check: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
   chevronDown: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>',
   home: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10"/><path d="M9 21v-6h6v6"/></svg>',
@@ -346,6 +387,9 @@ let state = {
   showSettings: false,
   showDashboard: false,
   dashboardCategory: 'all',
+  dashboardYearFilter: '',
+  showYearPicker: false,
+  statisticsField: 'writer',
   query: '',
   sortBy: '',
   statusFilter: '',
@@ -395,6 +439,23 @@ function getBookStatus(b) {
 }
 function formatDate(d) { if (!d) return '-'; try { return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return d; } }
 function esc(s) { if (s == null) return ''; return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+function hashStr(s) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) | 0; }
+  return Math.abs(h);
+}
+function getCoverInitial(title) {
+  const t = (title || '').trim();
+  return t ? t.charAt(0).toUpperCase() : '?';
+}
+function renderCoverPlaceholder(title, sizeClass) {
+  const hash = hashStr(title || '?');
+  const hue1 = hash % 360;
+  const hue2 = (hue1 + 34) % 360;
+  const style = `background: linear-gradient(150deg, hsl(${hue1} 62% 90%), hsl(${hue2} 58% 80%));`;
+  return `<div class="cover-placeholder ${sizeClass || ''}" style="${style}"><span class="cover-placeholder-letter">${esc(getCoverInitial(title))}</span>${ICONS.bookOutline}</div>`;
+}
 function getLangBadge(lang) {
   if (!lang) return '';
   const key = lang.trim().toLowerCase();
@@ -458,11 +519,12 @@ function getPagesPerDayRanking(books) {
     })
     .sort((a, b) => b.rate - a.rate);
 }
-function getYearGrouping(books) {
+function getYearGrouping(books, yearFilter) {
   const map = new Map();
   books.forEach(b => {
     if (getBookStatus(b) !== 'done' || !b.endDate) return;
     const year = b.endDate.slice(0, 4);
+    if (yearFilter && year !== yearFilter) return;
     if (!map.has(year)) map.set(year, { year, books: [], totalPages: 0 });
     const entry = map.get(year);
     entry.books.push(b);
@@ -491,6 +553,12 @@ const SORT_OPTIONS = [
   { value: 'rating', label: 'Rating' },
   { value: 'finished', label: 'Finished Reading' },
   { value: 'title', label: 'Title A-Z' }
+];
+const STATUS_OPTIONS = [
+  { value: 'tbr', label: 'To be Read' },
+  { value: 'ongoing', label: 'Reading' },
+  { value: 'dnf', label: "Didn't Finish" },
+  { value: 'done', label: 'Done' }
 ];
 
 function renderCustomSelect(key, options, currentValue, align) {
@@ -596,6 +664,21 @@ function renderHome() {
         <span class="chart-count">${count}</span>
       </div>`;
   }).join('');
+  const recentDone = state.books.filter(b => getBookStatus(b) === 'done')
+    .sort((a, b) => (b.endDate || '').localeCompare(a.endDate || '') || (b.addedAt || 0) - (a.addedAt || 0))
+    .slice(0, 3);
+  const recentRows = recentDone.map(b => `
+      <div class="reading-row" data-action="toggle" data-id="${b.id}">
+        <div class="cover cover-reading">${renderCoverPlaceholder(b.title)}${b.coverUrl ? `<img class="cover-img-layer" src="${esc(b.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}${b.language ? `<span class="lang-badge">${ICONS.globe}${esc(getLangBadge(b.language))}</span>` : ''}</div>
+        <div class="reading-info">
+          <div class="reading-row-top">
+            <span class="reading-title">${esc(b.title)}</span>
+            <span class="recent-rating">${ICONS.star}${Number(b.rating).toFixed(1)}</span>
+          </div>
+          <p class="reading-author">${esc(b.author)}</p>
+          <p class="reading-pages">${b.endDate ? `Finished ${formatDateShort(b.endDate)}` : 'Finished'}</p>
+        </div>
+      </div>`).join('');
   const readingBooks = state.books.filter(b => getBookStatus(b) === 'ongoing');
   const readingRows = readingBooks.map(b => {
     const pct = getReadingPct(b);
@@ -604,7 +687,7 @@ function renderHome() {
     const barColor = getReadingBarColor(pct);
     return `
       <div class="reading-row" data-action="toggle" data-id="${b.id}">
-        <div class="cover cover-reading">${b.coverUrl ? `<img src="${esc(b.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}${b.language ? `<span class="lang-badge">${esc(getLangBadge(b.language))}</span>` : ''}</div>
+        <div class="cover cover-reading">${renderCoverPlaceholder(b.title)}${b.coverUrl ? `<img class="cover-img-layer" src="${esc(b.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}${b.language ? `<span class="lang-badge">${ICONS.globe}${esc(getLangBadge(b.language))}</span>` : ''}</div>
         <div class="reading-info">
           <div class="reading-row-top">
             <span class="reading-title">${esc(b.title)}</span>
@@ -628,6 +711,11 @@ function renderHome() {
         <p class="section-title">Reading</p>
         ${readingBooks.length ? `<div class="reading-list">${readingRows}</div>` : `<p class="reading-empty">No books currently being read.</p>`}
       </div>
+      ${recentDone.length ? `
+      <div class="dashboard">
+        <p class="section-title">Recently Finished</p>
+        <div class="reading-list">${recentRows}</div>
+      </div>` : ''}
     </div>
     <button class="btn-add-fab-square" id="add-btn-home" aria-label="Add Book">${ICONS.plus}</button>
   `;
@@ -705,7 +793,7 @@ function renderListItem(book) {
   return `
     <div class="item">
       <div class="item-row" data-action="toggle" data-id="${book.id}">
-        <div class="cover cover-list">${book.coverUrl ? `<img src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}${book.language ? `<span class="lang-badge">${esc(getLangBadge(book.language))}</span>` : ''}</div>
+        <div class="cover cover-list">${renderCoverPlaceholder(book.title)}${book.coverUrl ? `<img class="cover-img-layer" src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}${book.language ? `<span class="lang-badge">${ICONS.globe}${esc(getLangBadge(book.language))}</span>` : ''}</div>
         <div class="item-info">
           <p class="item-title">${esc(book.title)}</p>
           <p class="item-author">${esc(book.author)}</p>
@@ -724,8 +812,8 @@ function renderGridItem(book) {
     <div class="item">
       <div class="grid-top" data-action="toggle" data-id="${book.id}">
         <div class="cover cover-grid">
-          ${book.coverUrl ? `<img src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}
-          ${book.language ? `<span class="lang-badge-grid">${esc(getLangBadge(book.language))}</span>` : ''}
+          ${renderCoverPlaceholder(book.title)}${book.coverUrl ? `<img class="cover-img-layer" src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}
+          ${book.language ? `<span class="lang-badge-grid">${ICONS.globe}${esc(getLangBadge(book.language))}</span>` : ''}
           <span class="rate-badge-grid">${ICONS.star}${Number(book.rating).toFixed(1)}</span>
         </div>
         <p class="item-title-grid">${esc(book.title)}</p>
@@ -742,45 +830,41 @@ function renderDetailModal(book) {
   const totalPages = Number(book.totalPages) || 0;
   const currentPage = getBookStatus(book) === 'done' ? totalPages : (Number(book.currentPage) || 0);
   return `
-    <div class="modal">
-      <div class="modal-inner">
-        <div class="modal-header">
-          <h2>Book Details</h2>
-          <button data-action="close-detail" aria-label="Close">${ICONS.x}</button>
+    <div class="detail-sheet-backdrop" data-action="close-detail">
+      <div class="detail-sheet" data-action="stop">
+        <div class="detail-sheet-handle"></div>
+        <button class="detail-sheet-close-btn" data-action="close-detail" aria-label="Close">${ICONS.x}</button>
+        <div class="detail-head">
+          <div class="cover cover-detail">${renderCoverPlaceholder(book.title)}${book.coverUrl ? `<img class="cover-img-layer" src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}${book.language ? `<span class="lang-badge">${ICONS.globe}${esc(getLangBadge(book.language))}</span>` : ''}</div>
+          <div class="detail-head-info">
+            <p class="detail-book-title">${esc(book.title)}</p>
+            <p class="detail-book-author">${esc(book.author)}</p>
+            ${book.translator ? `<p class="detail-book-translator">Translated by ${esc(book.translator)}</p>` : ''}
+            ${book.publisher ? `<p class="detail-book-publisher">${esc(book.publisher)}</p>` : ''}
+            <span class="detail-rating">${ICONS.star}${Number(book.rating).toFixed(1)}</span>
+            <div class="detail-status-row"><span class="status-mini status-mini-detail" style="${getStatusPillStyle(getBookStatus(book))}">${statusMeta.label}</span></div>
+          </div>
         </div>
-        <div class="modal-body">
-          <div class="detail-head">
-            <div class="cover cover-detail">${book.coverUrl ? `<img src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}${book.language ? `<span class="lang-badge">${esc(getLangBadge(book.language))}</span>` : ''}</div>
-            <div class="detail-head-info">
-              <p class="detail-book-title">${esc(book.title)}</p>
-              <p class="detail-book-author">${esc(book.author)}</p>
-              ${book.translator ? `<p class="detail-book-translator">Translated by ${esc(book.translator)}</p>` : ''}
-              ${book.publisher ? `<p class="detail-book-publisher">${esc(book.publisher)}</p>` : ''}
-              <span class="detail-rating">${ICONS.star}${Number(book.rating).toFixed(1)}</span>
-              <div class="detail-status-row"><span class="status-mini status-mini-detail" style="${getStatusPillStyle(getBookStatus(book))}">${statusMeta.label}</span></div>
-            </div>
-          </div>
-          <div class="detail-info-grid">
-            ${book.country ? `<div><span class="label">Origin Country</span> ${esc(book.country)}</div>` : ''}
-            ${book.originYear ? `<div><span class="label">Origin Year</span> ${esc(book.originYear)}</div>` : ''}
-            ${book.language ? `<div><span class="label">Language</span> ${esc(book.language)}</div>` : ''}
-            ${book.isbn ? `<div><span class="label">ISBN</span> ${esc(book.isbn)}</div>` : ''}
-            ${totalPages ? `<div><span class="label">Pages</span> ${currentPage}/${totalPages} (${getReadingPct(book)}%)</div>` : ''}
-            <div><span class="label">Started</span> ${formatDate(book.startDate)}</div>
-            <div><span class="label">Finished</span> ${formatDate(book.endDate)}</div>
-          </div>
-          ${book.review ? `<div class="review-box"><p class="review-heading">What Stayed</p><p class="review-text">${esc(book.review)}</p></div>` : ''}
-          <div class="action-row">
-            <button class="btn-ghost" data-action="edit" data-id="${book.id}">${ICONS.edit} Edit</button>
-            ${confirming ? `
-              <div class="confirm-row">
-                <span style="color:#B91C1C;">Are you sure?</span>
-                <button data-action="delete" data-id="${book.id}" style="color:#B91C1C;font-weight:500;">Yes, delete</button>
-                <button data-action="cancel-delete" style="color:var(--text-soft);">Cancel</button>
-              </div>` : `
-              <button class="btn-ghost btn-danger" data-action="ask-delete" data-id="${book.id}">${ICONS.trash} Delete</button>
-            `}
-          </div>
+        <div class="detail-info-grid">
+          ${book.country ? `<div><span class="label">Origin Country</span> ${esc(book.country)}</div>` : ''}
+          ${book.originYear ? `<div><span class="label">Origin Year</span> ${esc(book.originYear)}</div>` : ''}
+          ${book.language ? `<div><span class="label">Language</span> ${esc(book.language)}</div>` : ''}
+          ${book.isbn ? `<div><span class="label">ISBN</span> ${esc(book.isbn)}</div>` : ''}
+          ${totalPages ? `<div><span class="label">Pages</span> ${currentPage}/${totalPages} (${getReadingPct(book)}%)</div>` : ''}
+          <div><span class="label">Started</span> ${formatDate(book.startDate)}</div>
+          <div><span class="label">Finished</span> ${formatDate(book.endDate)}</div>
+        </div>
+        ${book.review ? `<div class="review-box"><p class="review-heading">What Stayed</p><p class="review-text">${esc(book.review)}</p></div>` : ''}
+        <div class="action-row">
+          <button class="btn-ghost" data-action="edit" data-id="${book.id}">${ICONS.edit} Edit</button>
+          ${confirming ? `
+            <div class="confirm-row">
+              <span style="color:#B91C1C;">Are you sure?</span>
+              <button data-action="delete" data-id="${book.id}" style="color:#B91C1C;font-weight:500;">Yes, delete</button>
+              <button data-action="cancel-delete" style="color:var(--text-soft);">Cancel</button>
+            </div>` : `
+            <button class="btn-ghost btn-danger" data-action="ask-delete" data-id="${book.id}">${ICONS.trash} Delete</button>
+          `}
         </div>
       </div>
     </div>`;
@@ -926,27 +1010,152 @@ function renderSettingsModal() {
     </div>`;
 }
 
+function truncateLabel(s, max) {
+  return s.length > max ? s.slice(0, max - 1) + '…' : s;
+}
+
+function renderDashboardSummaryStrip() {
+  const currentYear = String(new Date().getFullYear());
+  const doneThisYear = state.books.filter(b => getBookStatus(b) === 'done' && b.endDate && b.endDate.slice(0, 4) === currentYear).length;
+  const paceList = getPagesPerDayRanking(state.books);
+  const avgPace = paceList.length ? paceList.reduce((s, b) => s + b.rate, 0) / paceList.length : null;
+  const writerRank = rankBy(state.books, b => b.author && b.author.trim());
+  const topWriter = writerRank.length ? writerRank[0][0] : null;
+  return `
+    <div class="dash-summary-strip">
+      <div class="dash-summary-tile">
+        <p class="dash-summary-value">${doneThisYear}</p>
+        <p class="dash-summary-label">Finished This Year</p>
+      </div>
+      <div class="dash-summary-tile">
+        <p class="dash-summary-value">${avgPace != null ? avgPace.toFixed(1) : '—'}</p>
+        <p class="dash-summary-label">Avg Pages/Day</p>
+      </div>
+      <div class="dash-summary-tile">
+        <p class="dash-summary-value dash-summary-value-text">${topWriter ? esc(truncateLabel(topWriter, 14)) : '—'}</p>
+        <p class="dash-summary-label">Top Author</p>
+      </div>
+    </div>`;
+}
+
+function renderStatisticsSection() {
+  const fields = [
+    { key: 'writer', label: 'Writer', getKey: b => b.author && b.author.trim() },
+    { key: 'translator', label: 'Translator', getKey: b => b.translator && b.translator.trim() },
+    { key: 'publisher', label: 'Publisher', getKey: b => b.publisher && b.publisher.trim() },
+    { key: 'country', label: 'Country', getKey: b => b.country && b.country.trim() },
+    { key: 'language', label: 'Language', getKey: b => b.language && b.language.trim() }
+  ];
+  const active = fields.find(f => f.key === state.statisticsField) || fields[0];
+  const chips = fields.map(f => `<button type="button" class="stat-chip ${f.key === active.key ? 'active' : ''}" data-action="pick-stat-field" data-field="${f.key}">${f.label}</button>`).join('');
+  const entries = rankBy(state.books, active.getKey);
+  return `<div class="stat-chip-row">${chips}</div>${renderPieChart(entries)}`;
+}
+
+function polarToCartesian(cx, cy, r, angleDeg) {
+  const rad = (angleDeg - 90) * Math.PI / 180;
+  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+}
+
+function describeArc(cx, cy, r, startAngle, endAngle) {
+  const start = polarToCartesian(cx, cy, r, endAngle);
+  const end = polarToCartesian(cx, cy, r, startAngle);
+  const largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1';
+  return `M ${cx} ${cy} L ${start.x} ${start.y} A ${r} ${r} 0 ${largeArcFlag} 0 ${end.x} ${end.y} Z`;
+}
+
+function renderPieChart(entries) {
+  if (!entries.length) return `<p class="dash-empty">No data yet.</p>`;
+  const top5 = entries.slice(0, 5);
+  const rest = entries.slice(5);
+  const restTotal = rest.reduce((s, [, c]) => s + c, 0);
+  const slices = [...top5];
+  if (restTotal > 0) slices.push(['Others', restTotal]);
+
+  const total = slices.reduce((s, [, c]) => s + c, 0);
+  const cx = 200, cy = 200, r = 105;
+  let angle = 0;
+  const arcs = [];
+  const leftLabels = [];
+  const rightLabels = [];
+
+  slices.forEach(([name, count], i) => {
+    const sliceAngle = (count / total) * 360;
+    const startAngle = angle;
+    const endAngle = angle + sliceAngle;
+    const midAngle = (startAngle + endAngle) / 2;
+    const opacity = (0.35 + 0.65 * ((slices.length - i) / slices.length)).toFixed(2);
+    arcs.push(`<path d="${describeArc(cx, cy, r, startAngle, endAngle)}" fill="rgba(var(--accent-rgb),${opacity})" stroke="var(--surface)" stroke-width="3" />`);
+    const pct = Math.round((count / total) * 100);
+    const isLeft = midAngle > 180;
+    const entry = { name, count, pct, midAngle };
+    if (isLeft) leftLabels.push(entry); else rightLabels.push(entry);
+    angle = endAngle;
+  });
+
+  function layout(list, side) {
+    list.sort((a, b) => polarToCartesian(cx, cy, r, a.midAngle).y - polarToCartesian(cx, cy, r, b.midAngle).y);
+    const n = list.length;
+    const spacing = 300 / Math.max(n, 1);
+    return list.map((l, idx) => {
+      const labelY = 50 + spacing * (idx + 0.5);
+      const edgePoint = polarToCartesian(cx, cy, r, l.midAngle);
+      const labelX = side === 'left' ? 14 : 386;
+      const bendX = side === 'left' ? 64 : 336;
+      return { ...l, edgePoint, labelX, labelY, bendX };
+    });
+  }
+
+  const leftLaidOut = layout(leftLabels, 'left');
+  const rightLaidOut = layout(rightLabels, 'right');
+
+  function labelSvg(l, side) {
+    const anchor = side === 'left' ? 'start' : 'end';
+    return `
+      <polyline points="${l.edgePoint.x},${l.edgePoint.y} ${l.bendX},${l.labelY} ${l.labelX},${l.labelY}" fill="none" stroke="var(--text-faint)" stroke-width="1.5" />
+      <text x="${l.labelX}" y="${l.labelY - 6}" text-anchor="${anchor}" font-size="13" font-weight="700" fill="var(--text)" font-family="Outfit, sans-serif">${esc(truncateLabel(l.name, 16))}</text>
+      <text x="${l.labelX}" y="${l.labelY + 10}" text-anchor="${anchor}" font-size="11" fill="var(--text-soft)" font-family="Outfit, sans-serif">${l.count} book${l.count === 1 ? '' : 's'} · ${l.pct}%</text>`;
+  }
+
+  const labelsSvg = [...leftLaidOut.map(l => labelSvg(l, 'left')), ...rightLaidOut.map(l => labelSvg(l, 'right'))].join('');
+
+  return `<svg viewBox="0 0 400 400" class="pie-chart-svg">${arcs.join('')}${labelsSvg}</svg>`;
+}
+
+function renderYearPickerSheet() {
+  const years = getAvailableYears();
+  return `
+    <div class="bottom-sheet-backdrop" data-action="close-year-picker">
+      <div class="bottom-sheet">
+        <div class="bottom-sheet-handle"></div>
+        <p class="bottom-sheet-title">Select Year</p>
+        <div class="bottom-sheet-list">
+          <button type="button" class="bottom-sheet-option ${!state.dashboardYearFilter ? 'active' : ''}" data-action="pick-year" data-year="">All years</button>
+          ${years.map(y => `<button type="button" class="bottom-sheet-option ${state.dashboardYearFilter === y ? 'active' : ''}" data-action="pick-year" data-year="${y}">${y}</button>`).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
 function renderDashboardModal() {
   const cat = state.dashboardCategory;
   const tabs = [
     { key: 'all', label: 'All' },
     { key: 'year', label: 'Year' },
-    { key: 'pagesPerDay', label: 'Pages/Day' },
-    { key: 'writer', label: 'Writer' },
-    { key: 'country', label: 'Origin Country' },
-    { key: 'publisher', label: 'Publisher' },
-    { key: 'language', label: 'Language' }
+    { key: 'pace', label: 'Reading Pace' },
+    { key: 'statistics', label: 'Statistics' }
   ];
   const dashOptions = tabs.map(t => ({ value: t.key, label: t.label }));
   const selectHtml = `<div class="dash-select-row">${renderCustomSelect('dashboard', dashOptions, cat, 'left')}</div>`;
+  const yearFilterLabel = state.dashboardYearFilter || 'All years';
+  const yearPickerBtn = (cat === 'all' || cat === 'year')
+    ? `<button type="button" class="year-filter-trigger" data-action="open-year-picker">${esc(yearFilterLabel)} ${ICONS.chevronDown}</button>`
+    : '';
   let content = '';
-  if (cat === 'pagesPerDay') content = renderPagesPerDayRanking();
-  else if (cat === 'writer') content = renderCountRanking(rankBy(state.books, b => b.author && b.author.trim()));
-  else if (cat === 'country') content = renderCountRanking(rankBy(state.books, b => b.country && b.country.trim()));
-  else if (cat === 'publisher') content = renderCountRanking(rankBy(state.books, b => b.publisher && b.publisher.trim()));
-  else if (cat === 'language') content = renderCountRanking(rankBy(state.books, b => b.language && b.language.trim()));
-  else if (cat === 'all') content = renderYearGrouping();
-  else if (cat === 'year') content = renderYearMonthlyBreakdown();
+  if (cat === 'pace') content = renderPagesPerDayRanking();
+  else if (cat === 'statistics') content = renderStatisticsSection();
+  else if (cat === 'all') content = renderYearGrouping(state.dashboardYearFilter);
+  else if (cat === 'year') content = renderYearMonthlyBreakdown(state.dashboardYearFilter);
   return `
     <div class="modal">
       <div class="modal-inner">
@@ -955,10 +1164,13 @@ function renderDashboardModal() {
           <button id="close-dashboard" aria-label="Close">${ICONS.x}</button>
         </div>
         <div class="modal-body">
+          ${renderDashboardSummaryStrip()}
           ${selectHtml}
+          ${yearPickerBtn}
           ${content}
         </div>
       </div>
+      ${state.showYearPicker ? renderYearPickerSheet() : ''}
     </div>`;
 }
 
@@ -990,8 +1202,14 @@ function renderPagesPerDayRanking() {
     </div>`).join('');
 }
 
-function renderYearGrouping() {
-  const groups = getYearGrouping(state.books);
+function getAvailableYears() {
+  const years = new Set();
+  state.books.forEach(b => { if (getBookStatus(b) === 'done' && b.endDate) years.add(b.endDate.slice(0, 4)); });
+  return [...years].sort((a, b) => b.localeCompare(a));
+}
+
+function renderYearGrouping(yearFilter) {
+  const groups = getYearGrouping(state.books, yearFilter);
   if (!groups.length) return `<p class="dash-empty">No data yet. Set an End Date on a book.</p>`;
   return groups.map(g => `
     <div class="year-group">
@@ -1008,11 +1226,12 @@ function renderYearGrouping() {
     </div>`).join('');
 }
 
-function getYearMonthlyBreakdown(books) {
+function getYearMonthlyBreakdown(books, yearFilter) {
   const map = new Map();
   books.forEach(b => {
     if (getBookStatus(b) !== 'done' || !b.endDate) return;
     const year = b.endDate.slice(0, 4);
+    if (yearFilter && year !== yearFilter) return;
     const month = parseInt(b.endDate.slice(5, 7), 10) - 1;
     if (!map.has(year)) map.set(year, new Array(12).fill(0));
     if (month >= 0 && month < 12) map.get(year)[month]++;
@@ -1022,8 +1241,8 @@ function getYearMonthlyBreakdown(books) {
     .map(([year, counts]) => ({ year, counts, total: counts.reduce((s, c) => s + c, 0) }));
 }
 
-function renderYearMonthlyBreakdown() {
-  const groups = getYearMonthlyBreakdown(state.books);
+function renderYearMonthlyBreakdown(yearFilter) {
+  const groups = getYearMonthlyBreakdown(state.books, yearFilter);
   if (!groups.length) return `<p class="dash-empty">No data yet. Set an End Date on a book.</p>`;
   const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   return groups.map(g => {
@@ -1081,12 +1300,7 @@ function renderForm() {
           </div>
           <label class="field"><span class="field-label">ISBN</span><input id="f-isbn" value="${esc(f.isbn)}" /></label>
           <label class="field"><span class="field-label">Status</span>
-            <select id="f-status">
-              <option value="tbr" ${f.status === 'tbr' ? 'selected' : ''}>To be Read</option>
-              <option value="ongoing" ${f.status === 'ongoing' ? 'selected' : ''}>Reading</option>
-              <option value="dnf" ${f.status === 'dnf' ? 'selected' : ''}>Didn't Finish</option>
-              <option value="done" ${f.status === 'done' ? 'selected' : ''}>Done</option>
-            </select>
+            ${renderCustomSelect('formStatus', STATUS_OPTIONS, f.status, 'left')}
           </label>
           <div class="grid-2">
             <label class="field"><span class="field-label">Start Date</span><input type="date" id="f-start" value="${esc(f.startDate)}" /></label>
@@ -1488,6 +1702,10 @@ function attachHandlers() {
       if (key === 'filter') state.statusFilter = value;
       if (key === 'sort') state.sortBy = value;
       if (key === 'dashboard') state.dashboardCategory = value;
+      if (key === 'formStatus') {
+        state.form.status = value;
+        if (value !== 'done') state.form.endDate = '';
+      }
       state.openDropdown = null;
       render();
     });
@@ -1509,6 +1727,8 @@ function attachHandlers() {
     const id = el.getAttribute('data-id');
     if (action === 'toggle') {
       el.addEventListener('click', () => { state.expandedId = id; state.confirmDeleteId = null; render(); });
+    } else if (action === 'stop') {
+      el.addEventListener('click', e => e.stopPropagation());
     } else if (action === 'close-detail') {
       el.addEventListener('click', e => { e.stopPropagation(); state.expandedId = null; state.confirmDeleteId = null; render(); });
     } else if (action === 'edit') {
@@ -1552,6 +1772,29 @@ function attachHandlers() {
         saveAccentToStorage(hex);
         render();
       });
+    } else if (action === 'open-year-picker') {
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        state.showYearPicker = true;
+        render();
+      });
+    } else if (action === 'close-year-picker') {
+      el.addEventListener('click', () => {
+        state.showYearPicker = false;
+        render();
+      });
+    } else if (action === 'pick-year') {
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        state.dashboardYearFilter = el.getAttribute('data-year') || '';
+        state.showYearPicker = false;
+        render();
+      });
+    } else if (action === 'pick-stat-field') {
+      el.addEventListener('click', () => {
+        state.statisticsField = el.getAttribute('data-field');
+        render();
+      });
     }
   });
 
@@ -1562,15 +1805,6 @@ function attachHandlers() {
     bind('f-publisher', 'publisher'); bind('f-language', 'language'); bind('f-country', 'country'); bind('f-origin-year', 'originYear'); bind('f-isbn', 'isbn');
     bind('f-start', 'startDate'); bind('f-end', 'endDate'); bind('f-review', 'review');
     bind('f-current-page', 'currentPage'); bind('f-total-pages', 'totalPages');
-
-    const statusSelect = document.getElementById('f-status');
-    if (statusSelect) statusSelect.addEventListener('change', e => {
-      state.form.status = e.target.value;
-      if (state.form.status !== 'done') {
-        state.form.endDate = '';
-      }
-      rerenderPreserveFocus();
-    });
 
     const coverUrlInput = document.getElementById('f-cover-url');
     if (coverUrlInput) coverUrlInput.addEventListener('input', e => { state.form.coverUrl = e.target.value; updateCoverPreview(); });
