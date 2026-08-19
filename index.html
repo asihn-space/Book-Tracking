@@ -41,7 +41,7 @@
   #app { max-width: 640px; margin: 0 auto; min-height: 100vh; }
   .header { position: sticky; top: 0; z-index: 20; background: var(--bg); border-bottom: 1px solid var(--border); padding: 12px 12px; }
   .title { font-family: var(--font-display); font-size: 24px; line-height: 1; font-weight: 800; margin: 0; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; }
-  .header-name { font-family: var(--font-script); font-size: 23px; line-height: 1; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--accent); margin-left: 4px; display: inline-block; vertical-align: middle; }
+  .header-name { font-family: var(--font-script); font-size: 23px; line-height: 0.62; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--accent); margin-left: 4px; display: inline-block; vertical-align: middle; transform: translateY(2px); }
   .header-top-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
   .settings-btn { background: none; border: none; cursor: pointer; color: var(--text-soft); padding: 4px; margin-top: 1px; flex-shrink: 0; }
   .swatch-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
@@ -1110,7 +1110,7 @@ function renderDashboardSummaryStrip() {
         <p class="dash-summary-label">Avg Pages/Day</p>
       </div>
       <div class="dash-summary-tile">
-        <p class="dash-summary-value dash-summary-value-text">${topWriter ? esc(truncateLabel(topWriter, 14)) : '—'}</p>
+        <p class="dash-summary-value dash-summary-value-text">${topWriter ? esc(topWriter) : '—'}</p>
         <p class="dash-summary-label">Top Author</p>
       </div>
     </div>`;
