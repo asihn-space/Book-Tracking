@@ -39,11 +39,11 @@
   html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   body { margin: 0; font-family: var(--font-body); background: var(--bg); color: var(--text); }
   #app { max-width: 640px; margin: 0 auto; min-height: 100vh; }
-  .header { position: sticky; top: 0; z-index: 20; background: var(--bg); border-bottom: 1px solid var(--border); padding: 16px 12px; }
-  .title { font-family: var(--font-display); font-size: 24px; line-height: 1; font-weight: 800; margin: 0; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; }
-  .header-name { font-family: var(--font-script); font-size: 24px; line-height: 0.62; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--accent); margin-left: 4px; display: inline-block; vertical-align: middle; transform: translateY(2px); }
-  .header-top-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
-  .settings-btn { background: none; border: none; cursor: pointer; color: var(--text-soft); padding: 4px; margin-top: 1px; flex-shrink: 0; }
+  .header { position: sticky; top: 0; z-index: 20; background: var(--bg); border-bottom: 1px solid var(--border); padding: 10px 12px; }
+  .title { font-family: var(--font-display); font-size: 22px; line-height: 1; font-weight: 800; margin: 0; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: baseline; }
+  .header-name { font-family: var(--font-script); font-size: 30px; line-height: 1; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--accent); margin-left: 4px; display: inline-block; }
+  .header-top-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .settings-btn { background: none; border: none; cursor: pointer; color: var(--text-soft); padding: 4px; flex-shrink: 0; }
   .swatch-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
   .swatch-btn { width: 100%; aspect-ratio: 1; border-radius: 9999px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; outline-offset: 3px; }
   .swatch-btn.active { outline: 3px solid var(--text); }
@@ -64,10 +64,10 @@
   .year-filter-chip { flex-shrink: 0; padding: 4px 11px; border-radius: 9999px; background: none; border: 1px solid var(--border); font-size: 11px; font-weight: 600; color: var(--text-faint); cursor: pointer; font-family: inherit; white-space: nowrap; }
   .year-filter-chip.active { background: rgba(var(--accent-rgb), 0.12); color: var(--accent); border-color: rgba(var(--accent-rgb), 0.4); }
 
-  .picker-trigger { position: fixed; bottom: 88px; right: max(18px, calc(50% - 302px)); z-index: 24; display: inline-flex; align-items: center; gap: 6px; padding: 0 16px; height: 42px; border-radius: 14px; background: var(--accent); border: none; font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--accent-contrast); cursor: pointer; box-shadow: 0 8px 18px rgba(var(--accent-rgb), 0.32); }
-  .picker-trigger svg { color: var(--accent-contrast); flex-shrink: 0; }
+  .picker-trigger { position: fixed; bottom: 88px; right: max(18px, calc(50% - 302px)); z-index: 24; display: inline-flex; align-items: center; gap: 4px; padding: 0 12px; height: 32px; border-radius: 10px; background: var(--accent); border: none; font-family: var(--font-display); font-weight: 700; font-size: 12px; color: var(--accent-contrast); cursor: pointer; box-shadow: 0 6px 14px rgba(var(--accent-rgb), 0.28); }
+  .picker-trigger svg { width: 12px; height: 12px; color: var(--accent-contrast); flex-shrink: 0; }
   .sheet-option-list { display: flex; flex-direction: column; gap: 4px; }
-  .sheet-option-btn { display: flex; align-items: center; justify-content: space-between; padding: 13px 14px; border-radius: 12px; border: none; background: none; text-align: left; font-family: var(--font-display); font-weight: 600; font-size: 15px; color: var(--text); cursor: pointer; }
+  .sheet-option-btn { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 10px; border: none; background: none; text-align: left; font-family: var(--font-display); font-weight: 600; font-size: 13.5px; color: var(--text); cursor: pointer; }
   .sheet-option-btn.active { background: rgba(var(--accent-rgb), 0.12); color: var(--accent); }
   .sheet-option-btn.active svg { color: var(--accent); }
   .sheet-title { font-family: var(--font-display); font-size: 17px; font-weight: 800; margin: 0 0 12px; padding: 0 2px; }
@@ -85,12 +85,12 @@
   .rank-sub { font-size: 11.5px; color: var(--text-soft); margin: 2px 0 0; }
   .rank-value { font-size: 13px; font-weight: 700; color: var(--accent); flex-shrink: 0; white-space: nowrap; }
   .rank-value-rating { display: inline-flex; align-items: center; gap: 3px; font-weight: 700; font-size: 13px; color: #CA8A04; flex-shrink: 0; }
-  .year-group { margin-bottom: 18px; padding: 14px; border: 1px solid var(--border); border-radius: 10px; }
+  .year-group { margin-bottom: 18px; padding: 14px; background: var(--surface); border: 1px solid transparent; border-radius: 14px; box-shadow: 0 3px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04); }
   .year-group:last-child { margin-bottom: 0; }
   .year-group-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px; margin-bottom: 4px; }
   .year-group-title { font-family: var(--font-display); font-weight: 800; font-size: 15px; margin: 0; }
   .year-group-stats { font-size: 11.5px; color: var(--text-soft); }
-  .month-chart { display: flex; align-items: flex-end; gap: 4px; margin-top: 14px; }
+  .month-chart { display: flex; align-items: flex-end; gap: 4px; margin-top: 8px; }
   .month-col { flex: 1; display: flex; flex-direction: column; align-items: center; }
   .month-col-count { font-size: 10px; font-weight: 700; color: var(--text-soft); height: 13px; font-variant-numeric: tabular-nums; }
   .month-col-track { width: 100%; max-width: 18px; height: 84px; display: flex; align-items: flex-end; background: var(--bg); border-radius: 4px; overflow: hidden; }
@@ -135,7 +135,15 @@
   .quotes-view { padding-bottom: 90px; }
   .quotes-wall { column-count: 2; column-gap: 12px; }
   @media (max-width: 380px) { .quotes-wall { column-count: 1; } }
-  .quote-card { position: relative; break-inside: avoid; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 14px 14px; margin: 0 0 16px; box-shadow: 0 8px 18px rgba(0,0,0,0.08); }
+  .quote-card { position: relative; break-inside: avoid; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 14px 14px; margin: 0 0 16px; box-shadow: 0 3px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04); cursor: pointer; transition: transform 0.12s ease, box-shadow 0.12s ease; }
+  .quote-card:active { transform: scale(0.97); box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .quote-card-text { -webkit-line-clamp: 8; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+  .quote-expand-sheet { text-align: center; padding-top: 34px; }
+  .quote-expand-mark { color: rgba(var(--accent-rgb), 0.22); display: flex; justify-content: center; margin-bottom: 4px; }
+  .quote-expand-mark svg { width: 34px; height: 34px; }
+  .quote-expand-text { font-family: 'Noto Serif', serif; font-size: 17px; font-weight: 400; line-height: 1.7; color: var(--text); margin: 8px 0 22px; text-align: left; }
+  .quote-expand-book { display: block; font-family: 'Alex Brush', cursive; font-size: 26px; font-weight: 400; color: var(--accent); line-height: 1.2; }
+  .quote-expand-author { display: block; font-family: var(--font-body); font-size: 12px; font-weight: 500; color: var(--text-faint); letter-spacing: 0.01em; margin-top: 2px; }
   .quote-card-mark { position: absolute; top: 8px; left: 10px; color: rgba(var(--accent-rgb), 0.22); }
   .quote-card-mark svg { width: 26px; height: 26px; }
   .quote-card-text { position: relative; font-family: 'Noto Serif', serif; font-size: 13px; font-weight: 400; line-height: 1.55; color: var(--text); margin: 6px 0 14px; }
@@ -194,8 +202,8 @@
 
   /* List view */
   .list-view { display: flex; flex-direction: column; gap: 6px; }
-  .item { border-radius: 14px; padding: 10px; background: var(--surface); border: 1px solid transparent; box-shadow: 0 10px 22px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.06); }
-  .item-row { display: flex; gap: 10px; cursor: pointer; position: relative; }
+  .item { border-radius: 14px; padding: 10px; background: var(--surface); border: 1px solid transparent; box-shadow: 0 3px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04); }
+  .item-row { display: flex; gap: 10px; cursor: pointer; position: relative; align-items: flex-start; }
   .cover { border-radius: 6px; overflow: hidden; aspect-ratio: 2/3; background: var(--bg); display: flex; align-items: center; justify-content: center; color: var(--text-faint); flex-shrink: 0; position: relative; }
   .cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .cover-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
@@ -212,7 +220,9 @@
   .rate-plain { display: inline-flex; align-items: center; gap: 3px; font-weight: 700; font-size: 12px; font-variant-numeric: tabular-nums; color: #CA8A04; position: absolute; top: 0; right: 0; }
   .rate-plain svg { flex-shrink: 0; }
   .item-publisher { font-size: 10.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; margin: 5px 0 0; }
-  .item-date-range { font-size: 10.5px; color: var(--text-faint); font-variant-numeric: tabular-nums; margin: 4px 0 0; }
+  .status-line { display: flex; align-items: center; gap: 6px; margin-top: 5px; flex-wrap: wrap; }
+  .status-line .status-mini { margin-top: 0; }
+  .item-date-range { font-size: 10.5px; color: var(--text-faint); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 4px 0 0; }
 
   /* Grid view */
   .grid-view { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
@@ -234,7 +244,7 @@
   .detail-sheet-handle { width: 40px; height: 4px; border-radius: 9999px; background: var(--border); margin: 0 auto 14px; }
   .detail-sheet-close-btn { position: absolute; top: 12px; right: 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 9999px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-soft); padding: 0; }
   .picker-sheet-backdrop { position: fixed; inset: 0; z-index: 40; background: transparent; }
-  .picker-sheet { position: fixed; bottom: 152px; right: max(18px, calc(50% - 302px)); z-index: 41; width: 200px; max-height: 300px; overflow-y: auto; background: var(--surface); border-radius: 16px; box-shadow: 0 14px 34px rgba(0,0,0,0.2); padding: 10px; transform-origin: bottom right; animation: picker-sheet-pop 0.15s ease-out; }
+  .picker-sheet { position: fixed; bottom: 132px; right: max(18px, calc(50% - 302px)); z-index: 41; width: 168px; max-height: 300px; overflow-y: auto; background: var(--surface); border-radius: 14px; box-shadow: 0 14px 34px rgba(0,0,0,0.2); padding: 8px; transform-origin: bottom right; animation: picker-sheet-pop 0.15s ease-out; }
   .picker-sheet-title { font-family: var(--font-display); font-size: 11.5px; font-weight: 700; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.04em; margin: 2px 2px 8px; }
   @keyframes picker-sheet-pop { from { opacity: 0; transform: scale(0.94) translateY(6px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
@@ -356,7 +366,9 @@ const ICONS = {
   repeat: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>',
   share: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>',
   download: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
-  quote: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9.983 3v7.391c0 5.704-3.731 9.57-8.983 10.609l-.995-2.151c2.432-.917 3.995-3.638 3.995-5.849h-4v-10h9.983zm14.017 0v7.391c0 5.704-3.748 9.571-9 10.609l-.996-2.151c2.433-.917 3.996-3.638 3.996-5.849h-4v-10h10z"/></svg>'
+  quote: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9.983 3v7.391c0 5.704-3.731 9.57-8.983 10.609l-.995-2.151c2.432-.917 3.995-3.638 3.995-5.849h-4v-10h9.983zm14.017 0v7.391c0 5.704-3.748 9.571-9 10.609l-.996-2.151c2.433-.917 3.996-3.638 3.996-5.849h-4v-10h10z"/></svg>',
+  trophy: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0Z"/><path d="M7 5H4a1 1 0 0 0-1 1v1a3 3 0 0 0 3 3h1"/><path d="M17 5h3a1 1 0 0 1 1 1v1a3 3 0 0 1-3 3h-1"/></svg>',
+  pieChart: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>'
 };
 
 const ACCENT_KEY = 'reading-log-v2-accent';
@@ -480,6 +492,7 @@ let state = {
   activeTab: 'home',
   libraryView: 'list',
   expandedId: null,
+  expandedQuoteIndex: null,
   confirmDeleteId: null,
   showForm: false,
   editingId: null,
@@ -875,7 +888,9 @@ function renderListItem(book) {
           <p class="item-title">${esc(book.title)}</p>
           <p class="item-author">${esc(book.author)}</p>
           ${book.publisher ? `<p class="item-publisher">${esc(book.publisher)}</p>` : ''}
-          <span class="status-mini" style="${getStatusPillStyle(getBookStatus(book))}">${statusMeta.label}</span>
+          <div class="status-line">
+            <span class="status-mini" style="${getStatusPillStyle(getBookStatus(book))}">${statusMeta.label}</span>
+          </div>
           ${isDone && book.startDate && book.endDate ? `<p class="item-date-range">${formatDateShort(book.startDate)} - ${formatDateShort(book.endDate)}</p>` : ''}
         </div>
         <span class="rate-plain">${ICONS.star}${Number(book.rating).toFixed(1)}</span>
@@ -1131,7 +1146,7 @@ function renderStatisticsSection() {
       ${esc(active.label)} ${ICONS.chevronDown}
     </button>`;
   const entries = rankBy(state.books, active.getKey);
-  return `${trigger}${renderPieChart(entries)}`;
+  return `${trigger}<div class="year-group">${renderPieChart(entries)}</div>`;
 }
 
 function renderStatSheet() {
@@ -1212,7 +1227,7 @@ function renderAchievementSection() {
       </div>
       ${top5Html}
     </div>
-    ${chartHtml ? `<div class="year-group"><p class="year-top5-heading">Books finished per month</p>${chartHtml}</div>` : ''}`;
+    ${chartHtml ? `<div class="year-group"><p class="year-group-title">Books finished per month</p>${chartHtml}</div>` : ''}`;
 }
 
 function polarToCartesian(cx, cy, r, angleDeg) {
@@ -1225,6 +1240,27 @@ function describeArc(cx, cy, r, startAngle, endAngle) {
   const end = polarToCartesian(cx, cy, r, startAngle);
   const largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1';
   return `M ${cx} ${cy} L ${start.x} ${start.y} A ${r} ${r} 0 ${largeArcFlag} 0 ${end.x} ${end.y} Z`;
+}
+
+function tintShade(hex, percent) {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.substring(0, 2), 16), g = parseInt(h.substring(2, 4), 16), b = parseInt(h.substring(4, 6), 16);
+  const clamp = v => Math.max(0, Math.min(255, Math.round(v)));
+  const toHex = v => clamp(v).toString(16).padStart(2, '0');
+  if (percent >= 0) {
+    return `#${toHex(r + (255 - r) * percent)}${toHex(g + (255 - g) * percent)}${toHex(b + (255 - b) * percent)}`;
+  }
+  const f = 1 + percent;
+  return `#${toHex(r * f)}${toHex(g * f)}${toHex(b * f)}`;
+}
+function getPieShades(n, baseHex) {
+  const darkP = -0.34, lightP = 0.62;
+  const arr = [];
+  for (let i = 0; i < n; i++) {
+    const t = n <= 1 ? 0 : i / (n - 1);
+    arr.push(tintShade(baseHex, darkP + (lightP - darkP) * t));
+  }
+  return arr;
 }
 
 function renderPieChart(entries) {
@@ -1241,14 +1277,14 @@ function renderPieChart(entries) {
   const arcs = [];
   const leftLabels = [];
   const rightLabels = [];
+  const shades = getPieShades(slices.length, state.accentColor);
 
   slices.forEach(([name, count], i) => {
     const sliceAngle = (count / total) * 360;
     const startAngle = angle;
     const endAngle = angle + sliceAngle;
     const midAngle = (startAngle + endAngle) / 2;
-    const opacity = (0.35 + 0.65 * ((slices.length - i) / slices.length)).toFixed(2);
-    arcs.push(`<path d="${describeArc(cx, cy, r, startAngle, endAngle)}" fill="rgba(var(--accent-rgb),${opacity})" stroke="var(--surface)" stroke-width="3" />`);
+    arcs.push(`<path d="${describeArc(cx, cy, r, startAngle, endAngle)}" fill="${shades[i]}" stroke="var(--surface)" stroke-width="1" />`);
     const pct = Math.round((count / total) * 100);
     const isLeft = midAngle > 180;
     const entry = { name, count, pct, midAngle };
@@ -1274,10 +1310,11 @@ function renderPieChart(entries) {
 
   function labelSvg(l, side) {
     const anchor = side === 'left' ? 'start' : 'end';
+    const lineY = l.labelY - 8;
     return `
-      <polyline points="${l.edgePoint.x},${l.edgePoint.y} ${l.bendX},${l.labelY} ${l.labelX},${l.labelY}" fill="none" stroke="var(--text-faint)" stroke-width="1.5" />
-      <text x="${l.labelX}" y="${l.labelY - 6}" text-anchor="${anchor}" font-size="13" font-weight="700" fill="var(--text)" font-family="Outfit, sans-serif">${esc(truncateLabel(l.name, 16))}</text>
-      <text x="${l.labelX}" y="${l.labelY + 10}" text-anchor="${anchor}" font-size="11" fill="var(--text-soft)" font-family="Outfit, sans-serif">${l.count} book${l.count === 1 ? '' : 's'} · ${l.pct}%</text>`;
+      <polyline points="${l.edgePoint.x},${l.edgePoint.y} ${l.bendX},${lineY} ${l.labelX},${lineY}" fill="none" stroke="var(--text-faint)" stroke-width="1.5" />
+      <text x="${l.labelX}" y="${l.labelY - 6}" text-anchor="${anchor}" font-size="13" font-weight="700" fill="var(--text)" font-family="Outfit, sans-serif" stroke="var(--surface)" stroke-width="4" paint-order="stroke fill" stroke-linejoin="round">${esc(truncateLabel(l.name, 16))}</text>
+      <text x="${l.labelX}" y="${l.labelY + 10}" text-anchor="${anchor}" font-size="11" fill="var(--text-soft)" font-family="Outfit, sans-serif" stroke="var(--surface)" stroke-width="4" paint-order="stroke fill" stroke-linejoin="round">${l.count} book${l.count === 1 ? '' : 's'} · ${l.pct}%</text>`;
   }
 
   const labelsSvg = [...leftLaidOut.map(l => labelSvg(l, 'left')), ...rightLaidOut.map(l => labelSvg(l, 'right'))].join('');
@@ -1288,8 +1325,8 @@ function renderPieChart(entries) {
 function renderDashboardTab() {
   const cat = state.dashboardCategory;
   const tabs = [
-    { key: 'year', label: 'Achievement', icon: ICONS.star },
-    { key: 'statistics', label: 'Statistics', icon: ICONS.chart }
+    { key: 'year', label: 'Achievement', icon: ICONS.trophy },
+    { key: 'statistics', label: 'Statistics', icon: ICONS.pieChart }
   ];
   const catRow = `<div class="dash-cat-row">${tabs.map(t => `<button type="button" class="dash-cat-chip ${t.key === cat ? 'active' : ''}" data-action="pick-dashboard-cat" data-cat="${t.key}">${t.icon}<span>${t.label}</span></button>`).join('')}</div>`;
   const content = cat === 'statistics' ? renderStatisticsSection() : renderAchievementSection();
@@ -1335,14 +1372,31 @@ function renderQuotes() {
   const cards = quotes.map((q, i) => {
     const layout = state.quotesLayout[i] || { rot: 0, ty: 0 };
     return `
-      <div class="quote-card" style="transform:rotate(${layout.rot}deg) translateY(${layout.ty}px);">
+      <div class="quote-card" style="transform:rotate(${layout.rot}deg) translateY(${layout.ty}px);" data-action="expand-quote" data-id="${i}">
         <span class="quote-card-mark">${ICONS.quote}</span>
         <p class="quote-card-text">${esc(q.text)}</p>
         <span class="quote-card-book">${esc(q.bookTitle)}</span>
         ${q.author && q.author.trim() ? `<span class="quote-card-author">${esc(q.author.trim())}</span>` : ''}
       </div>`;
   }).join('');
-  return `<div class="quotes-view"><div class="quotes-wall">${cards}</div></div>`;
+  return `<div class="quotes-view"><div class="quotes-wall">${cards}</div></div>${state.expandedQuoteIndex !== null ? renderQuoteExpandSheet(state.expandedQuoteIndex) : ''}`;
+}
+
+function renderQuoteExpandSheet(index) {
+  const quotes = getAllQuotes();
+  const q = quotes[index];
+  if (!q) return '';
+  return `
+    <div class="detail-sheet-backdrop" data-action="close-quote">
+      <div class="detail-sheet quote-expand-sheet" data-action="stop">
+        <div class="detail-sheet-handle"></div>
+        <button class="detail-sheet-close-btn" data-action="close-quote" aria-label="Close">${ICONS.x}</button>
+        <span class="quote-expand-mark">${ICONS.quote}</span>
+        <p class="quote-expand-text">${esc(q.text)}</p>
+        <span class="quote-expand-book">${esc(q.bookTitle)}</span>
+        ${q.author && q.author.trim() ? `<span class="quote-expand-author">${esc(q.author.trim())}</span>` : ''}
+      </div>
+    </div>`;
 }
 
 function renderCountRanking(entries) {
@@ -1857,6 +1911,10 @@ function attachHandlers() {
       el.addEventListener('click', e => e.stopPropagation());
     } else if (action === 'close-detail') {
       el.addEventListener('click', e => { e.stopPropagation(); state.expandedId = null; state.confirmDeleteId = null; render(); });
+    } else if (action === 'expand-quote') {
+      el.addEventListener('click', () => { state.expandedQuoteIndex = parseInt(id, 10); render(); });
+    } else if (action === 'close-quote') {
+      el.addEventListener('click', e => { e.stopPropagation(); state.expandedQuoteIndex = null; render(); });
     } else if (action === 'edit') {
       el.addEventListener('click', e => {
         e.stopPropagation();
