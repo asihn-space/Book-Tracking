@@ -39,9 +39,9 @@
   html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   body { margin: 0; font-family: var(--font-body); background: var(--bg); color: var(--text); }
   #app { max-width: 640px; margin: 0 auto; min-height: 100vh; }
-  .header { position: sticky; top: 0; z-index: 20; background: var(--bg); border-bottom: 1px solid var(--border); padding: 20px 16px 14px; }
-  .title { font-family: var(--font-display); font-size: 21px; font-weight: 800; margin: 0; text-transform: uppercase; letter-spacing: 0.05em; }
-  .header-name { font-family: var(--font-script); font-size: 26px; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--accent); margin-left: 4px; vertical-align: middle; }
+  .header { position: sticky; top: 0; z-index: 20; background: var(--bg); border-bottom: 1px solid var(--border); padding: 14px 16px 12px; }
+  .title { font-family: var(--font-display); font-size: 25px; font-weight: 800; margin: 0; text-transform: uppercase; letter-spacing: 0.05em; }
+  .header-name { font-family: var(--font-script); font-size: 23px; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--accent); margin-left: 4px; vertical-align: middle; }
   .header-top-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
   .settings-btn { background: none; border: none; cursor: pointer; color: var(--text-soft); padding: 4px; margin-top: 1px; flex-shrink: 0; }
   .swatch-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
@@ -55,14 +55,22 @@
 
   /* Dashboard modal */
   .dashboard-title { font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 800; font-size: 17px; margin: 0; }
-  .dash-cat-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 16px; scrollbar-width: none; }
-  .dash-cat-row::-webkit-scrollbar { display: none; }
-  .dash-cat-chip { flex-shrink: 0; padding: 10px 16px; border-radius: 14px; background: var(--surface); border: 1.5px solid var(--border); font-size: 13px; font-weight: 700; color: var(--text-soft); cursor: pointer; font-family: var(--font-display); white-space: nowrap; letter-spacing: 0.01em; }
-  .dash-cat-chip.active { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); box-shadow: 0 3px 10px rgba(var(--accent-rgb), 0.28); }
+  .dash-cat-row { display: flex; gap: 0; background: var(--surface); border-radius: 14px; padding: 4px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+  .dash-cat-chip { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 8px; border-radius: 10px; background: none; border: none; font-size: 13px; font-weight: 700; color: var(--text-soft); cursor: pointer; font-family: var(--font-display); white-space: nowrap; }
+  .dash-cat-chip svg { width: 15px; height: 15px; flex-shrink: 0; }
+  .dash-cat-chip.active { background: var(--accent); color: var(--accent-contrast); box-shadow: 0 3px 10px rgba(var(--accent-rgb), 0.28); }
   .year-filter-row { display: flex; align-items: center; gap: 5px; overflow-x: auto; margin: -6px 0 16px; scrollbar-width: none; }
   .year-filter-row::-webkit-scrollbar { display: none; }
   .year-filter-chip { flex-shrink: 0; padding: 4px 11px; border-radius: 9999px; background: none; border: 1px solid var(--border); font-size: 11px; font-weight: 600; color: var(--text-faint); cursor: pointer; font-family: inherit; white-space: nowrap; }
   .year-filter-chip.active { background: rgba(var(--accent-rgb), 0.12); color: var(--accent); border-color: rgba(var(--accent-rgb), 0.4); }
+
+  .picker-trigger { position: fixed; bottom: 88px; right: max(18px, calc(50% - 302px)); z-index: 24; display: inline-flex; align-items: center; gap: 7px; padding: 0 18px; height: 58px; border-radius: 18px; background: var(--accent); border: none; font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--accent-contrast); cursor: pointer; box-shadow: 0 10px 24px rgba(var(--accent-rgb), 0.32); }
+  .picker-trigger svg { color: var(--accent-contrast); flex-shrink: 0; }
+  .sheet-option-list { display: flex; flex-direction: column; gap: 4px; }
+  .sheet-option-btn { display: flex; align-items: center; justify-content: space-between; padding: 13px 14px; border-radius: 12px; border: none; background: none; text-align: left; font-family: var(--font-display); font-weight: 600; font-size: 15px; color: var(--text); cursor: pointer; }
+  .sheet-option-btn.active { background: rgba(var(--accent-rgb), 0.12); color: var(--accent); }
+  .sheet-option-btn.active svg { color: var(--accent); }
+  .sheet-title { font-family: var(--font-display); font-size: 17px; font-weight: 800; margin: 0 0 12px; padding: 0 2px; }
   .rank-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
   .bar-rank-row { margin-bottom: 14px; }
   .bar-rank-label { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; gap: 8px; }
@@ -90,10 +98,10 @@
   .month-col-label { font-size: 9.5px; color: var(--text-faint); margin-top: 4px; }
   .year-top5-heading { font-size: 11px; font-weight: 700; color: var(--text-faint); letter-spacing: 0.02em; margin: 10px 0 2px; text-transform: uppercase; }
   .dash-empty { font-size: 13px; color: var(--text-soft); text-align: center; padding: 30px 0; }
-  .stat-chip-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 16px; scrollbar-width: none; }
+  .stat-chip-row { display: flex; gap: 4px; padding: 5px; background: var(--surface); border: 1px solid var(--border); border-radius: 9999px; overflow-x: auto; margin-bottom: 16px; scrollbar-width: none; }
   .stat-chip-row::-webkit-scrollbar { display: none; }
-  .stat-chip { flex-shrink: 0; padding: 8px 14px; border-radius: 14px; background: var(--surface); border: 1px solid var(--border); font-size: 12px; font-weight: 600; color: var(--text-soft); cursor: pointer; font-family: inherit; white-space: nowrap; }
-  .stat-chip.active { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); }
+  .stat-chip { flex: 1 0 auto; padding: 9px 16px; border-radius: 9999px; background: none; border: none; font-size: 12.5px; font-weight: 700; color: var(--text-soft); cursor: pointer; font-family: var(--font-display); white-space: nowrap; }
+  .stat-chip.active { background: var(--accent); color: var(--accent-contrast); box-shadow: 0 3px 10px rgba(var(--accent-rgb), 0.28); }
   .pie-chart-svg { width: 100%; height: auto; display: block; margin: 4px auto 0; }
 
   main { padding: 16px 16px 40px; }
@@ -153,8 +161,8 @@
 
   /* Bottom nav */
   .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 25; background: var(--surface); border-top: 1px solid var(--border); display: flex; max-width: 640px; margin: 0 auto; padding: 6px 10px calc(6px + env(safe-area-inset-bottom, 0px)); }
-  .bottom-nav-btn { flex: 1 1 0; min-width: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 7px 4px 5px; border: none; background: none; cursor: pointer; font-family: inherit; font-size: 10.5px; font-weight: 600; color: var(--text-faint); border-radius: 12px; }
-  .bottom-nav-btn svg { display: block; flex-shrink: 0; }
+  .bottom-nav-btn { flex: 1 1 0; min-width: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 7px 4px 5px; border: none; background: none; cursor: pointer; font-family: inherit; font-size: 11.5px; font-weight: 600; color: var(--text-faint); border-radius: 12px; }
+  .bottom-nav-btn svg { display: block; flex-shrink: 0; width: 20px; height: 20px; }
   .bottom-nav-btn span { display: block; width: 100%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .bottom-nav-btn.active { color: var(--accent); }
 
@@ -224,6 +232,10 @@
   .detail-sheet { position: relative; width: 100%; max-width: 640px; margin: 0 auto; background: var(--surface); border-radius: 22px 22px 0 0; max-height: 88vh; overflow-y: auto; padding: 12px 16px 26px; animation: sheet-slide-up 0.25s ease-out; }
   .detail-sheet-handle { width: 40px; height: 4px; border-radius: 9999px; background: var(--border); margin: 0 auto 14px; }
   .detail-sheet-close-btn { position: absolute; top: 12px; right: 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 9999px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-soft); padding: 0; }
+  .picker-sheet-backdrop { position: fixed; inset: 0; z-index: 40; background: transparent; }
+  .picker-sheet { position: fixed; bottom: 152px; right: max(18px, calc(50% - 302px)); z-index: 41; width: 200px; max-height: 300px; overflow-y: auto; background: var(--surface); border-radius: 16px; box-shadow: 0 14px 34px rgba(0,0,0,0.2); padding: 10px; transform-origin: bottom right; animation: picker-sheet-pop 0.15s ease-out; }
+  .picker-sheet-title { font-family: var(--font-display); font-size: 11.5px; font-weight: 700; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.04em; margin: 2px 2px 8px; }
+  @keyframes picker-sheet-pop { from { opacity: 0; transform: scale(0.94) translateY(6px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
   /* Detail modal (shared) */
   .status-mini { display: inline-block; font-size: 9.5px; font-weight: 700; padding: 2px 8px; border-radius: 9999px; margin-top: 5px; }
@@ -448,7 +460,9 @@ let state = {
   accentColor: SAVED_ACCENT,
   showSettings: false,
   quotesLayout: null,
-  dashboardCategory: 'all',
+  dashboardCategory: 'year',
+  showYearSheet: false,
+  showStatSheet: false,
   dashboardYearFilter: '',
   statisticsField: 'writer',
   query: '',
@@ -1101,18 +1115,103 @@ function renderDashboardSummaryStrip() {
     </div>`;
 }
 
+const STATISTICS_FIELDS = [
+  { key: 'writer', label: 'Writer', getKey: b => b.author && b.author.trim() },
+  { key: 'translator', label: 'Translator', getKey: b => b.translator && b.translator.trim() },
+  { key: 'publisher', label: 'Publisher', getKey: b => b.publisher && b.publisher.trim() },
+  { key: 'country', label: 'Country', getKey: b => b.country && b.country.trim() },
+  { key: 'language', label: 'Language', getKey: b => b.language && b.language.trim() }
+];
+
 function renderStatisticsSection() {
-  const fields = [
-    { key: 'writer', label: 'Writer', getKey: b => b.author && b.author.trim() },
-    { key: 'translator', label: 'Translator', getKey: b => b.translator && b.translator.trim() },
-    { key: 'publisher', label: 'Publisher', getKey: b => b.publisher && b.publisher.trim() },
-    { key: 'country', label: 'Country', getKey: b => b.country && b.country.trim() },
-    { key: 'language', label: 'Language', getKey: b => b.language && b.language.trim() }
-  ];
-  const active = fields.find(f => f.key === state.statisticsField) || fields[0];
-  const chips = fields.map(f => `<button type="button" class="stat-chip ${f.key === active.key ? 'active' : ''}" data-action="pick-stat-field" data-field="${f.key}">${f.label}</button>`).join('');
+  const active = STATISTICS_FIELDS.find(f => f.key === state.statisticsField) || STATISTICS_FIELDS[0];
+  const trigger = `
+    <button type="button" class="picker-trigger" data-action="open-stat-sheet">
+      ${esc(active.label)} ${ICONS.chevronDown}
+    </button>`;
   const entries = rankBy(state.books, active.getKey);
-  return `<div class="stat-chip-row">${chips}</div>${renderPieChart(entries)}`;
+  return `${trigger}${renderPieChart(entries)}`;
+}
+
+function renderStatSheet() {
+  const active = STATISTICS_FIELDS.find(f => f.key === state.statisticsField) || STATISTICS_FIELDS[0];
+  const options = STATISTICS_FIELDS.map(f => `
+    <button type="button" class="sheet-option-btn ${f.key === active.key ? 'active' : ''}" data-action="pick-stat-field" data-field="${f.key}">
+      ${esc(f.label)} ${f.key === active.key ? ICONS.check : ''}
+    </button>`).join('');
+  return `
+    <div class="picker-sheet-backdrop" data-action="close-stat-sheet">
+      <div class="picker-sheet" data-action="stop">
+        <p class="picker-sheet-title">Statistics by</p>
+        <div class="sheet-option-list">${options}</div>
+      </div>
+    </div>`;
+}
+
+function renderYearPickerTrigger(years, activeYear) {
+  return `
+    <button type="button" class="picker-trigger" data-action="open-year-sheet">
+      ${esc(activeYear)} ${ICONS.chevronDown}
+    </button>`;
+}
+
+function renderYearSheet() {
+  const years = getAvailableYears();
+  const activeYear = (state.dashboardYearFilter && years.includes(state.dashboardYearFilter)) ? state.dashboardYearFilter : years[0];
+  const options = years.map(y => `
+    <button type="button" class="sheet-option-btn ${y === activeYear ? 'active' : ''}" data-action="pick-year" data-year="${y}">
+      ${esc(y)} ${y === activeYear ? ICONS.check : ''}
+    </button>`).join('');
+  return `
+    <div class="picker-sheet-backdrop" data-action="close-year-sheet">
+      <div class="picker-sheet" data-action="stop">
+        <p class="picker-sheet-title">Select Year</p>
+        <div class="sheet-option-list">${options}</div>
+      </div>
+    </div>`;
+}
+
+function renderAchievementSection() {
+  const years = getAvailableYears();
+  if (!years.length) return `<p class="dash-empty">No data yet. Set an End Date on a book.</p>`;
+  const activeYear = (state.dashboardYearFilter && years.includes(state.dashboardYearFilter)) ? state.dashboardYearFilter : years[0];
+  const trigger = renderYearPickerTrigger(years, activeYear);
+  const g = getYearGrouping(state.books, activeYear)[0];
+  const m = getYearMonthlyBreakdown(state.books, activeYear)[0];
+  if (!g) return `${trigger}<p class="dash-empty">No data yet.</p>`;
+  const top5Html = g.top5.length ? `
+    <p class="year-top5-heading">Top ${g.top5.length} by rating</p>
+    ${g.top5.map((b, i) => `
+      <div class="rank-row">
+        <span class="rank-num">${i + 1}</span>
+        <div class="rank-info"><p class="rank-name">${esc(b.title)}</p><p class="rank-sub">${esc(b.author)}</p></div>
+        <span class="rank-value-rating">${ICONS.star}${Number(b.rating).toFixed(1)}</span>
+      </div>`).join('')}` : '';
+  let chartHtml = '';
+  if (m) {
+    const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const max = Math.max(1, ...m.counts);
+    const bars = m.counts.map((c, i) => {
+      const pct = Math.max(c > 0 ? 6 : 0, Math.round((c / max) * 100));
+      return `
+        <div class="month-col">
+          <span class="month-col-count">${c || ''}</span>
+          <div class="month-col-track"><div class="month-col-fill" style="height:${pct}%;"></div></div>
+          <span class="month-col-label">${monthLabels[i]}</span>
+        </div>`;
+    }).join('');
+    chartHtml = `<div class="month-chart" style="margin-top:16px;">${bars}</div>`;
+  }
+  return `
+    ${trigger}
+    <div class="year-group">
+      <div class="year-group-head">
+        <span class="year-group-title">${esc(g.year)}</span>
+        <span class="year-group-stats">${g.count} book${g.count === 1 ? '' : 's'} · ${g.totalPages} pages · ${g.perDay.toFixed(1)} pg/day avg</span>
+      </div>
+      ${top5Html}
+    </div>
+    ${chartHtml ? `<div class="year-group"><p class="year-top5-heading">Books finished per month</p>${chartHtml}</div>` : ''}`;
 }
 
 function polarToCartesian(cx, cy, r, angleDeg) {
@@ -1185,37 +1284,21 @@ function renderPieChart(entries) {
   return `<svg viewBox="0 0 400 400" class="pie-chart-svg">${arcs.join('')}${labelsSvg}</svg>`;
 }
 
-function renderYearChipRow() {
-  const years = getAvailableYears();
-  const chips = [
-    `<button type="button" class="year-filter-chip ${!state.dashboardYearFilter ? 'active' : ''}" data-action="pick-year" data-year="">All</button>`,
-    ...years.map(y => `<button type="button" class="year-filter-chip ${state.dashboardYearFilter === y ? 'active' : ''}" data-action="pick-year" data-year="${y}">${y}</button>`)
-  ].join('');
-  return `<div class="year-filter-row">${chips}</div>`;
-}
-
 function renderDashboardTab() {
   const cat = state.dashboardCategory;
   const tabs = [
-    { key: 'all', label: 'SUMMARY' },
-    { key: 'year', label: 'ACHIEVEMENT' },
-    { key: 'pace', label: 'READING PACE' },
-    { key: 'statistics', label: 'STATISTICS' }
+    { key: 'year', label: 'Achievement', icon: ICONS.star },
+    { key: 'statistics', label: 'Statistics', icon: ICONS.chart }
   ];
-  const catRow = `<div class="dash-cat-row">${tabs.map(t => `<button type="button" class="dash-cat-chip ${t.key === cat ? 'active' : ''}" data-action="pick-dashboard-cat" data-cat="${t.key}">${t.label}</button>`).join('')}</div>`;
-  const yearChipRow = (cat === 'all' || cat === 'year') ? renderYearChipRow() : '';
-  let content = '';
-  if (cat === 'pace') content = renderPagesPerDayRanking();
-  else if (cat === 'statistics') content = renderStatisticsSection();
-  else if (cat === 'all') content = renderYearGrouping(state.dashboardYearFilter);
-  else if (cat === 'year') content = renderYearMonthlyBreakdown(state.dashboardYearFilter);
+  const catRow = `<div class="dash-cat-row">${tabs.map(t => `<button type="button" class="dash-cat-chip ${t.key === cat ? 'active' : ''}" data-action="pick-dashboard-cat" data-cat="${t.key}">${t.icon}<span>${t.label}</span></button>`).join('')}</div>`;
+  const content = cat === 'statistics' ? renderStatisticsSection() : renderAchievementSection();
   return `
     <div class="dashboard-view">
-      <h2 class="dashboard-title" style="margin-bottom:14px;">Dashboard</h2>
       ${catRow}
-      ${yearChipRow}
       ${content}
-    </div>`;
+    </div>
+    ${state.showYearSheet ? renderYearSheet() : ''}
+    ${state.showStatSheet ? renderStatSheet() : ''}`;
 }
 
 function shuffleQuotesLayout(count) {
@@ -1278,39 +1361,10 @@ function renderCountRanking(entries) {
   }).join('');
 }
 
-function renderPagesPerDayRanking() {
-  const list = getPagesPerDayRanking(state.books);
-  if (!list.length) return `<p class="dash-empty">No data yet. Set Start Date, End Date, and total pages on a book.</p>`;
-  return list.map((b, i) => `
-    <div class="rank-row">
-      <span class="rank-num">${i + 1}</span>
-      <div class="rank-info"><p class="rank-name">${esc(b.title)}</p><p class="rank-sub">${esc(b.author)} · ${b.days} day${b.days === 1 ? '' : 's'}</p></div>
-      <span class="rank-value">${b.rate.toFixed(1)} pg/day</span>
-    </div>`).join('');
-}
-
 function getAvailableYears() {
   const years = new Set();
   state.books.forEach(b => { if (getBookStatus(b) === 'done' && b.endDate) years.add(b.endDate.slice(0, 4)); });
   return [...years].sort((a, b) => b.localeCompare(a));
-}
-
-function renderYearGrouping(yearFilter) {
-  const groups = getYearGrouping(state.books, yearFilter);
-  if (!groups.length) return `<p class="dash-empty">No data yet. Set an End Date on a book.</p>`;
-  return groups.map(g => `
-    <div class="year-group">
-      <div class="year-group-head">
-        <span class="year-group-title">${esc(g.year)}</span>
-        <span class="year-group-stats">${g.count} book${g.count === 1 ? '' : 's'} · ${g.totalPages} pages · ${g.perDay.toFixed(1)} pg/day avg</span>
-      </div>
-      ${g.top5.length ? `<p class="year-top5-heading">Top ${g.top5.length} by rating</p>${g.top5.map((b, i) => `
-        <div class="rank-row">
-          <span class="rank-num">${i + 1}</span>
-          <div class="rank-info"><p class="rank-name">${esc(b.title)}</p><p class="rank-sub">${esc(b.author)}</p></div>
-          <span class="rank-value-rating">${ICONS.star}${Number(b.rating).toFixed(1)}</span>
-        </div>`).join('')}` : ''}
-    </div>`).join('');
 }
 
 function getYearMonthlyBreakdown(books, yearFilter) {
@@ -1326,32 +1380,6 @@ function getYearMonthlyBreakdown(books, yearFilter) {
   return [...map.entries()]
     .sort((a, b) => b[0].localeCompare(a[0]))
     .map(([year, counts]) => ({ year, counts, total: counts.reduce((s, c) => s + c, 0) }));
-}
-
-function renderYearMonthlyBreakdown(yearFilter) {
-  const groups = getYearMonthlyBreakdown(state.books, yearFilter);
-  if (!groups.length) return `<p class="dash-empty">No data yet. Set an End Date on a book.</p>`;
-  const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  return groups.map(g => {
-    const max = Math.max(1, ...g.counts);
-    const bars = g.counts.map((c, i) => {
-      const pct = Math.max(c > 0 ? 6 : 0, Math.round((c / max) * 100));
-      return `
-        <div class="month-col">
-          <span class="month-col-count">${c || ''}</span>
-          <div class="month-col-track"><div class="month-col-fill" style="height:${pct}%;"></div></div>
-          <span class="month-col-label">${monthLabels[i]}</span>
-        </div>`;
-    }).join('');
-    return `
-      <div class="year-group">
-        <div class="year-group-head">
-          <span class="year-group-title">${esc(g.year)}</span>
-          <span class="year-group-stats">${g.total} book${g.total === 1 ? '' : 's'} done</span>
-        </div>
-        <div class="month-chart">${bars}</div>
-      </div>`;
-  }).join('');
 }
 
 function renderForm() {
@@ -1878,13 +1906,23 @@ function attachHandlers() {
       el.addEventListener('click', e => {
         e.stopPropagation();
         state.dashboardYearFilter = el.getAttribute('data-year') || '';
+        state.showYearSheet = false;
         render();
       });
     } else if (action === 'pick-stat-field') {
       el.addEventListener('click', () => {
         state.statisticsField = el.getAttribute('data-field');
+        state.showStatSheet = false;
         render();
       });
+    } else if (action === 'open-year-sheet') {
+      el.addEventListener('click', () => { state.showYearSheet = true; render(); });
+    } else if (action === 'close-year-sheet') {
+      el.addEventListener('click', e => { e.stopPropagation(); state.showYearSheet = false; render(); });
+    } else if (action === 'open-stat-sheet') {
+      el.addEventListener('click', () => { state.showStatSheet = true; render(); });
+    } else if (action === 'close-stat-sheet') {
+      el.addEventListener('click', e => { e.stopPropagation(); state.showStatSheet = false; render(); });
     } else if (action === 'add-quote') {
       el.addEventListener('click', () => {
         const current = (state.form.quotes && state.form.quotes.length) ? state.form.quotes : [''];
