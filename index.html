@@ -125,7 +125,7 @@
   .chart-count { font-size: 13px; font-weight: 600; color: var(--text-soft); width: 22px; text-align: right; font-variant-numeric: tabular-nums; }
   .home-view { padding-bottom: 90px; }
   .dashboard + .dashboard { margin-top: 14px; }
-  .dash-summary-strip { display: grid; grid-template-columns: 3fr 3fr 5fr; gap: 8px; margin-bottom: 28px; }
+  .dash-summary-strip { display: grid; grid-template-columns: 3fr 3fr 5fr; gap: 8px; margin-bottom: 14px; }
   .dash-summary-tile { background: rgba(var(--accent-rgb), 0.16); border: 1px solid rgba(var(--accent-rgb), 0.22); border-radius: 14px; padding: 12px 8px; text-align: center; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 10px 22px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.06); }
   .dash-summary-value { font-family: var(--font-display); font-size: 18px; font-weight: 800; color: var(--text); margin: 0; line-height: 1.25; }
   .dash-summary-value-text { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
@@ -135,7 +135,13 @@
   .quotes-view { padding-bottom: 90px; }
   .quotes-wall { column-count: 2; column-gap: 12px; }
   @media (max-width: 380px) { .quotes-wall { column-count: 1; } }
-  .quote-card { position: relative; break-inside: avoid; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 14px 14px; margin: 0 0 16px; box-shadow: 0 3px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04); cursor: pointer; transition: transform 0.12s ease, box-shadow 0.12s ease; }
+  .quote-card { position: relative; break-inside: avoid; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 14px 14px; margin: 0 0 16px; box-shadow: 0 3px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04); cursor: pointer; transition: transform 0.12s ease, box-shadow 0.12s ease; user-select: none; -webkit-user-select: none; }
+  .quote-card.select-mode { transform: none !important; }
+  .quote-card.quote-selected { outline: 3px solid var(--accent); outline-offset: -1px; }
+  .quote-select-check { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border-radius: 50%; background: var(--surface); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; z-index: 2; color: transparent; }
+  .quote-select-check.checked { background: var(--accent); border-color: var(--accent); color: var(--accent-contrast); }
+  .quote-select-toolbar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--border); padding: 12px 18px calc(12px + env(safe-area-inset-bottom)); display: flex; align-items: center; justify-content: space-between; gap: 12px; z-index: 40; box-shadow: 0 -4px 14px rgba(0,0,0,0.08); }
+  .quote-select-count { font-size: 14px; font-weight: 600; color: var(--text); }
   .quote-card:active { transform: scale(0.97); box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
   .quote-card-text { -webkit-line-clamp: 8; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
   .quote-expand-sheet { text-align: center; padding-top: 34px; }
@@ -166,7 +172,7 @@
   .reading-author { font-size: 11.5px; color: var(--text-soft); margin: 2px 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .reading-pages { font-size: 11px; color: var(--text-faint); margin: 6px 0 0; }
   .reading-empty { font-size: 13px; color: var(--text-soft); text-align: center; padding: 10px 0 2px; }
-  .btn-add-fab-square { position: fixed; bottom: 88px; right: max(18px, calc(50% - 302px)); width: 58px; height: 58px; border-radius: 18px; background: var(--accent); color: var(--accent-contrast); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 24px rgba(var(--accent-rgb), 0.32); z-index: 30; }
+  .btn-add-fab-square { position: fixed; bottom: 88px; right: max(18px, calc(50% - 302px)); width: 52px; height: 52px; border-radius: 16px; background: var(--accent); color: var(--accent-contrast); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 24px rgba(var(--accent-rgb), 0.32); z-index: 30; }
 
   /* Bottom nav */
   .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 25; background: var(--surface); border-top: 1px solid var(--border); display: flex; max-width: 640px; margin: 0 auto; padding: 6px 10px calc(6px + env(safe-area-inset-bottom, 0px)); }
@@ -340,7 +346,7 @@ const STATUS_META = {
   tbr:     { label: 'To be Read',     color: '#FFC118' },
   ongoing: { label: 'Reading',        color: '#82c8e5' },
   dnf:     { label: "Didn't Finish",  color: '#FF5555' },
-  done:    { label: 'Done',           color: ACCENT }
+  done:    { label: 'Finished',       color: ACCENT }
 };
 
 const ICONS = {
@@ -493,6 +499,8 @@ let state = {
   libraryView: 'list',
   expandedId: null,
   expandedQuoteIndex: null,
+  quoteSelectMode: false,
+  selectedQuoteIndices: [],
   confirmDeleteId: null,
   showForm: false,
   editingId: null,
@@ -635,7 +643,7 @@ const FILTER_OPTIONS = [
   { value: 'tbr', label: 'To be Read' },
   { value: 'ongoing', label: 'Reading' },
   { value: 'dnf', label: "Didn't Finish" },
-  { value: 'done', label: 'Done' }
+  { value: 'done', label: 'Finished' }
 ];
 const SORT_OPTIONS = [
   { value: 'added', label: 'Newest' },
@@ -647,7 +655,7 @@ const STATUS_OPTIONS = [
   { value: 'tbr', label: 'To be Read' },
   { value: 'ongoing', label: 'Reading' },
   { value: 'dnf', label: "Didn't Finish" },
-  { value: 'done', label: 'Done' }
+  { value: 'done', label: 'Finished' }
 ];
 
 function renderCustomSelect(key, options, currentValue, align) {
@@ -696,6 +704,8 @@ function openAddForm() { state.form = { ...emptyForm, quotes: [''] }; state.edit
 
 function render() {
   const app = document.getElementById('app');
+  const prevModalBody = app.querySelector('.modal-body');
+  const savedScrollTop = prevModalBody ? prevModalBody.scrollTop : null;
   app.innerHTML = `
     <div class="header">
       <div class="header-top-row">
@@ -723,6 +733,10 @@ function render() {
     ${state.showForm ? renderForm() : ''}
   `;
   attachHandlers();
+  if (savedScrollTop !== null) {
+    const nextModalBody = app.querySelector('.modal-body');
+    if (nextModalBody) nextModalBody.scrollTop = savedScrollTop;
+  }
 }
 
 function getStatusColor(key) {
@@ -1227,7 +1241,7 @@ function renderAchievementSection() {
       </div>
       ${top5Html}
     </div>
-    ${chartHtml ? `<div class="year-group"><p class="year-group-title">Books finished per month</p>${chartHtml}</div>` : ''}`;
+    ${chartHtml ? `<div class="year-group"><p class="year-group-title">Finishes by month</p>${chartHtml}</div>` : ''}`;
 }
 
 function polarToCartesian(cx, cy, r, angleDeg) {
@@ -1369,17 +1383,30 @@ function renderQuotes() {
         </div>
       </div>`;
   }
+  const selectMode = state.quoteSelectMode;
+  const selected = state.selectedQuoteIndices || [];
   const cards = quotes.map((q, i) => {
     const layout = state.quotesLayout[i] || { rot: 0, ty: 0 };
+    const isSelected = selected.includes(i);
+    const rotStyle = selectMode ? '' : `transform:rotate(${layout.rot}deg) translateY(${layout.ty}px);`;
     return `
-      <div class="quote-card" style="transform:rotate(${layout.rot}deg) translateY(${layout.ty}px);" data-action="expand-quote" data-id="${i}">
+      <div class="quote-card${selectMode ? ' select-mode' : ''}${isSelected ? ' quote-selected' : ''}" style="${rotStyle}" data-action="expand-quote" data-id="${i}">
+        ${selectMode ? `<span class="quote-select-check${isSelected ? ' checked' : ''}">${isSelected ? ICONS.check : ''}</span>` : ''}
         <span class="quote-card-mark">${ICONS.quote}</span>
         <p class="quote-card-text">${esc(q.text)}</p>
         <span class="quote-card-book">${esc(q.bookTitle)}</span>
         ${q.author && q.author.trim() ? `<span class="quote-card-author">${esc(q.author.trim())}</span>` : ''}
       </div>`;
   }).join('');
-  return `<div class="quotes-view"><div class="quotes-wall">${cards}</div></div>${state.expandedQuoteIndex !== null ? renderQuoteExpandSheet(state.expandedQuoteIndex) : ''}`;
+  const toolbar = selectMode ? `
+    <div class="quote-select-toolbar">
+      <span class="quote-select-count">${selected.length} of 5 selected</span>
+      <div style="display:flex; gap:8px;">
+        <button type="button" class="btn-secondary-sm" data-action="cancel-quote-select">Cancel</button>
+        <button type="button" class="btn-secondary-sm" data-action="share-quotes" ${selected.length === 0 ? 'disabled' : ''}>${ICONS.share} Share</button>
+      </div>
+    </div>` : '';
+  return `<div class="quotes-view"><div class="quotes-wall">${cards}</div></div>${toolbar}${state.expandedQuoteIndex !== null ? renderQuoteExpandSheet(state.expandedQuoteIndex) : ''}`;
 }
 
 function renderQuoteExpandSheet(index) {
@@ -1390,7 +1417,6 @@ function renderQuoteExpandSheet(index) {
     <div class="detail-sheet-backdrop" data-action="close-quote">
       <div class="detail-sheet quote-expand-sheet" data-action="stop">
         <div class="detail-sheet-handle"></div>
-        <button class="detail-sheet-close-btn" data-action="close-quote" aria-label="Close">${ICONS.x}</button>
         <span class="quote-expand-mark">${ICONS.quote}</span>
         <p class="quote-expand-text">${esc(q.text)}</p>
         <span class="quote-expand-book">${esc(q.bookTitle)}</span>
@@ -1525,6 +1551,23 @@ function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight) {
   if (lines.length > 3) lines = lines.slice(0, 3);
   const startY = y - ((lines.length - 1) * lineHeight) / 2;
   lines.forEach((l, i) => ctx.fillText(l, x, startY + i * lineHeight));
+}
+
+function getWrappedLines(ctx, text, maxWidth) {
+  const words = text.split(' ');
+  let line = '';
+  const lines = [];
+  for (let n = 0; n < words.length; n++) {
+    const testLine = line + words[n] + ' ';
+    if (ctx.measureText(testLine).width > maxWidth && n > 0) {
+      lines.push(line.trim());
+      line = words[n] + ' ';
+    } else {
+      line = testLine;
+    }
+  }
+  lines.push(line.trim());
+  return lines;
 }
 
 function generateAchievementCanvas(book, days, callback) {
@@ -1684,6 +1727,170 @@ function shareAchievementImage() {
   });
 }
 
+
+function generateQuoteCollageCanvas(quotes, callback) {
+  document.fonts.ready.then(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#0CBAA6';
+    const cx = canvas.width / 2;
+    const textWidth = 860;
+    const areaTop = 340;
+    const areaBottom = 1820;
+
+    // Base sizing — book title now reads as the largest, most confident line
+    // (it's the "heading" of each block), the quote is the body copy, and the
+    // author is a small tracked caption. This mirrors the hierarchy already
+    // used on the in-app quote cards instead of fighting it.
+    const base = { quoteFont: 29, quoteLineHeight: 43, bookFont: 40, authorFont: 19, afterQuoteGap: 22, afterBookGap: 12, afterAuthorGap: 34, dividerGap: 58 };
+
+    // Draws text with manual letter-spacing (canvas' built-in letterSpacing
+    // support is inconsistent across browsers), centered on cx.
+    function drawTracked(text, x, y, spacing) {
+      const chars = text.split('');
+      const widths = chars.map(c => ctx.measureText(c).width);
+      const total = widths.reduce((a, b) => a + b, 0) + spacing * (chars.length - 1);
+      let cursorX = x - total / 2;
+      const prevAlign = ctx.textAlign;
+      ctx.textAlign = 'left';
+      chars.forEach((c, i) => {
+        ctx.fillText(c, cursorX, y);
+        cursorX += widths[i] + spacing;
+      });
+      ctx.textAlign = prevAlign;
+    }
+
+    // A short line–diamond–line flourish, reused under the title and between quotes.
+    function drawOrnament(y, opts = {}) {
+      const { armLength = 90, gap = 14, size = 5, color = accent, alpha = 1 } = opts;
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(cx - gap - armLength, y);
+      ctx.lineTo(cx - gap, y);
+      ctx.moveTo(cx + gap, y);
+      ctx.lineTo(cx + gap + armLength, y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(cx, y - size);
+      ctx.lineTo(cx + size, y);
+      ctx.lineTo(cx, y + size);
+      ctx.lineTo(cx - size, y);
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function measureAt(scale) {
+      const s = k => Math.round(base[k] * scale);
+      ctx.font = `${s('quoteFont')}px "Noto Serif", serif`;
+      let total = 0;
+      const blocks = quotes.map((q, i) => {
+        const lines = getWrappedLines(ctx, `"${q.text}"`, textWidth);
+        const quoteH = lines.length * s('quoteLineHeight');
+        const hasAuthor = !!(q.author && q.author.trim());
+        const blockH = quoteH + s('afterQuoteGap') + s('bookFont') + (hasAuthor ? s('authorFont') + 10 : 0) + s('afterAuthorGap');
+        total += blockH + (i < quotes.length - 1 ? s('dividerGap') : 0);
+        return { lines, hasAuthor, blockH, quoteLineHeight: s('quoteLineHeight') };
+      });
+      return { total, blocks, s };
+    }
+
+    function drawCollage() {
+      ctx.textAlign = 'center';
+
+      // Small tracked kicker above the script title
+      ctx.font = '600 19px Outfit, sans-serif';
+      ctx.fillStyle = accent;
+      drawTracked('A COLLECTION OF LINES I LOVE', cx, 150, 5);
+
+      ctx.font = '84px "Alex Brush", cursive';
+      ctx.fillStyle = accent;
+      ctx.fillText('My Favorite Quotes', cx, 236);
+
+      drawOrnament(276, { armLength: 70, gap: 12, size: 4 });
+
+      let { total } = measureAt(1);
+      const available = areaBottom - areaTop;
+      const scale = total > available ? Math.max(available / total, 0.55) : 1;
+      const { blocks, s } = measureAt(scale);
+      const recalculated = measureAt(scale).total;
+      const leftover = Math.max(available - recalculated, 0);
+      const extraGap = leftover / (blocks.length + 1);
+
+      let y = areaTop + extraGap;
+      blocks.forEach((block, i) => {
+        ctx.font = `${s('quoteFont')}px "Noto Serif", serif`;
+        ctx.fillStyle = '#2c2c2a';
+        block.lines.forEach((line, li) => {
+          ctx.fillText(line, cx, y + block.quoteLineHeight * (li + 1) - block.quoteLineHeight * 0.3);
+        });
+        y += block.lines.length * block.quoteLineHeight + s('afterQuoteGap');
+
+        ctx.font = `${s('bookFont')}px "Alex Brush", cursive`;
+        ctx.fillStyle = accent;
+        ctx.fillText(quotes[i].bookTitle, cx, y + s('bookFont') * 0.72);
+        y += s('bookFont');
+
+        if (block.hasAuthor) {
+          y += 10;
+          ctx.font = `600 ${s('authorFont')}px Outfit, sans-serif`;
+          ctx.fillStyle = '#8A8580';
+          drawTracked(quotes[i].author.trim().toUpperCase(), cx, y + s('authorFont') * 0.78, 2);
+          y += s('authorFont');
+        }
+        y += s('afterAuthorGap');
+
+        if (i < blocks.length - 1) {
+          drawOrnament(y - s('afterAuthorGap') / 2, { armLength: 60, gap: 10, size: 3.5, color: '#B8B2AA', alpha: 0.9 });
+          y += s('dividerGap') + extraGap;
+        }
+      });
+
+      ctx.font = '500 22px Outfit, sans-serif';
+      ctx.fillStyle = '#A1A1AA';
+      ctx.fillText('via Book Tracking', cx, 1872);
+
+      callback(canvas);
+    }
+
+    const bg = new Image();
+    bg.onload = () => { ctx.drawImage(bg, 0, 0, canvas.width, canvas.height); drawCollage(); };
+    bg.onerror = () => { ctx.fillStyle = '#EAE7E4'; ctx.fillRect(0, 0, canvas.width, canvas.height); drawCollage(); };
+    bg.src = ACHIEVEMENT_BG;
+  });
+}
+
+function shareQuoteCollage() {
+  const allQuotes = getAllQuotes();
+  const quotes = state.selectedQuoteIndices.map(i => allQuotes[i]).filter(Boolean);
+  if (!quotes.length) return;
+  generateQuoteCollageCanvas(quotes, canvas => {
+    canvas.toBlob(async blob => {
+      const file = new File([blob], 'favorite-quotes.png', { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: 'My Favorite Quotes', text: 'A few of my favorite quotes' });
+        } catch (err) { /* user cancelled, nothing to do */ }
+      } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'favorite-quotes.png';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        alert("Sharing isn't supported here, so the image was downloaded instead — you can share it from your Gallery app.");
+      }
+      state.quoteSelectMode = false;
+      state.selectedQuoteIndices = [];
+      render();
+    }, 'image/png');
+  });
+}
 
 function updateCoverPreview() {
   const preview = document.getElementById('cover-preview');
@@ -1912,9 +2119,44 @@ function attachHandlers() {
     } else if (action === 'close-detail') {
       el.addEventListener('click', e => { e.stopPropagation(); state.expandedId = null; state.confirmDeleteId = null; render(); });
     } else if (action === 'expand-quote') {
-      el.addEventListener('click', () => { state.expandedQuoteIndex = parseInt(id, 10); render(); });
+      const qIndex = parseInt(id, 10);
+      let pressTimer = null;
+      let longPressed = false;
+      const startPress = () => {
+        longPressed = false;
+        pressTimer = setTimeout(() => {
+          longPressed = true;
+          state.quoteSelectMode = true;
+          if (!state.selectedQuoteIndices.includes(qIndex)) state.selectedQuoteIndices = [...state.selectedQuoteIndices, qIndex];
+          render();
+        }, 500);
+      };
+      const cancelPress = () => { if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; } };
+      el.addEventListener('pointerdown', startPress);
+      el.addEventListener('pointerup', cancelPress);
+      el.addEventListener('pointercancel', cancelPress);
+      el.addEventListener('pointerleave', cancelPress);
+      el.addEventListener('click', () => {
+        if (longPressed) { longPressed = false; return; }
+        if (state.quoteSelectMode) {
+          const idx = state.selectedQuoteIndices.indexOf(qIndex);
+          if (idx !== -1) {
+            state.selectedQuoteIndices = state.selectedQuoteIndices.filter(i => i !== qIndex);
+          } else if (state.selectedQuoteIndices.length < 5) {
+            state.selectedQuoteIndices = [...state.selectedQuoteIndices, qIndex];
+          }
+          render();
+        } else {
+          state.expandedQuoteIndex = qIndex;
+          render();
+        }
+      });
     } else if (action === 'close-quote') {
       el.addEventListener('click', e => { e.stopPropagation(); state.expandedQuoteIndex = null; render(); });
+    } else if (action === 'cancel-quote-select') {
+      el.addEventListener('click', () => { state.quoteSelectMode = false; state.selectedQuoteIndices = []; render(); });
+    } else if (action === 'share-quotes') {
+      el.addEventListener('click', () => { shareQuoteCollage(); });
     } else if (action === 'edit') {
       el.addEventListener('click', e => {
         e.stopPropagation();
