@@ -1092,16 +1092,28 @@ function launchConfetti(canvasId) {
     });
   }
 
-  // Big instant pop from both bottom corners, crossing paths for full-width coverage
-  const burstEach = 55;
-  for (let i = 0; i < burstEach; i++) {
-    pushBurst(cssW * (0.02 + Math.random() * 0.08), cssH * (0.92 + Math.random() * 0.08), 1);
-    pushBurst(cssW * (0.9 + Math.random() * 0.08), cssH * (0.92 + Math.random() * 0.08), -1);
+  // Two pops instead of one: a big immediate burst, then a second wave a beat later so it reads
+  // as "burst — burst" rather than one continuous shot.
+  function fireBurstWave(waveCount, delayMs) {
+    for (let i = 0; i < waveCount; i++) {
+      const leftX = cssW * (0.02 + Math.random() * 0.08), leftY = cssH * (0.92 + Math.random() * 0.08);
+      const rightX = cssW * (0.9 + Math.random() * 0.08), rightY = cssH * (0.92 + Math.random() * 0.08);
+      if (delayMs <= 0) {
+        pushBurst(leftX, leftY, 1);
+        pushBurst(rightX, rightY, -1);
+      } else {
+        spawnQueue.push({ at: delayMs + Math.random() * 120, spawn: () => pushBurst(leftX, leftY, 1) });
+        spawnQueue.push({ at: delayMs + Math.random() * 120, spawn: () => pushBurst(rightX, rightY, -1) });
+      }
+    }
   }
-  // A following wave of rain, staggered, to fill the burst out
-  for (let i = 0; i < 70; i++) pushRain(Math.random() * 1400);
-  // Glints of light popping near the launch points early on
-  for (let i = 0; i < 34; i++) pushSparkle(Math.random() * 1200);
+  fireBurstWave(48, 0);
+  fireBurstWave(40, 420);
+  // A following wave of rain, staggered, to fill the burst out (spans both pops)
+  for (let i = 0; i < 90; i++) pushRain(Math.random() * 1700);
+  // Glints of light popping near the launch points, one flurry per burst
+  for (let i = 0; i < 22; i++) pushSparkle(Math.random() * 900);
+  for (let i = 0; i < 22; i++) pushSparkle(420 + Math.random() * 900);
 
   function drawParticle(p, now) {
     const age = now - p.spawn;
