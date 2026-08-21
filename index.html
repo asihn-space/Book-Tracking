@@ -156,11 +156,6 @@
   .quote-card-book { display: block; text-align: right; font-family: 'Alex Brush', cursive; font-size: 16px; font-weight: 400; color: var(--accent); line-height: 1; }
   .quote-card-author { display: block; text-align: right; font-family: var(--font-body); font-size: 10px; font-weight: 500; color: var(--text-faint); letter-spacing: 0.01em; margin-top: 0; }
 
-  /* Shareable card selection (books + dashboard) */
-  .card-select-host { position: relative; }
-  .card-select-host.card-selected { outline: 3px solid var(--accent); outline-offset: -2px; border-radius: 14px; }
-  .card-select-host.card-select-active { cursor: pointer; }
-
   /* Quote inputs (form) */
   .quote-input-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; }
   .quote-input-row textarea { flex: 1; }
@@ -499,8 +494,6 @@ let state = {
   expandedQuoteIndex: null,
   quoteSelectMode: false,
   selectedQuoteIndices: [],
-  cardSelectMode: false,
-  selectedCards: [],
   confirmDeleteId: null,
   showForm: false,
   editingId: null,
@@ -528,15 +521,6 @@ function saveBooks() {
   catch (e) { state.error = 'Failed to save changes. Please try again.'; }
 }
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
-function cardKey(type, id) { return type + ':' + id; }
-function isCardSelected(type, id) { return state.selectedCards.some(c => c.type === type && c.id === id); }
-function toggleCardSelection(type, id) {
-  if (isCardSelected(type, id)) {
-    state.selectedCards = state.selectedCards.filter(c => !(c.type === type && c.id === id));
-  } else if (state.selectedCards.length < 6) {
-    state.selectedCards = [...state.selectedCards, { type, id }];
-  }
-}
 function getBookStatus(b) {
   if (b.status) return b.status;
   if (b.startDate && b.endDate) return 'done';
@@ -741,7 +725,6 @@ function render() {
     ${state.showNameEdit ? renderNameEditModal() : ''}
     ${state.showAchievement ? renderAchievementModal() : ''}
     ${state.showForm ? renderForm() : ''}
-    ${renderCardSelectToolbar()}
   `;
   attachHandlers();
   if (savedScrollTop !== null) {
@@ -782,8 +765,7 @@ function renderHome() {
     .sort((a, b) => (b.endDate || '').localeCompare(a.endDate || '') || (b.addedAt || 0) - (a.addedAt || 0))
     .slice(0, 3);
   const recentRows = recentDone.map(b => `
-      <div class="reading-row card-select-host${state.cardSelectMode ? ' card-select-active' : ''}${isCardSelected('book', b.id) ? ' card-selected' : ''}" data-action="toggle" data-id="${b.id}">
-        ${state.cardSelectMode ? `<span class="quote-select-check${isCardSelected('book', b.id) ? ' checked' : ''}">${isCardSelected('book', b.id) ? ICONS.check : ''}</span>` : ''}
+      <div class="reading-row" data-action="toggle" data-id="${b.id}">
         <div class="cover cover-reading">${renderCoverPlaceholder(b.title)}${b.coverUrl ? `<img class="cover-img-layer" src="${esc(b.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}${b.language ? `<span class="lang-badge">${esc(getLangBadge(b.language))}</span>` : ''}</div>
         <div class="reading-info">
           <div class="reading-row-top">
@@ -801,8 +783,7 @@ function renderHome() {
     const currentPage = Math.min(Number(b.currentPage) || 0, totalPages || (Number(b.currentPage) || 0));
     const barColor = getReadingBarColor(pct);
     return `
-      <div class="reading-row card-select-host${state.cardSelectMode ? ' card-select-active' : ''}${isCardSelected('book', b.id) ? ' card-selected' : ''}" data-action="toggle" data-id="${b.id}">
-        ${state.cardSelectMode ? `<span class="quote-select-check${isCardSelected('book', b.id) ? ' checked' : ''}">${isCardSelected('book', b.id) ? ICONS.check : ''}</span>` : ''}
+      <div class="reading-row" data-action="toggle" data-id="${b.id}">
         <div class="cover cover-reading">${renderCoverPlaceholder(b.title)}${b.coverUrl ? `<img class="cover-img-layer" src="${esc(b.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}${b.language ? `<span class="lang-badge">${esc(getLangBadge(b.language))}</span>` : ''}</div>
         <div class="reading-info">
           <div class="reading-row-top">
@@ -907,11 +888,9 @@ function formatDateShort(d) {
 function renderListItem(book) {
   const statusMeta = STATUS_META[getBookStatus(book)];
   const isDone = getBookStatus(book) === 'done';
-  const isSel = isCardSelected('book', book.id);
   return `
     <div class="item">
-      <div class="item-row card-select-host${state.cardSelectMode ? ' card-select-active' : ''}${isSel ? ' card-selected' : ''}" data-action="toggle" data-id="${book.id}">
-        ${state.cardSelectMode ? `<span class="quote-select-check${isSel ? ' checked' : ''}">${isSel ? ICONS.check : ''}</span>` : ''}
+      <div class="item-row" data-action="toggle" data-id="${book.id}">
         <div class="cover cover-list">${renderCoverPlaceholder(book.title)}${book.coverUrl ? `<img class="cover-img-layer" src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}${book.language ? `<span class="lang-badge">${esc(getLangBadge(book.language))}</span>` : ''}</div>
         <div class="item-info">
           <p class="item-title">${esc(book.title)}</p>
@@ -929,11 +908,9 @@ function renderListItem(book) {
 
 function renderGridItem(book) {
   const statusMeta = STATUS_META[getBookStatus(book)];
-  const isSel = isCardSelected('book', book.id);
   return `
     <div class="item">
-      <div class="grid-top card-select-host${state.cardSelectMode ? ' card-select-active' : ''}${isSel ? ' card-selected' : ''}" data-action="toggle" data-id="${book.id}">
-        ${state.cardSelectMode ? `<span class="quote-select-check${isSel ? ' checked' : ''}">${isSel ? ICONS.check : ''}</span>` : ''}
+      <div class="grid-top" data-action="toggle" data-id="${book.id}">
         <div class="cover cover-grid">
           ${renderCoverPlaceholder(book.title)}${book.coverUrl ? `<img class="cover-img-layer" src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}
           ${book.language ? `<span class="lang-badge-grid">${esc(getLangBadge(book.language))}</span>` : ''}
@@ -1371,12 +1348,7 @@ function renderStatisticsSection() {
       ${esc(active.label)} ${ICONS.chevronDown}
     </button>`;
   const entries = rankBy(state.books, active.getKey);
-  const isSel = isCardSelected('stat', active.key);
-  return `${trigger}
-    <div class="year-group card-select-host${state.cardSelectMode ? ' card-select-active' : ''}${isSel ? ' card-selected' : ''}" data-action="dash-card" data-ctype="stat" data-id="${active.key}">
-      ${state.cardSelectMode ? `<span class="quote-select-check${isSel ? ' checked' : ''}">${isSel ? ICONS.check : ''}</span>` : ''}
-      ${renderPieChart(entries)}
-    </div>`;
+  return `${trigger}<div class="year-group">${renderPieChart(entries)}</div>`;
 }
 
 function renderStatSheet() {
@@ -1448,18 +1420,16 @@ function renderAchievementSection() {
     }).join('');
     chartHtml = `<div class="month-chart" style="margin-top:16px;">${bars}</div>`;
   }
-  const isSel = isCardSelected('achievement', activeYear);
   return `
     ${trigger}
-    <div class="year-group card-select-host${state.cardSelectMode ? ' card-select-active' : ''}${isSel ? ' card-selected' : ''}" data-action="dash-card" data-ctype="achievement" data-id="${activeYear}">
-      ${state.cardSelectMode ? `<span class="quote-select-check${isSel ? ' checked' : ''}">${isSel ? ICONS.check : ''}</span>` : ''}
+    <div class="year-group">
       <div class="year-group-head">
         <span class="year-group-title">${esc(g.year)}</span>
         <span class="year-group-stats">${g.count} book${g.count === 1 ? '' : 's'} · ${g.totalPages} pages · ${g.perDay.toFixed(1)} pg/day avg</span>
       </div>
       ${top5Html}
-      ${chartHtml ? `<p class="year-group-title" style="margin-top:16px;">Finishes by month</p>${chartHtml}` : ''}
-    </div>`;
+    </div>
+    ${chartHtml ? `<div class="year-group"><p class="year-group-title">Finishes by month</p>${chartHtml}</div>` : ''}`;
 }
 
 function polarToCartesian(cx, cy, r, angleDeg) {
@@ -1654,19 +1624,6 @@ function renderQuoteExpandSheet(index) {
         <p class="quote-expand-text">${esc(q.text)}</p>
         <span class="quote-expand-book">${esc(q.bookTitle)}</span>
         ${q.author && q.author.trim() ? `<span class="quote-expand-author">${esc(q.author.trim())}</span>` : ''}
-      </div>
-    </div>`;
-}
-
-function renderCardSelectToolbar() {
-  if (!state.cardSelectMode) return '';
-  const count = state.selectedCards.length;
-  return `
-    <div class="quote-select-toolbar">
-      <span class="quote-select-count">${count} of 6 selected</span>
-      <div style="display:flex; gap:8px;">
-        <button type="button" class="btn-secondary-sm" data-action="cancel-card-select">Cancel</button>
-        <button type="button" class="btn-secondary-sm" data-action="share-cards" ${count === 0 ? 'disabled' : ''}>${ICONS.share} Share</button>
       </div>
     </div>`;
 }
@@ -2138,308 +2095,6 @@ function shareQuoteCollage() {
   });
 }
 
-function drawTrackedText(ctx, text, x, y, spacing) {
-  const chars = text.split('');
-  const widths = chars.map(c => ctx.measureText(c).width);
-  const total = widths.reduce((a, b) => a + b, 0) + spacing * (chars.length - 1);
-  let cursorX = x - total / 2;
-  const prevAlign = ctx.textAlign;
-  ctx.textAlign = 'left';
-  chars.forEach((c, i) => { ctx.fillText(c, cursorX, y); cursorX += widths[i] + spacing; });
-  ctx.textAlign = prevAlign;
-}
-
-function generateBookCardCanvas(book, callback) {
-  document.fonts.ready.then(() => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1080; canvas.height = 1350;
-    const ctx = canvas.getContext('2d');
-    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#0CBAA6';
-    const cx = canvas.width / 2;
-    const status = getBookStatus(book);
-    const coverBox = { x: cx - 220, y: 110, w: 440, h: 652, r: 20 };
-
-    function drawText() {
-      ctx.textAlign = 'center';
-      const kicker = status === 'done' ? 'FINISHED READING' : status === 'ongoing' ? 'CURRENTLY READING' : status === 'dnf' ? 'DID NOT FINISH' : 'TO BE READ';
-      ctx.font = '600 24px Outfit, sans-serif';
-      ctx.fillStyle = accent;
-      drawTrackedText(ctx, kicker, cx, 830, 4);
-
-      const titleY = 895;
-      ctx.font = '800 46px "Plus Jakarta Sans", sans-serif';
-      ctx.fillStyle = '#2c2c2a';
-      wrapCanvasText(ctx, book.title.toUpperCase(), cx, titleY, 900, 54);
-
-      ctx.font = '500 30px Outfit, sans-serif';
-      ctx.fillStyle = '#71717A';
-      ctx.fillText(book.author || '', cx, titleY + 80);
-
-      let nextY = titleY + 145;
-      if (status === 'ongoing') {
-        const pct = getReadingPct(book);
-        const barW = 700, barH = 20;
-        const barX = cx - barW / 2;
-        ctx.fillStyle = '#EAE7E4';
-        ctx.beginPath(); ctx.roundRect(barX, nextY, barW, barH, 10); ctx.fill();
-        ctx.fillStyle = accent;
-        ctx.beginPath(); ctx.roundRect(barX, nextY, barW * Math.max(0, Math.min(100, pct)) / 100, barH, 10); ctx.fill();
-        nextY += 54;
-        ctx.font = '600 30px Outfit, sans-serif';
-        ctx.fillStyle = accent;
-        ctx.fillText(`${pct}% complete`, cx, nextY);
-      } else if (status === 'done') {
-        ctx.font = '600 32px Outfit, sans-serif';
-        ctx.fillStyle = accent;
-        ctx.fillText(`\u2605 ${Number(book.rating).toFixed(1)}`, cx, nextY);
-        nextY += 50;
-        if (book.startDate && book.endDate) {
-          ctx.font = '500 26px Outfit, sans-serif';
-          ctx.fillStyle = '#71717A';
-          ctx.fillText(`${formatDateShort(book.startDate)} - ${formatDateShort(book.endDate)}`, cx, nextY);
-        }
-      } else {
-        ctx.font = '600 32px Outfit, sans-serif';
-        ctx.fillStyle = accent;
-        ctx.fillText(`\u2605 ${Number(book.rating).toFixed(1)}`, cx, nextY);
-      }
-
-      ctx.font = '500 22px Outfit, sans-serif';
-      ctx.fillStyle = '#A1A1AA';
-      ctx.fillText('via Book Tracking', cx, 1300);
-
-      callback(canvas);
-    }
-
-    function drawCoverAndFinish() {
-      ctx.save();
-      ctx.shadowColor = 'rgba(0,0,0,0.28)';
-      ctx.shadowBlur = 36;
-      ctx.shadowOffsetY = 16;
-      ctx.fillStyle = '#FFFFFF';
-      ctx.beginPath();
-      ctx.roundRect(coverBox.x, coverBox.y, coverBox.w, coverBox.h, coverBox.r);
-      ctx.fill();
-      ctx.restore();
-
-      if (book.coverUrl) {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => {
-          try {
-            ctx.save();
-            ctx.beginPath();
-            ctx.roundRect(coverBox.x, coverBox.y, coverBox.w, coverBox.h, coverBox.r);
-            ctx.clip();
-            const ir = img.width / img.height, cr = coverBox.w / coverBox.h;
-            let dw, dh, dx, dy;
-            if (ir > cr) { dh = coverBox.h; dw = coverBox.h * ir; dx = coverBox.x - (dw - coverBox.w) / 2; dy = coverBox.y; }
-            else { dw = coverBox.w; dh = coverBox.w / ir; dx = coverBox.x; dy = coverBox.y - (dh - coverBox.h) / 2; }
-            ctx.drawImage(img, dx, dy, dw, dh);
-            ctx.restore();
-          } catch (err) { /* cross-origin cover can't be baked in; continue without it */ }
-          drawText();
-        };
-        img.onerror = () => drawText();
-        img.src = book.coverUrl;
-      } else {
-        drawText();
-      }
-    }
-
-    const bg = new Image();
-    bg.onload = () => { ctx.drawImage(bg, 0, 0, canvas.width, canvas.height); drawCoverAndFinish(); };
-    bg.onerror = () => { ctx.fillStyle = '#EAE7E4'; ctx.fillRect(0, 0, canvas.width, canvas.height); drawCoverAndFinish(); };
-    bg.src = ACHIEVEMENT_BG;
-  });
-}
-
-function generateAchievementCardCanvas(year, callback) {
-  document.fonts.ready.then(() => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1080; canvas.height = 1080;
-    const ctx = canvas.getContext('2d');
-    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#0CBAA6';
-    const cx = canvas.width / 2;
-    const g = getYearGrouping(state.books, year)[0];
-
-    function draw() {
-      ctx.textAlign = 'center';
-      ctx.font = '600 26px Outfit, sans-serif';
-      ctx.fillStyle = accent;
-      drawTrackedText(ctx, 'YEAR IN BOOKS', cx, 160, 5);
-
-      ctx.font = '110px "Alex Brush", cursive';
-      ctx.fillStyle = accent;
-      ctx.fillText(year, cx, 280);
-
-      if (g) {
-        ctx.font = '600 34px Outfit, sans-serif';
-        ctx.fillStyle = '#2c2c2a';
-        ctx.fillText(`${g.count} book${g.count === 1 ? '' : 's'} finished`, cx, 380);
-        ctx.font = '500 28px Outfit, sans-serif';
-        ctx.fillStyle = '#71717A';
-        ctx.fillText(`${g.totalPages} pages · ${g.perDay.toFixed(1)} pg/day avg`, cx, 430);
-
-        let y = 520;
-        if (g.top5.length) {
-          ctx.font = '600 24px Outfit, sans-serif';
-          ctx.fillStyle = accent;
-          ctx.fillText('TOP RATED', cx, y);
-          y += 50;
-          g.top5.slice(0, 5).forEach((b, i) => {
-            ctx.font = '600 30px "Plus Jakarta Sans", sans-serif';
-            ctx.fillStyle = '#2c2c2a';
-            ctx.textAlign = 'left';
-            ctx.fillText(`${i + 1}. ${truncateLabel(b.title, 28)}`, cx - 420, y);
-            ctx.textAlign = 'right';
-            ctx.fillStyle = accent;
-            ctx.fillText(`\u2605 ${Number(b.rating).toFixed(1)}`, cx + 420, y);
-            ctx.textAlign = 'center';
-            y += 56;
-          });
-        }
-      } else {
-        ctx.font = '500 30px Outfit, sans-serif';
-        ctx.fillStyle = '#71717A';
-        ctx.fillText('No data yet', cx, 400);
-      }
-
-      ctx.font = '500 22px Outfit, sans-serif';
-      ctx.fillStyle = '#A1A1AA';
-      ctx.fillText('via Book Tracking', cx, 1030);
-
-      callback(canvas);
-    }
-
-    const bg = new Image();
-    bg.onload = () => { ctx.drawImage(bg, 0, 0, canvas.width, canvas.height); draw(); };
-    bg.onerror = () => { ctx.fillStyle = '#EAE7E4'; ctx.fillRect(0, 0, canvas.width, canvas.height); draw(); };
-    bg.src = ACHIEVEMENT_BG;
-  });
-}
-
-function generateStatCardCanvas(fieldKey, callback) {
-  document.fonts.ready.then(() => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1080; canvas.height = 1080;
-    const ctx = canvas.getContext('2d');
-    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#0CBAA6';
-    const cx = canvas.width / 2;
-    const field = STATISTICS_FIELDS.find(f => f.key === fieldKey) || STATISTICS_FIELDS[0];
-    const entries = rankBy(state.books, field.getKey).slice(0, 8);
-    const max = entries.length ? Math.max(...entries.map(([, c]) => c)) : 1;
-
-    function draw() {
-      ctx.textAlign = 'center';
-      ctx.font = '600 26px Outfit, sans-serif';
-      ctx.fillStyle = accent;
-      drawTrackedText(ctx, `BY ${field.label.toUpperCase()}`, cx, 160, 5);
-
-      ctx.font = '90px "Alex Brush", cursive';
-      ctx.fillStyle = accent;
-      ctx.fillText('Reading Stats', cx, 270);
-
-      let y = 380;
-      const barX = cx - 420, barW = 840, barH = 34;
-      entries.forEach(([name, count]) => {
-        ctx.textAlign = 'left';
-        ctx.font = '600 26px Outfit, sans-serif';
-        ctx.fillStyle = '#2c2c2a';
-        ctx.fillText(truncateLabel(name || 'Unknown', 26), barX, y - 10);
-        ctx.textAlign = 'right';
-        ctx.fillStyle = '#71717A';
-        ctx.fillText(`${count}`, barX + barW, y - 10);
-        ctx.fillStyle = '#EAE7E4';
-        ctx.beginPath(); ctx.roundRect(barX, y, barW, barH, 8); ctx.fill();
-        ctx.fillStyle = accent;
-        ctx.beginPath(); ctx.roundRect(barX, y, barW * (count / max), barH, 8); ctx.fill();
-        y += 78;
-      });
-      if (!entries.length) {
-        ctx.textAlign = 'center';
-        ctx.font = '500 30px Outfit, sans-serif';
-        ctx.fillStyle = '#71717A';
-        ctx.fillText('No data yet', cx, 400);
-      }
-
-      ctx.textAlign = 'center';
-      ctx.font = '500 22px Outfit, sans-serif';
-      ctx.fillStyle = '#A1A1AA';
-      ctx.fillText('via Book Tracking', cx, 1030);
-
-      callback(canvas);
-    }
-
-    const bg = new Image();
-    bg.onload = () => { ctx.drawImage(bg, 0, 0, canvas.width, canvas.height); draw(); };
-    bg.onerror = () => { ctx.fillStyle = '#EAE7E4'; ctx.fillRect(0, 0, canvas.width, canvas.height); draw(); };
-    bg.src = ACHIEVEMENT_BG;
-  });
-}
-
-function generateCardCanvas(descriptor, callback) {
-  if (descriptor.type === 'book') {
-    const book = state.books.find(b => b.id === descriptor.id);
-    if (!book) { callback(null); return; }
-    generateBookCardCanvas(book, callback);
-  } else if (descriptor.type === 'achievement') {
-    generateAchievementCardCanvas(descriptor.id, callback);
-  } else if (descriptor.type === 'stat') {
-    generateStatCardCanvas(descriptor.id, callback);
-  } else {
-    callback(null);
-  }
-}
-
-function shareSelectedCards() {
-  const cards = state.selectedCards.slice();
-  if (!cards.length) return;
-  let remaining = cards.length;
-  const canvases = new Array(cards.length);
-  cards.forEach((descriptor, i) => {
-    generateCardCanvas(descriptor, canvas => {
-      canvases[i] = canvas;
-      remaining--;
-      if (remaining === 0) finishShareCards(canvases);
-    });
-  });
-}
-
-function finishShareCards(canvases) {
-  const validCanvases = canvases.filter(Boolean);
-  if (!validCanvases.length) { state.cardSelectMode = false; state.selectedCards = []; render(); return; }
-  let pending = validCanvases.length;
-  const files = new Array(validCanvases.length);
-  validCanvases.forEach((canvas, i) => {
-    canvas.toBlob(blob => {
-      files[i] = new File([blob], `book-tracking-card-${i + 1}.png`, { type: 'image/png' });
-      pending--;
-      if (pending === 0) doShareCardFiles(files.filter(Boolean));
-    }, 'image/png');
-  });
-}
-
-async function doShareCardFiles(files) {
-  if (navigator.canShare && navigator.canShare({ files })) {
-    try {
-      await navigator.share({ files, title: 'Book Tracking', text: 'A few cards from my Book Tracking app' });
-    } catch (err) { /* user cancelled, nothing to do */ }
-  } else {
-    files.forEach(file => {
-      const url = URL.createObjectURL(file);
-      const a = document.createElement('a');
-      a.href = url; a.download = file.name;
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    });
-    alert("Sharing isn't supported here, so the images were downloaded instead — you can share them from your Gallery app.");
-  }
-  state.cardSelectMode = false;
-  state.selectedCards = [];
-  render();
-}
-
 function updateCoverPreview() {
   const preview = document.getElementById('cover-preview');
   if (!preview) return;
@@ -2660,60 +2315,7 @@ function attachHandlers() {
     const action = el.getAttribute('data-action');
     const id = el.getAttribute('data-id');
     if (action === 'toggle') {
-      let pressTimer = null;
-      let longPressed = false;
-      const startPress = () => {
-        longPressed = false;
-        pressTimer = setTimeout(() => {
-          longPressed = true;
-          state.cardSelectMode = true;
-          toggleCardSelection('book', id);
-          render();
-        }, 500);
-      };
-      const cancelPress = () => { if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; } };
-      el.addEventListener('pointerdown', startPress);
-      el.addEventListener('pointerup', cancelPress);
-      el.addEventListener('pointercancel', cancelPress);
-      el.addEventListener('pointerleave', cancelPress);
-      el.addEventListener('click', () => {
-        if (longPressed) { longPressed = false; return; }
-        if (state.cardSelectMode) {
-          toggleCardSelection('book', id);
-          render();
-        } else {
-          state.expandedId = id; state.confirmDeleteId = null; render();
-        }
-      });
-    } else if (action === 'dash-card') {
-      const ctype = el.getAttribute('data-ctype');
-      let pressTimer = null;
-      let longPressed = false;
-      const startPress = () => {
-        longPressed = false;
-        pressTimer = setTimeout(() => {
-          longPressed = true;
-          state.cardSelectMode = true;
-          toggleCardSelection(ctype, id);
-          render();
-        }, 500);
-      };
-      const cancelPress = () => { if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; } };
-      el.addEventListener('pointerdown', startPress);
-      el.addEventListener('pointerup', cancelPress);
-      el.addEventListener('pointercancel', cancelPress);
-      el.addEventListener('pointerleave', cancelPress);
-      el.addEventListener('click', () => {
-        if (longPressed) { longPressed = false; return; }
-        if (state.cardSelectMode) {
-          toggleCardSelection(ctype, id);
-          render();
-        }
-      });
-    } else if (action === 'cancel-card-select') {
-      el.addEventListener('click', () => { state.cardSelectMode = false; state.selectedCards = []; render(); });
-    } else if (action === 'share-cards') {
-      el.addEventListener('click', () => { shareSelectedCards(); });
+      el.addEventListener('click', () => { state.expandedId = id; state.confirmDeleteId = null; render(); });
     } else if (action === 'stop') {
       el.addEventListener('click', e => e.stopPropagation());
     } else if (action === 'close-detail') {
