@@ -528,6 +528,7 @@ function getBookStatus(b) {
   return 'tbr';
 }
 function formatDate(d) { if (!d) return '-'; try { return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return d; } }
+function todayStr() { const dt = new Date(); const y = dt.getFullYear(); const m = String(dt.getMonth() + 1).padStart(2, '0'); const day = String(dt.getDate()).padStart(2, '0'); return `${y}-${m}-${day}`; }
 function esc(s) { if (s == null) return ''; return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
 function hashStr(s) {
@@ -2323,6 +2324,7 @@ function attachHandlers() {
       if (key === 'formStatus') {
         state.form.status = value;
         if (value !== 'done') state.form.endDate = '';
+        else if (!state.form.endDate) state.form.endDate = todayStr();
       }
       state.openDropdown = null;
       render();
