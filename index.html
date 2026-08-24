@@ -172,6 +172,22 @@
   .reading-author { font-size: 11.5px; color: var(--text-soft); margin: 2px 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .reading-pages { font-size: 11px; color: var(--text-faint); margin: 6px 0 0; }
   .reading-empty { font-size: 13px; color: var(--text-soft); text-align: center; padding: 10px 0 2px; }
+  .reading-row-wrap { display: flex; flex-direction: column; }
+  .reading-timeline-card { margin: 10px 0 2px 54px; padding: 12px 14px; border-radius: 14px; background: var(--bg); border: 1px solid var(--border); animation: timelineSlideDown 0.22s ease; transform-origin: top; }
+  @keyframes timelineSlideDown { from { opacity: 0; transform: translateY(-8px) scaleY(0.96); } to { opacity: 1; transform: translateY(0) scaleY(1); } }
+  .timeline-title { font-family: var(--font-display); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-soft); margin: 0 0 10px; }
+  .timeline-list { display: flex; flex-direction: column; gap: 12px; margin: 0 0 12px; }
+  .timeline-item { position: relative; padding-left: 16px; }
+  .timeline-item::before { content: ''; position: absolute; left: 0; top: 5px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+  .timeline-item::after { content: ''; position: absolute; left: 3px; top: 14px; bottom: -12px; width: 1px; background: var(--border); }
+  .timeline-item:last-child::after { display: none; }
+  .timeline-day-label { font-size: 12px; font-weight: 700; color: var(--text); margin: 0; }
+  .timeline-date { font-size: 11px; font-weight: 500; color: var(--text-faint); margin-left: 2px; }
+  .timeline-pages { font-size: 12px; color: var(--text-soft); margin: 2px 0 0; }
+  .timeline-diff { color: var(--accent); font-weight: 700; }
+  .timeline-empty { font-size: 12px; color: var(--text-soft); margin: 0 0 12px; }
+  .book-details-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: 9999px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; }
+  .book-details-badge svg { width: 14px; height: 14px; }
   .btn-add-fab-square { position: fixed; bottom: 88px; right: max(18px, calc(50% - 302px)); width: 52px; height: 52px; border-radius: 16px; background: var(--accent); color: var(--accent-contrast); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 24px rgba(var(--accent-rgb), 0.32); z-index: 30; }
 
   /* Bottom nav */
@@ -330,7 +346,7 @@
 <script>
 const STORAGE_KEY = 'reading-log-v2';
 const NAME_KEY = 'reading-log-v2-name';
-const emptyForm = { title:'', author:'', translator:'', publisher:'', language:'', country:'', originYear:'', isbn:'', coverUrl:'', startDate:'', endDate:'', currentPage:'', totalPages:'', rating:7, review:'', status:'tbr', quotes: [] };
+const emptyForm = { title:'', author:'', translator:'', publisher:'', language:'', country:'', originYear:'', isbn:'', coverUrl:'', startDate:'', endDate:'', currentPage:'', totalPages:'', rating:7, review:'', status:'tbr', quotes: [], history: [] };
 
 const ACCENT = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#0CBAA6';
 
@@ -491,6 +507,7 @@ let state = {
   activeTab: 'home',
   libraryView: 'list',
   expandedId: null,
+  expandedTimelineId: null,
   expandedQuoteIndex: null,
   quoteSelectMode: false,
   selectedQuoteIndices: [],
@@ -526,6 +543,37 @@ function getBookStatus(b) {
   if (b.startDate && b.endDate) return 'done';
   if (b.startDate) return 'ongoing';
   return 'tbr';
+}
+function updateReadingHistory(prevBook, newBook) {
+  const history = (prevBook && Array.isArray(prevBook.history)) ? [...prevBook.history] : [];
+  const newStatus = getBookStatus(newBook);
+  const newPage = Number(newBook.currentPage) || 0;
+  const prevPage = prevBook ? (Number(prevBook.currentPage) || 0) : null;
+
+  if (newStatus !== 'ongoing') return history;
+
+  if (history.length === 0) {
+    if (!newBook.startDate) return history;
+    const startIso = new Date(newBook.startDate + 'T00:00:00').toISOString();
+    history.push({ date: startIso, page: newPage });
+    return history;
+  }
+
+  if (prevPage !== null && newPage !== prevPage) {
+    history.push({ date: new Date().toISOString(), page: newPage });
+  }
+  return history;
+}
+function formatHistoryDateTime(iso) {
+  try {
+    const d = new Date(iso);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mm = String(d.getMinutes()).padStart(2, '0');
+    return `${y}.${m}.${day} ${hh}:${mm}`;
+  } catch (e) { return ''; }
 }
 function formatDate(d) { if (!d) return '-'; try { return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return d; } }
 function todayStr() { const dt = new Date(); const y = dt.getFullYear(); const m = String(dt.getMonth() + 1).padStart(2, '0'); const day = String(dt.getDate()).padStart(2, '0'); return `${y}-${m}-${day}`; }
@@ -782,18 +830,22 @@ function renderHome() {
     const totalPages = Number(b.totalPages) || 0;
     const currentPage = Math.min(Number(b.currentPage) || 0, totalPages || (Number(b.currentPage) || 0));
     const barColor = getReadingBarColor(pct);
+    const isTimelineOpen = state.expandedTimelineId === b.id;
     return `
-      <div class="reading-row" data-action="toggle" data-id="${b.id}">
-        <div class="cover cover-reading">${renderCoverPlaceholder(b.title)}${b.coverUrl ? `<img class="cover-img-layer" src="${esc(b.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}${b.language ? `<span class="lang-badge">${esc(getLangBadge(b.language))}</span>` : ''}</div>
-        <div class="reading-info">
-          <div class="reading-row-top">
-            <span class="reading-title">${esc(b.title)}</span>
-            <span class="reading-pct" style="color:${barColor}">${pct}%</span>
+      <div class="reading-row-wrap">
+        <div class="reading-row" data-action="toggle-timeline" data-id="${b.id}">
+          <div class="cover cover-reading">${renderCoverPlaceholder(b.title)}${b.coverUrl ? `<img class="cover-img-layer" src="${esc(b.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}${b.language ? `<span class="lang-badge">${esc(getLangBadge(b.language))}</span>` : ''}</div>
+          <div class="reading-info">
+            <div class="reading-row-top">
+              <span class="reading-title">${esc(b.title)}</span>
+              <span class="reading-pct" style="color:${barColor}">${pct}%</span>
+            </div>
+            <p class="reading-author">${esc(b.author)}</p>
+            <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+            <p class="reading-pages">${totalPages ? `${currentPage}/${totalPages} pages` : 'Total pages not set yet'}</p>
           </div>
-          <p class="reading-author">${esc(b.author)}</p>
-          <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
-          <p class="reading-pages">${totalPages ? `${currentPage}/${totalPages} pages` : 'Total pages not set yet'}</p>
         </div>
+        ${isTimelineOpen ? renderReadingTimeline(b) : ''}
       </div>`;
   }).join('');
   return `
@@ -817,6 +869,24 @@ function renderHome() {
     </div>
     <button class="btn-add-fab-square" id="add-btn-home" aria-label="Add Book">${ICONS.plus}</button>
   `;
+}
+
+function renderReadingTimeline(book) {
+  const history = Array.isArray(book.history) ? book.history : [];
+  const items = history.map((h, i) => {
+    const diff = i > 0 ? (Number(h.page) || 0) - (Number(history[i - 1].page) || 0) : null;
+    return `
+      <div class="timeline-item">
+        <p class="timeline-day-label">Day ${i + 1} <span class="timeline-date">(${formatHistoryDateTime(h.date)})</span></p>
+        <p class="timeline-pages">${Number(h.page) || 0} pages${diff != null ? ` <span class="timeline-diff">(${diff >= 0 ? '+' : ''}${diff})</span>` : ''}</p>
+      </div>`;
+  }).join('');
+  return `
+    <div class="reading-timeline-card" data-action="stop">
+      <p class="timeline-title">Reading Timeline</p>
+      ${history.length ? `<div class="timeline-list">${items}</div>` : `<p class="timeline-empty">No progress recorded yet.</p>`}
+      <button type="button" class="book-details-badge" data-action="open-book-details" data-id="${book.id}">${ICONS.book} Book Details</button>
+    </div>`;
 }
 
 function getReadingPct(book) {
@@ -2316,6 +2386,10 @@ function attachHandlers() {
     const id = el.getAttribute('data-id');
     if (action === 'toggle') {
       el.addEventListener('click', () => { state.expandedId = id; state.confirmDeleteId = null; render(); });
+    } else if (action === 'toggle-timeline') {
+      el.addEventListener('click', () => { state.expandedTimelineId = state.expandedTimelineId === id ? null : id; render(); });
+    } else if (action === 'open-book-details') {
+      el.addEventListener('click', e => { e.stopPropagation(); state.expandedId = id; state.confirmDeleteId = null; render(); });
     } else if (action === 'stop') {
       el.addEventListener('click', e => e.stopPropagation());
     } else if (action === 'close-detail') {
@@ -2496,10 +2570,12 @@ function attachHandlers() {
         state.books = state.books.map(b => {
           if (b.id !== state.editingId) return b;
           savedBook = { ...state.form, id: state.editingId, addedAt: b.addedAt };
+          savedBook.history = updateReadingHistory(b, savedBook);
           return savedBook;
         });
       } else {
         savedBook = { ...state.form, id: uid(), addedAt: Date.now() };
+        savedBook.history = updateReadingHistory(null, savedBook);
         state.books = [savedBook, ...state.books];
       }
       saveBooks();
