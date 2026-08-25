@@ -487,7 +487,7 @@ let state = {
   userName: loadName(),
   accentColor: SAVED_ACCENT,
   showSettings: false,
-  quotesLayout: null,
+  quotesOrder: null,
   dashboardCategory: 'year',
   showYearSheet: false,
   showStatSheet: false,
@@ -1612,10 +1612,6 @@ function renderDashboardTab() {
 }
 
 function shuffleQuotesLayout(count) {
-  state.quotesLayout = Array.from({ length: count }, () => ({
-    rot: (Math.random() * 8 - 4).toFixed(2),
-    ty: Math.round(Math.random() * 20 - 10)
-  }));
   const order = Array.from({ length: count }, (_, i) => i);
   for (let i = order.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -1644,7 +1640,7 @@ function getAllQuotes() {
 
 function renderQuotes() {
   const baseCount = buildQuotesList().length;
-  if (!state.quotesLayout || state.quotesLayout.length !== baseCount) shuffleQuotesLayout(baseCount);
+  if (!state.quotesOrder || state.quotesOrder.length !== baseCount) shuffleQuotesLayout(baseCount);
   const quotes = getAllQuotes();
   if (!quotes.length) {
     return `
@@ -1659,11 +1655,9 @@ function renderQuotes() {
   const selectMode = state.quoteSelectMode;
   const selected = state.selectedQuoteIndices || [];
   const cards = quotes.map((q, i) => {
-    const layout = state.quotesLayout[i] || { rot: 0, ty: 0 };
     const isSelected = selected.includes(i);
-    const rotStyle = selectMode ? '' : `transform:rotate(${layout.rot}deg) translateY(${layout.ty}px);`;
     return `
-      <div class="quote-card${selectMode ? ' select-mode' : ''}${isSelected ? ' quote-selected' : ''}" style="${rotStyle}" data-action="expand-quote" data-id="${i}">
+      <div class="quote-card${selectMode ? ' select-mode' : ''}${isSelected ? ' quote-selected' : ''}" data-action="expand-quote" data-id="${i}">
         ${selectMode ? `<span class="quote-select-check${isSelected ? ' checked' : ''}">${isSelected ? ICONS.check : ''}</span>` : ''}
         <span class="quote-card-mark">${ICONS.quote}</span>
         <p class="quote-card-text">${esc(q.text)}</p>
