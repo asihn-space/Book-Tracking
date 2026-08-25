@@ -173,17 +173,19 @@
   .reading-pages { font-size: 11px; color: var(--text-faint); margin: 6px 0 0; }
   .reading-empty { font-size: 13px; color: var(--text-soft); text-align: center; padding: 10px 0 2px; }
   .reading-row-wrap { display: flex; flex-direction: column; }
-  .reading-timeline-card { margin: 10px 0 2px 54px; padding: 12px 14px; border-radius: 14px; background: var(--bg); border: 1px solid var(--border); animation: timelineSlideDown 0.22s ease; transform-origin: top; }
-  @keyframes timelineSlideDown { from { opacity: 0; transform: translateY(-8px) scaleY(0.96); } to { opacity: 1; transform: translateY(0) scaleY(1); } }
-  .timeline-title { font-family: var(--font-display); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-soft); margin: 0 0 10px; }
-  .timeline-list { display: flex; flex-direction: column; gap: 12px; margin: 0 0 12px; }
-  .timeline-item { position: relative; padding-left: 16px; }
-  .timeline-item::before { content: ''; position: absolute; left: 0; top: 5px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
-  .timeline-item::after { content: ''; position: absolute; left: 3px; top: 14px; bottom: -12px; width: 1px; background: var(--border); }
-  .timeline-item:last-child::after { display: none; }
-  .timeline-day-label { font-size: 12px; font-weight: 700; color: var(--text); margin: 0; }
-  .timeline-date { font-size: 11px; font-weight: 500; color: var(--text-faint); margin-left: 2px; }
-  .timeline-pages { font-size: 12px; color: var(--text-soft); margin: 2px 0 0; }
+  .reading-timeline-card { margin: 6px 0 2px 54px; padding: 4px 0 2px; animation: timelineSlideDown 0.22s ease; transform-origin: top; }
+  @keyframes timelineSlideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+  .timeline-title { font-family: var(--font-display); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-soft); margin: 0 0 12px; }
+  .timeline-list { display: flex; flex-direction: column; gap: 14px; margin: 0 0 14px; }
+  .timeline-day-title { font-size: 12px; font-weight: 700; color: var(--text); margin: 0 0 6px; }
+  .timeline-day-date { font-size: 11px; font-weight: 500; color: var(--text-faint); margin-left: 2px; }
+  .timeline-subs { display: flex; flex-direction: column; gap: 8px; }
+  .timeline-sub { position: relative; padding-left: 16px; display: flex; align-items: baseline; gap: 8px; }
+  .timeline-sub::before { content: ''; position: absolute; left: 0; top: 5px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+  .timeline-sub::after { content: ''; position: absolute; left: 3px; top: 14px; bottom: -16px; width: 1px; background: var(--border); }
+  .timeline-sub-last::after { display: none; }
+  .timeline-time { font-size: 11px; font-weight: 600; color: var(--text-faint); min-width: 34px; }
+  .timeline-sub-pages { font-size: 12px; color: var(--text-soft); }
   .timeline-diff { color: var(--accent); font-weight: 700; }
   .timeline-empty { font-size: 12px; color: var(--text-soft); margin: 0 0 12px; }
   .book-details-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: 9999px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; }
@@ -554,13 +556,20 @@ function updateReadingHistory(prevBook, newBook) {
 
   if (history.length === 0) {
     if (!newBook.startDate) return history;
-    const startIso = new Date(newBook.startDate + 'T00:00:00').toISOString();
-    history.push({ date: startIso, page: newPage });
+    const startDateTime = new Date(newBook.startDate + 'T00:00:00');
+    const now = new Date();
+    startDateTime.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
+    history.push({ date: startDateTime.toISOString(), page: newPage });
     return history;
   }
 
-  if (prevPage !== null && newPage !== prevPage) {
+  if (prevPage === null || newPage === prevPage) return history;
+
+  const lastEntry = history[history.length - 1];
+  if (newPage > lastEntry.page) {
     history.push({ date: new Date().toISOString(), page: newPage });
+  } else {
+    history[history.length - 1] = { date: new Date().toISOString(), page: newPage };
   }
   return history;
 }
@@ -870,21 +879,44 @@ function renderHome() {
     <button class="btn-add-fab-square" id="add-btn-home" aria-label="Add Book">${ICONS.plus}</button>
   `;
 }
-
 function renderReadingTimeline(book) {
   const history = Array.isArray(book.history) ? book.history : [];
-  const items = history.map((h, i) => {
-    const diff = i > 0 ? (Number(h.page) || 0) - (Number(history[i - 1].page) || 0) : null;
+  const pad2 = n => String(n).padStart(2, '0');
+  const dayGroups = [];
+  history.forEach(h => {
+    const d = new Date(h.date);
+    const dateKey = `${d.getFullYear()}.${pad2(d.getMonth() + 1)}.${pad2(d.getDate())}`;
+    let group = dayGroups[dayGroups.length - 1];
+    if (!group || group.dateKey !== dateKey) {
+      group = { dateKey, entries: [] };
+      dayGroups.push(group);
+    }
+    group.entries.push(h);
+  });
+  let flatIndex = 0;
+  const groupsHtml = dayGroups.map((g, gi) => {
+    const subsHtml = g.entries.map(h => {
+      const idx = flatIndex++;
+      const diff = idx > 0 ? (Number(h.page) || 0) - (Number(history[idx - 1].page) || 0) : null;
+      const d = new Date(h.date);
+      const time = `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+      const isLastOverall = idx === history.length - 1;
+      return `
+        <div class="timeline-sub${isLastOverall ? ' timeline-sub-last' : ''}">
+          <span class="timeline-time">${time}</span>
+          <span class="timeline-sub-pages">${Number(h.page) || 0} pages${diff != null && diff > 0 ? ` <span class="timeline-diff">(+${diff})</span>` : ''}</span>
+        </div>`;
+    }).join('');
     return `
-      <div class="timeline-item">
-        <p class="timeline-day-label">Day ${i + 1} <span class="timeline-date">(${formatHistoryDateTime(h.date)})</span></p>
-        <p class="timeline-pages">${Number(h.page) || 0} pages${diff != null ? ` <span class="timeline-diff">(${diff >= 0 ? '+' : ''}${diff})</span>` : ''}</p>
+      <div class="timeline-day-group">
+        <p class="timeline-day-title">Day ${gi + 1} <span class="timeline-day-date">(${g.dateKey})</span></p>
+        <div class="timeline-subs">${subsHtml}</div>
       </div>`;
   }).join('');
   return `
     <div class="reading-timeline-card" data-action="stop">
       <p class="timeline-title">Reading Timeline</p>
-      ${history.length ? `<div class="timeline-list">${items}</div>` : `<p class="timeline-empty">No progress recorded yet.</p>`}
+      ${history.length ? `<div class="timeline-list">${groupsHtml}</div>` : `<p class="timeline-empty">No progress recorded yet.</p>`}
       <button type="button" class="book-details-badge" data-action="open-book-details" data-id="${book.id}">${ICONS.book} Book Details</button>
     </div>`;
 }
