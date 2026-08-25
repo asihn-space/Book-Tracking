@@ -172,9 +172,11 @@
   .reading-pages { font-size: 11px; color: var(--text-faint); margin: 6px 0 0; }
   .reading-empty { font-size: 13px; color: var(--text-soft); text-align: center; padding: 10px 0 2px; }
   .reading-row-wrap { display: flex; flex-direction: column; }
-  .reading-timeline-card { margin: 6px 0 2px 54px; padding: 4px 0 2px; animation: timelineSlideDown 0.22s ease; transform-origin: top; }
+  .reading-timeline-card { margin: 6px 0 2px 54px; padding: 4px 0 2px; position: relative; animation: timelineSlideDown 0.22s ease; transform-origin: top; }
+  .reading-timeline-card.detail-timeline-card { margin: 14px 0 0; padding: 14px 0 0; border-top: 1px solid var(--border); }
   @keyframes timelineSlideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-  .timeline-title { font-family: var(--font-display); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-soft); margin: 0 0 12px; }
+  .timeline-title { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--text); margin: 0 0 12px; padding-right: 92px; }
+  .detail-timeline-card .timeline-title { padding-right: 0; }
   .timeline-list { display: flex; flex-direction: column; gap: 14px; margin: 0 0 14px; }
   .timeline-day-title { font-size: 12px; font-weight: 700; color: var(--text); margin: 0 0 6px; }
   .timeline-day-date { font-size: 11px; font-weight: 500; color: var(--text-faint); margin-left: 2px; }
@@ -187,8 +189,8 @@
   .timeline-sub-pages { font-size: 12px; color: var(--text-soft); }
   .timeline-diff { color: var(--accent); font-weight: 700; }
   .timeline-empty { font-size: 12px; color: var(--text-soft); margin: 0 0 12px; }
-  .book-details-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: 9999px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; }
-  .book-details-badge svg { width: 14px; height: 14px; }
+  .book-details-badge { position: absolute; top: 0; right: 0; display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 600; padding: 4px 10px; border-radius: 9999px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; white-space: nowrap; }
+  .book-details-badge svg { width: 11px; height: 11px; }
   .btn-add-fab-square { position: fixed; bottom: 88px; right: max(18px, calc(50% - 302px)); width: 52px; height: 52px; border-radius: 16px; background: var(--accent); color: var(--accent-contrast); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 24px rgba(var(--accent-rgb), 0.32); z-index: 30; }
 
   /* Bottom nav */
@@ -568,7 +570,7 @@ function updateReadingHistory(prevBook, newBook) {
   if (newPage > lastEntry.page) {
     history.push({ date: new Date().toISOString(), page: newPage });
   } else {
-    history[history.length - 1] = { date: new Date().toISOString(), page: newPage };
+    history[history.length - 1] = { ...lastEntry, page: newPage };
   }
   return history;
 }
@@ -878,7 +880,8 @@ function renderHome() {
     <button class="btn-add-fab-square" id="add-btn-home" aria-label="Add Book">${ICONS.plus}</button>
   `;
 }
-function renderReadingTimeline(book) {
+function renderReadingTimeline(book, opts = {}) {
+  const { hideBadge = false, variant = '' } = opts;
   const history = Array.isArray(book.history) ? book.history : [];
   const pad2 = n => String(n).padStart(2, '0');
   const dayGroups = [];
@@ -913,10 +916,10 @@ function renderReadingTimeline(book) {
       </div>`;
   }).join('');
   return `
-    <div class="reading-timeline-card" data-action="stop">
+    <div class="reading-timeline-card${variant ? ' ' + variant : ''}" data-action="stop">
       <p class="timeline-title">Reading Timeline</p>
       ${history.length ? `<div class="timeline-list">${groupsHtml}</div>` : `<p class="timeline-empty">No progress recorded yet.</p>`}
-      <button type="button" class="book-details-badge" data-action="open-book-details" data-id="${book.id}">${ICONS.book} Book Details</button>
+      ${hideBadge ? '' : `<button type="button" class="book-details-badge" data-action="open-book-details" data-id="${book.id}">${ICONS.book} Book Details</button>`}
     </div>`;
 }
 
@@ -1046,6 +1049,7 @@ function renderDetailModal(book) {
             <div class="detail-status-row"><span class="status-mini status-mini-detail" style="${getStatusPillStyle(getBookStatus(book))}">${statusMeta.label}</span></div>
           </div>
         </div>
+        ${(book.history && book.history.length) ? renderReadingTimeline(book, { hideBadge: true, variant: 'detail-timeline-card' }) : ''}
         <div class="detail-info-grid">
           ${book.country ? `<div><span class="label">Origin Country</span> ${esc(book.country)}</div>` : ''}
           ${book.originYear ? `<div><span class="label">Origin Year</span> ${esc(book.originYear)}</div>` : ''}
