@@ -191,6 +191,10 @@
   .timeline-empty { font-size: 12px; color: var(--text-soft); margin: 0 0 12px; }
   .book-details-badge { position: absolute; top: 0; right: 0; display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 600; padding: 4px 10px; border-radius: 9999px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; white-space: nowrap; }
   .book-details-badge svg { width: 11px; height: 11px; }
+  .detail-timeline-toggle { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 600; padding: 6px 12px; margin-top: 8px; border-radius: 9999px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; }
+  .detail-timeline-toggle svg { width: 13px; height: 13px; }
+  .detail-timeline-chevron { display: inline-flex; transition: transform 0.15s ease; }
+  .detail-timeline-chevron svg { width: 11px; height: 11px; }
   .btn-add-fab-square { position: fixed; bottom: 88px; right: max(18px, calc(50% - 302px)); width: 52px; height: 52px; border-radius: 16px; background: var(--accent); color: var(--accent-contrast); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 24px rgba(var(--accent-rgb), 0.32); z-index: 30; }
 
   /* Bottom nav */
@@ -511,6 +515,7 @@ let state = {
   libraryView: 'list',
   expandedId: null,
   expandedTimelineId: null,
+  detailTimelineOpen: false,
   expandedQuoteIndex: null,
   quoteSelectMode: false,
   selectedQuoteIndices: [],
@@ -880,9 +885,23 @@ function renderHome() {
     <button class="btn-add-fab-square" id="add-btn-home" aria-label="Add Book">${ICONS.plus}</button>
   `;
 }
+function normalizeHistoryForDisplay(rawHistory) {
+  const list = Array.isArray(rawHistory) ? rawHistory : [];
+  const result = [];
+  list.forEach(h => {
+    const page = Number(h.page) || 0;
+    const last = result[result.length - 1];
+    if (!last || page > (Number(last.page) || 0)) {
+      result.push({ ...h, page });
+    } else {
+      result[result.length - 1] = { ...last, page };
+    }
+  });
+  return result;
+}
 function renderReadingTimeline(book, opts = {}) {
   const { hideBadge = false, variant = '' } = opts;
-  const history = Array.isArray(book.history) ? book.history : [];
+  const history = normalizeHistoryForDisplay(book.history);
   const pad2 = n => String(n).padStart(2, '0');
   const dayGroups = [];
   history.forEach(h => {
@@ -1047,9 +1066,10 @@ function renderDetailModal(book) {
             ${book.publisher ? `<p class="detail-book-publisher">${esc(book.publisher)}</p>` : ''}
             <span class="detail-rating">${ICONS.star}${Number(book.rating).toFixed(1)}</span>
             <div class="detail-status-row"><span class="status-mini status-mini-detail" style="${getStatusPillStyle(getBookStatus(book))}">${statusMeta.label}</span></div>
+            ${(book.history && book.history.length) ? `<button type="button" class="detail-timeline-toggle" data-action="toggle-detail-timeline">${ICONS.chart} Reading Timeline <span class="detail-timeline-chevron"${state.detailTimelineOpen ? ' style="transform:rotate(180deg)"' : ''}>${ICONS.chevronDown}</span></button>` : ''}
           </div>
         </div>
-        ${(book.history && book.history.length) ? renderReadingTimeline(book, { hideBadge: true, variant: 'detail-timeline-card' }) : ''}
+        ${(state.detailTimelineOpen && book.history && book.history.length) ? renderReadingTimeline(book, { hideBadge: true, variant: 'detail-timeline-card' }) : ''}
         <div class="detail-info-grid">
           ${book.country ? `<div><span class="label">Origin Country</span> ${esc(book.country)}</div>` : ''}
           ${book.originYear ? `<div><span class="label">Origin Year</span> ${esc(book.originYear)}</div>` : ''}
@@ -2414,15 +2434,17 @@ function attachHandlers() {
     const action = el.getAttribute('data-action');
     const id = el.getAttribute('data-id');
     if (action === 'toggle') {
-      el.addEventListener('click', () => { state.expandedId = id; state.confirmDeleteId = null; render(); });
+      el.addEventListener('click', () => { state.expandedId = id; state.confirmDeleteId = null; state.detailTimelineOpen = false; render(); });
     } else if (action === 'toggle-timeline') {
       el.addEventListener('click', () => { state.expandedTimelineId = state.expandedTimelineId === id ? null : id; render(); });
+    } else if (action === 'toggle-detail-timeline') {
+      el.addEventListener('click', e => { e.stopPropagation(); state.detailTimelineOpen = !state.detailTimelineOpen; render(); });
     } else if (action === 'open-book-details') {
-      el.addEventListener('click', e => { e.stopPropagation(); state.expandedId = id; state.confirmDeleteId = null; render(); });
+      el.addEventListener('click', e => { e.stopPropagation(); state.expandedId = id; state.confirmDeleteId = null; state.detailTimelineOpen = false; render(); });
     } else if (action === 'stop') {
       el.addEventListener('click', e => e.stopPropagation());
     } else if (action === 'close-detail') {
-      el.addEventListener('click', e => { e.stopPropagation(); state.expandedId = null; state.confirmDeleteId = null; render(); });
+      el.addEventListener('click', e => { e.stopPropagation(); state.expandedId = null; state.confirmDeleteId = null; state.detailTimelineOpen = false; render(); });
     } else if (action === 'expand-quote') {
       const qIndex = parseInt(id, 10);
       let pressTimer = null;
