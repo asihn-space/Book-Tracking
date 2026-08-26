@@ -175,7 +175,7 @@
   .reading-timeline-card { margin: 6px 0 2px 54px; padding: 4px 0 2px; position: relative; animation: timelineSlideDown 0.22s ease; transform-origin: top; }
   .reading-timeline-card.detail-timeline-card { margin: 14px 0 0; padding: 14px 0 0; border-top: 1px solid var(--border); }
   @keyframes timelineSlideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-  .timeline-title { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--text); margin: 0 0 12px; padding-right: 92px; }
+  .timeline-title { font-family: var(--font-body); font-size: 11px; font-weight: 700; color: var(--text-faint); margin: 0 0 12px; padding-right: 92px; }
   .detail-timeline-card .timeline-title { padding-right: 0; }
   .timeline-list { display: flex; flex-direction: column; gap: 14px; margin: 0 0 14px; }
   .timeline-day-title { font-size: 12px; font-weight: 700; color: var(--text); margin: 0 0 6px; }
@@ -936,7 +936,7 @@ function renderReadingTimeline(book, opts = {}) {
   }).join('');
   return `
     <div class="reading-timeline-card${variant ? ' ' + variant : ''}" data-action="stop">
-      <p class="timeline-title">Reading Timeline</p>
+      <p class="timeline-title">READING TIMELINE</p>
       ${history.length ? `<div class="timeline-list">${groupsHtml}</div>` : `<p class="timeline-empty">No progress recorded yet.</p>`}
       ${hideBadge ? '' : `<button type="button" class="book-details-badge" data-action="open-book-details" data-id="${book.id}">${ICONS.book} Book Details</button>`}
     </div>`;
@@ -1066,7 +1066,7 @@ function renderDetailModal(book) {
             ${book.publisher ? `<p class="detail-book-publisher">${esc(book.publisher)}</p>` : ''}
             <span class="detail-rating">${ICONS.star}${Number(book.rating).toFixed(1)}</span>
             <div class="detail-status-row"><span class="status-mini status-mini-detail" style="${getStatusPillStyle(getBookStatus(book))}">${statusMeta.label}</span></div>
-            ${(book.history && book.history.length) ? `<button type="button" class="detail-timeline-toggle" data-action="toggle-detail-timeline">${ICONS.chart} Reading Timeline <span class="detail-timeline-chevron"${state.detailTimelineOpen ? ' style="transform:rotate(180deg)"' : ''}>${ICONS.chevronDown}</span></button>` : ''}
+            ${(book.history && book.history.length) ? `<button type="button" class="detail-timeline-toggle" data-action="toggle-detail-timeline">${ICONS.chart} READING TIMELINE <span class="detail-timeline-chevron"${state.detailTimelineOpen ? ' style="transform:rotate(180deg)"' : ''}>${ICONS.chevronDown}</span></button>` : ''}
           </div>
         </div>
         ${(state.detailTimelineOpen && book.history && book.history.length) ? renderReadingTimeline(book, { hideBadge: true, variant: 'detail-timeline-card' }) : ''}
