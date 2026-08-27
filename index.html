@@ -278,7 +278,7 @@
 
   /* Detail modal (shared) */
   .status-mini { display: inline-block; font-size: 9.5px; font-weight: 700; padding: 2px 8px; border-radius: 9999px; margin-top: 5px; }
-  .status-mini-detail { font-size: 12px; padding: 4px 12px; margin-top: 0; }
+  .status-mini-detail { font-size: 12px; padding: 4px 12px; margin: 0 0 6px; }
   .cover-detail { width: 106px; flex-shrink: 0; margin: 0; }
   .detail-head { display: flex; gap: 14px; align-items: stretch; margin-bottom: 16px; }
   .detail-head-info { flex: 1; min-width: 0; padding-top: 2px; display: flex; flex-direction: column; justify-content: space-between; }
@@ -286,10 +286,9 @@
   .detail-book-author { font-size: 13.5px; color: var(--accent); font-weight: 600; margin: 0 0 3px; }
   .detail-book-translator { font-size: 12px; color: var(--text-faint); margin: 0 0 6px; }
   .detail-book-publisher { font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-faint); font-weight: 600; margin: 0; }
-  .detail-rating { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; font-size: 12px; color: #CA8A04; }
   .detail-meta-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
   .detail-status-row { margin-top: 0; }
-  .detail-timeline-toggle { display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-body); font-size: 12px; font-weight: 700; letter-spacing: 0.01em; padding: 4px 12px; border-radius: 9999px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; }
+  .detail-timeline-toggle { display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-body); font-size: 12px; font-weight: 700; letter-spacing: 0.01em; padding: 4px 12px; border-radius: 9999px; border: 1px solid var(--border); background: var(--bg); color: var(--text-soft); cursor: pointer; }
   .detail-timeline-toggle:active { background: var(--border); }
   .detail-timeline-toggle-left { display: inline-flex; align-items: center; gap: 5px; }
   .detail-timeline-toggle svg { width: 12px; height: 12px; flex-shrink: 0; }
@@ -1086,19 +1085,16 @@ function renderDetailModal(book) {
       <div class="detail-sheet" data-action="stop">
         <div class="detail-sheet-handle"></div>
         <div class="detail-head">
-          <div class="cover cover-detail">${renderCoverPlaceholder(book.title)}${book.coverUrl ? `<img class="cover-img-layer" src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}${book.language ? `<span class="lang-badge">${esc(getLangBadge(book.language))}</span>` : ''}</div>
+          <div class="cover cover-detail">${renderCoverPlaceholder(book.title)}${book.coverUrl ? `<img class="cover-img-layer" src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}${book.language ? `<span class="lang-badge-grid">${esc(getLangBadge(book.language))}</span>` : ''}<span class="rate-badge-grid">${ICONS.star}${Number(book.rating).toFixed(1)}</span></div>
           <div class="detail-head-info">
             <div class="detail-head-top">
+              <span class="status-mini status-mini-detail" style="${getStatusPillStyle(getBookStatus(book))}">${statusMeta.label}</span>
               <p class="detail-book-title">${esc(book.title)}</p>
               <p class="detail-book-author">${esc(book.author)}</p>
               ${book.translator ? `<p class="detail-book-translator">Translated by ${esc(book.translator)}</p>` : ''}
               ${book.publisher ? `<p class="detail-book-publisher">${esc(book.publisher)}</p>` : ''}
             </div>
-            <div class="detail-meta-row">
-              <span class="detail-rating">${ICONS.star}${Number(book.rating).toFixed(1)}</span>
-              <span class="status-mini status-mini-detail" style="${getStatusPillStyle(getBookStatus(book))}">${statusMeta.label}</span>
-              ${(book.history && book.history.length) ? `<button type="button" class="detail-timeline-toggle" data-action="open-reading-timeline" data-id="${book.id}"><span class="detail-timeline-toggle-left">${ICONS.chart} Timeline</span><span class="detail-timeline-toggle-chevron">${ICONS.chevronRight}</span></button>` : ''}
-            </div>
+            ${(book.history && book.history.length) ? `<div class="detail-meta-row"><button type="button" class="detail-timeline-toggle" data-action="open-reading-timeline" data-id="${book.id}"><span class="detail-timeline-toggle-left">${ICONS.chart} Timeline</span><span class="detail-timeline-toggle-chevron">${ICONS.chevronRight}</span></button></div>` : ''}
           </div>
         </div>
         <div class="detail-info-grid">
