@@ -88,7 +88,7 @@
   .year-group { margin-bottom: 18px; padding: 14px; background: var(--surface); border: 1px solid transparent; border-radius: 14px; box-shadow: 0 3px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04); }
   .year-group:last-child { margin-bottom: 0; }
   .year-group-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px; margin-bottom: 4px; }
-  .year-group-title { font-family: var(--font-display); font-weight: 800; font-size: 15px; margin: 0; }
+  .year-group-title { font-family: var(--font-body); color: var(--text-faint); font-weight: 800; font-size: 12px; margin: 0; }
   .year-group-stats { font-size: 11.5px; color: var(--text-soft); }
   .month-chart { display: flex; align-items: flex-end; gap: 4px; margin-top: 8px; }
   .month-col { flex: 1; display: flex; flex-direction: column; align-items: center; }
@@ -133,9 +133,9 @@
 
   /* Quotes */
   .quotes-view { padding-bottom: 90px; }
-  .quotes-wall { column-count: 2; column-gap: 12px; }
+  .quotes-wall { column-count: 2; column-gap: 8px; }
   @media (max-width: 380px) { .quotes-wall { column-count: 1; } }
-  .quote-card { position: relative; break-inside: avoid; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 14px 14px; margin: 0 0 16px; box-shadow: 0 3px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04); cursor: pointer; transition: transform 0.12s ease, box-shadow 0.12s ease; user-select: none; -webkit-user-select: none; }
+  .quote-card { position: relative; break-inside: avoid; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 14px 14px; margin: 0 0 8px; box-shadow: 0 3px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04); cursor: pointer; transition: transform 0.12s ease, box-shadow 0.12s ease; user-select: none; -webkit-user-select: none; }
   .quote-card.select-mode { transform: none !important; }
   .quote-card.quote-selected { outline: 3px solid var(--accent); outline-offset: -1px; }
   .quote-select-check { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border-radius: 50%; background: var(--surface); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; z-index: 2; color: transparent; }
@@ -192,8 +192,6 @@
   .book-details-badge { position: absolute; top: 0; right: 0; display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-body); font-size: 10.5px; font-weight: 600; padding: 4px 10px; border-radius: 9999px; border: none; background: #E4E4E7; color: #52525B; cursor: pointer; white-space: nowrap; }
   .list-timeline-sheet .reading-timeline-card { margin: 4px 0 0; padding: 0; }
   .book-details-badge svg { width: 11px; height: 11px; }
-  .detail-timeline-toggle { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 600; padding: 6px 12px; margin-top: 8px; border-radius: 9999px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; }
-  .detail-timeline-toggle svg { width: 13px; height: 13px; }
   .detail-timeline-chevron { display: inline-flex; transition: transform 0.15s ease; }
   .detail-timeline-chevron svg { width: 11px; height: 11px; }
   .btn-add-fab-square { position: fixed; bottom: 88px; right: max(18px, calc(50% - 302px)); width: 52px; height: 52px; border-radius: 16px; background: var(--accent); color: var(--accent-contrast); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 24px rgba(var(--accent-rgb), 0.32); z-index: 30; }
@@ -282,25 +280,34 @@
   .status-mini { display: inline-block; font-size: 9.5px; font-weight: 700; padding: 2px 8px; border-radius: 9999px; margin-top: 5px; }
   .status-mini-detail { font-size: 12px; padding: 4px 12px; margin-top: 0; }
   .cover-detail { width: 106px; flex-shrink: 0; margin: 0; }
-  .detail-head { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 16px; }
-  .detail-head-info { flex: 1; min-width: 0; padding-top: 2px; }
+  .detail-head { display: flex; gap: 14px; align-items: stretch; margin-bottom: 16px; }
+  .detail-head-info { flex: 1; min-width: 0; padding-top: 2px; display: flex; flex-direction: column; justify-content: space-between; }
   .detail-book-title { font-family: var(--font-display); font-size: 17px; font-weight: 800; margin: 0 0 4px; line-height: 1.3; }
   .detail-book-author { font-size: 13.5px; color: var(--accent); font-weight: 600; margin: 0 0 3px; }
   .detail-book-translator { font-size: 12px; color: var(--text-faint); margin: 0 0 6px; }
-  .detail-book-publisher { font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-faint); font-weight: 600; margin: 0 0 8px; }
-  .detail-rating { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; font-size: 13px; color: #CA8A04; }
-  .detail-meta-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+  .detail-book-publisher { font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-faint); font-weight: 600; margin: 0; }
+  .detail-rating { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; font-size: 12px; color: #CA8A04; }
+  .detail-meta-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
   .detail-status-row { margin-top: 0; }
-  .detail-timeline-toggle { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; font-family: var(--font-body); font-size: 12px; font-weight: 700; letter-spacing: 0.02em; padding: 10px 12px; margin-top: 10px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; text-align: left; }
+  .detail-timeline-toggle { display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-body); font-size: 12px; font-weight: 700; letter-spacing: 0.01em; padding: 4px 12px; border-radius: 9999px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; }
   .detail-timeline-toggle:active { background: var(--border); }
-  .detail-timeline-toggle-left { display: inline-flex; align-items: center; gap: 7px; }
-  .detail-timeline-toggle svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .detail-timeline-toggle-left { display: inline-flex; align-items: center; gap: 5px; }
+  .detail-timeline-toggle svg { width: 12px; height: 12px; flex-shrink: 0; }
   .detail-timeline-toggle-left svg { color: var(--accent); }
   .detail-timeline-toggle-chevron { color: var(--text-faint); display: inline-flex; }
   .timeline-sheet { max-width: 480px; }
   .timeline-sheet .reading-timeline-card.detail-timeline-card { border-top: none; margin: 0; padding: 6px 0 0; }
   .timeline-sheet .timeline-title { display: none; }
   .timeline-sheet-heading { font-family: var(--font-display); font-size: 16px; font-weight: 800; margin: 0 0 14px; padding-right: 36px; }
+
+  /* Reading timeline: popup (centered modal) instead of bottom sheet */
+  .timeline-popup-backdrop { position: fixed; inset: 0; z-index: 40; background: rgba(0,0,0,0.42); display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .timeline-popup { position: relative; width: 100%; max-width: 380px; margin: 0 auto; background: var(--surface); border-radius: 20px; max-height: 80vh; overflow-y: auto; padding: 18px 18px 20px; animation: timeline-popup-in 0.18s ease-out; }
+  @keyframes timeline-popup-in { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+  .timeline-popup.list-timeline-sheet .reading-timeline-card { margin: 4px 0 0; padding: 0; }
+  .timeline-popup.timeline-sheet { max-width: 380px; }
+  .timeline-popup.timeline-sheet .reading-timeline-card.detail-timeline-card { border-top: none; margin: 0; padding: 6px 0 0; }
+  .timeline-popup.timeline-sheet .timeline-title { display: none; }
   .detail-info-grid { display: grid; grid-template-columns: 1fr 1fr; row-gap: 12px; column-gap: 10px; font-size: 12.5px; color: var(--text-soft); margin-bottom: 14px; padding: 14px; border: 1px solid var(--border); border-radius: 10px; }
   .detail-info-grid .label { color: var(--text-faint); margin-right: 3px; }
   .review-box { margin: 0 0 4px; padding: 14px; background: #F5F5F6; border: 1px solid var(--border); border-radius: 10px; }
@@ -901,9 +908,8 @@ function renderHome() {
 function renderReadingTimelineListSheet(book) {
   if (!book) return '';
   return `
-    <div class="detail-sheet-backdrop" data-action="close-timeline-sheet">
-      <div class="detail-sheet list-timeline-sheet" data-action="stop">
-        <div class="detail-sheet-handle"></div>
+    <div class="timeline-popup-backdrop" data-action="close-timeline-sheet">
+      <div class="detail-sheet timeline-popup list-timeline-sheet" data-action="stop">
         ${renderReadingTimeline(book, { hideBadge: false })}
       </div>
     </div>`;
@@ -1079,19 +1085,20 @@ function renderDetailModal(book) {
     <div class="detail-sheet-backdrop" data-action="close-detail">
       <div class="detail-sheet" data-action="stop">
         <div class="detail-sheet-handle"></div>
-        <button class="detail-sheet-close-btn" data-action="close-detail" aria-label="Close">${ICONS.x}</button>
         <div class="detail-head">
           <div class="cover cover-detail">${renderCoverPlaceholder(book.title)}${book.coverUrl ? `<img class="cover-img-layer" src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}${book.language ? `<span class="lang-badge">${esc(getLangBadge(book.language))}</span>` : ''}</div>
           <div class="detail-head-info">
-            <p class="detail-book-title">${esc(book.title)}</p>
-            <p class="detail-book-author">${esc(book.author)}</p>
-            ${book.translator ? `<p class="detail-book-translator">Translated by ${esc(book.translator)}</p>` : ''}
-            ${book.publisher ? `<p class="detail-book-publisher">${esc(book.publisher)}</p>` : ''}
+            <div class="detail-head-top">
+              <p class="detail-book-title">${esc(book.title)}</p>
+              <p class="detail-book-author">${esc(book.author)}</p>
+              ${book.translator ? `<p class="detail-book-translator">Translated by ${esc(book.translator)}</p>` : ''}
+              ${book.publisher ? `<p class="detail-book-publisher">${esc(book.publisher)}</p>` : ''}
+            </div>
             <div class="detail-meta-row">
               <span class="detail-rating">${ICONS.star}${Number(book.rating).toFixed(1)}</span>
               <span class="status-mini status-mini-detail" style="${getStatusPillStyle(getBookStatus(book))}">${statusMeta.label}</span>
+              ${(book.history && book.history.length) ? `<button type="button" class="detail-timeline-toggle" data-action="open-reading-timeline" data-id="${book.id}"><span class="detail-timeline-toggle-left">${ICONS.chart} Timeline</span><span class="detail-timeline-toggle-chevron">${ICONS.chevronRight}</span></button>` : ''}
             </div>
-            ${(book.history && book.history.length) ? `<button type="button" class="detail-timeline-toggle" data-action="open-reading-timeline" data-id="${book.id}"><span class="detail-timeline-toggle-left">${ICONS.chart} READING TIMELINE</span><span class="detail-timeline-toggle-chevron">${ICONS.chevronRight}</span></button>` : ''}
           </div>
         </div>
         <div class="detail-info-grid">
@@ -1123,9 +1130,8 @@ function renderDetailModal(book) {
 
 function renderReadingTimelineSheet(book) {
   return `
-    <div class="detail-sheet-backdrop" data-action="close-reading-timeline">
-      <div class="detail-sheet timeline-sheet" data-action="stop">
-        <div class="detail-sheet-handle"></div>
+    <div class="timeline-popup-backdrop" data-action="close-reading-timeline">
+      <div class="detail-sheet timeline-popup timeline-sheet" data-action="stop">
         ${renderReadingTimeline(book, { hideBadge: true, variant: 'detail-timeline-card' })}
       </div>
     </div>`;
@@ -1589,7 +1595,7 @@ function renderAchievementSection() {
       </div>
       ${top5Html}
     </div>
-    ${chartHtml ? `<div class="year-group"><p class="year-group-title">Finishes by month</p>${chartHtml}</div>` : ''}`;
+    ${chartHtml ? `<div class="year-group"><p class="year-group-title">Finishes by Month</p>${chartHtml}</div>` : ''}`;
 }
 
 function polarToCartesian(cx, cy, r, angleDeg) {
