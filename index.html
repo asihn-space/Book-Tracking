@@ -1083,7 +1083,7 @@ function renderDetailModal(book) {
       <div class="detail-sheet" data-action="stop">
         <div class="detail-sheet-handle"></div>
         <div class="detail-head">
-          <div class="cover cover-detail">${renderCoverPlaceholder(book.title)}${book.coverUrl ? `<img class="cover-img-layer" src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}${book.language ? `<span class="lang-badge">${esc(getLangBadge(book.language))}</span>` : ''}</div>
+          <div class="cover cover-detail">${renderCoverPlaceholder(book.title)}${book.coverUrl ? `<img class="cover-img-layer" src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}</div>
           <div class="detail-head-info">
             <div class="detail-head-top">
               <p class="detail-book-title">${esc(book.title)}</p>
