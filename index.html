@@ -572,27 +572,53 @@ function getBookStatus(b) {
 function updateReadingHistory(prevBook, newBook) {
   const history = (prevBook && Array.isArray(prevBook.history)) ? [...prevBook.history] : [];
   const newStatus = getBookStatus(newBook);
-  const newPage = Number(newBook.currentPage) || 0;
-  const prevPage = prevBook ? (Number(prevBook.currentPage) || 0) : null;
+  const prevStatus = prevBook ? getBookStatus(prevBook) : null;
 
-  if (newStatus !== 'ongoing') return history;
+  if (newStatus === 'tbr') return history;
+
+  const totalPages = Number(newBook.totalPages) || 0;
+  const rawCurrentPage = Number(newBook.currentPage) || 0;
+  // A finished book's true final page is its total page count, so "Finished"
+  // always lands on the last page even if "Last page read" was never
+  // manually pushed all the way there beforehand.
+  const targetPage = newStatus === 'done' ? (totalPages || rawCurrentPage) : rawCurrentPage;
 
   if (history.length === 0) {
-    if (!newBook.startDate) return history;
-    const startDateTime = new Date(newBook.startDate + 'T00:00:00');
-    const now = new Date();
-    startDateTime.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
-    history.push({ date: startDateTime.toISOString(), page: newPage });
+    if (newBook.startDate) {
+      const startDateTime = new Date(newBook.startDate + 'T00:00:00');
+      const now = new Date();
+      startDateTime.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
+      history.push({ date: startDateTime.toISOString(), page: newStatus === 'done' ? 0 : targetPage });
+    } else if (newStatus !== 'done') {
+      return history;
+    }
+  }
+
+  const lastEntry = history.length ? history[history.length - 1] : { page: -1, date: null };
+
+  if (newStatus === 'done') {
+    // Always add a distinct entry the moment a book transitions to Finished,
+    // so the timeline never gets stuck on an earlier in-progress update.
+    const justFinished = prevStatus !== 'done';
+    if (targetPage > lastEntry.page || justFinished) {
+      const finishDate = newBook.endDate ? new Date(newBook.endDate + 'T00:00:00') : new Date();
+      const now = new Date();
+      finishDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
+      history.push({ date: finishDate.toISOString(), page: Math.max(targetPage, lastEntry.page) });
+    } else {
+      history[history.length - 1] = { ...lastEntry, page: Math.max(lastEntry.page, targetPage) };
+    }
     return history;
   }
 
-  if (prevPage === null || newPage === prevPage) return history;
-
-  const lastEntry = history[history.length - 1];
-  if (newPage > lastEntry.page) {
-    history.push({ date: new Date().toISOString(), page: newPage });
+  // ongoing / dnf: log incremental page progress (still works correctly even
+  // if this book was previously marked Finished and got reverted).
+  const prevPage = prevBook ? (Number(prevBook.currentPage) || 0) : null;
+  if (prevPage === null || targetPage === prevPage) return history;
+  if (targetPage > lastEntry.page) {
+    history.push({ date: new Date().toISOString(), page: targetPage });
   } else {
-    history[history.length - 1] = { ...lastEntry, page: newPage };
+    history[history.length - 1] = { ...lastEntry, page: targetPage };
   }
   return history;
 }
