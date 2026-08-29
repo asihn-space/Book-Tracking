@@ -181,9 +181,9 @@
   .timeline-day-title { font-size: 12px; font-weight: 700; color: var(--text); margin: 0 0 6px; }
   .timeline-day-date { font-size: 11px; font-weight: 500; color: var(--text-faint); margin-left: 2px; }
   .timeline-subs { display: flex; flex-direction: column; gap: 8px; }
-  .timeline-sub { position: relative; padding-left: 16px; display: flex; align-items: baseline; gap: 8px; }
-  .timeline-sub::before { content: ''; position: absolute; left: 0; top: 5px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
-  .timeline-sub::after { content: ''; position: absolute; left: 3px; top: 14px; bottom: -16px; width: 1px; background: var(--border); }
+  .timeline-sub { position: relative; padding-left: 16px; display: flex; align-items: center; gap: 8px; }
+  .timeline-sub::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+  .timeline-sub::after { content: ''; position: absolute; left: 2px; top: calc(50% + 4px); bottom: -16px; width: 1px; background: var(--accent); }
   .timeline-sub-last::after { display: none; }
   .timeline-time { font-size: 11px; font-weight: 600; color: var(--text-faint); min-width: 34px; }
   .timeline-sub-pages { font-size: 12px; color: var(--text-soft); }
