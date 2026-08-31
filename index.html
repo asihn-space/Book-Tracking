@@ -54,7 +54,6 @@
   .swatch-hint { font-size: 12.5px; color: var(--text-soft); margin: 14px 0 0; }
 
   /* Dashboard modal */
-  .dashboard-title { font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 800; font-size: 17px; margin: 0; }
   .dash-cat-row { display: flex; gap: 0; background: var(--surface); border-radius: 14px; padding: 4px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
   .dash-cat-chip { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 8px; border-radius: 10px; background: none; border: none; font-size: 13px; font-weight: 700; color: var(--text-soft); cursor: pointer; font-family: var(--font-display); white-space: nowrap; }
   .dash-cat-chip svg { width: 15px; height: 15px; flex-shrink: 0; }
@@ -72,10 +71,6 @@
   .sheet-option-btn.active svg { color: var(--accent); }
   .sheet-title { font-family: var(--font-display); font-size: 17px; font-weight: 800; margin: 0 0 12px; padding: 0 2px; }
   .rank-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
-  .bar-rank-row { margin-bottom: 14px; }
-  .bar-rank-label { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; gap: 8px; }
-  .bar-rank-name { font-size: 13.5px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .bar-rank-count { font-size: 12px; font-weight: 700; color: var(--text-soft); font-variant-numeric: tabular-nums; flex-shrink: 0; }
   .bar-track { height: 10px; background: var(--bg); border-radius: 9999px; overflow: hidden; }
   .bar-fill { height: 100%; border-radius: 9999px; }
   .rank-row:last-child { border-bottom: none; }
@@ -230,7 +225,7 @@
   .bottom-nav-btn { flex: 1 1 0; min-width: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 7px 4px 5px; border: none; background: none; cursor: pointer; font-family: inherit; font-size: 11.5px; font-weight: 600; color: var(--text-faint); border-radius: 12px; }
   .bottom-nav-btn svg { display: block; flex-shrink: 0; width: 20px; height: 20px; }
   .bottom-nav-btn span { display: block; width: 100%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .bottom-nav-btn.active { color: var(--accent); }
+  .bottom-nav-btn.active { background: var(--accent); color: var(--accent-contrast); margin: 0 8px; }
 
   /* Dashboard tab (was modal) */
   .dashboard-view { padding-bottom: 90px; }
@@ -292,14 +287,12 @@
   .lang-badge-grid { position: absolute; top: 4px; left: 4px; display: inline-flex; align-items: center; gap: 3px; font-weight: 800; font-size: 9.5px; letter-spacing: 0.02em; color: var(--accent-dark); background: rgba(255,255,255,0.92); padding: 3px 8px; border-radius: 9999px; line-height: 1.4; box-shadow: 0 1px 4px rgba(0,0,0,0.18); border: 1px solid rgba(0,0,0,0.06); z-index: 3; }
   .item-title-grid { font-family: var(--font-display); font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; font-weight: 700; line-height: 1.3; }
   .item-author-grid { font-size: 9.5px; margin: 2px 0 0; color: var(--text-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .item-publisher-grid { font-size: 9px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-faint); margin: 4px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
   .status-mini-grid { margin: 4px 0 0; font-size: 8.5px; padding: 1.5px 6px; }
 
   /* Detail sheet */
   .detail-sheet-backdrop { position: fixed; inset: 0; z-index: 40; background: rgba(0,0,0,0.42); display: flex; align-items: flex-end; }
   .detail-sheet { position: relative; width: 100%; max-width: 640px; margin: 0 auto; background: var(--surface); border-radius: 22px 22px 0 0; max-height: 88vh; overflow-y: auto; padding: 12px 16px 26px; animation: sheet-slide-up 0.25s ease-out; }
   .detail-sheet-handle { width: 40px; height: 4px; border-radius: 9999px; background: var(--border); margin: 0 auto 14px; }
-  .detail-sheet-close-btn { position: absolute; top: 12px; right: 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 9999px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-soft); padding: 0; }
   .picker-sheet-backdrop { position: fixed; inset: 0; z-index: 40; background: transparent; }
   .picker-sheet { position: fixed; bottom: 132px; right: max(18px, calc(50% - 302px)); z-index: 41; width: 168px; max-height: 300px; overflow-y: auto; background: var(--surface); border-radius: 14px; box-shadow: 0 14px 34px rgba(0,0,0,0.2); padding: 8px; transform-origin: bottom right; animation: picker-sheet-pop 0.15s ease-out; }
   .picker-sheet-title { font-family: var(--font-display); font-size: 11.5px; font-weight: 700; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.04em; margin: 2px 2px 8px; }
@@ -318,13 +311,11 @@
   .detail-rating { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; font-size: 12px; color: #CA8A04; }
   .detail-rating svg { width: 12px; height: 12px; }
   .detail-meta-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-  .detail-status-row { margin-top: 0; }
   .detail-timeline-toggle { font-family: var(--font-body); font-size: 10.5px; font-weight: 500; color: var(--text-soft); padding: 4px 12px; border-radius: 9999px; border: 1px solid #D4D4D8; background: #E4E4E7; color: #52525B; cursor: pointer; white-space: nowrap; }
   .detail-timeline-toggle:active { background: var(--border); }
   .timeline-sheet { max-width: 480px; }
   .timeline-sheet .reading-timeline-card.detail-timeline-card { border-top: none; margin: 0; padding: 6px 0 0; }
   .timeline-sheet .timeline-title { display: none; }
-  .timeline-sheet-heading { font-family: var(--font-display); font-size: 16px; font-weight: 800; margin: 0 0 14px; padding-right: 36px; }
 
   /* Reading timeline: popup (centered modal) instead of bottom sheet */
   .timeline-popup-backdrop { position: fixed; inset: 0; z-index: 40; background: rgba(0,0,0,0.42); display: flex; align-items: center; justify-content: center; padding: 24px; }
@@ -382,7 +373,6 @@
   .achievement-card { position: relative; z-index: 6; width: 100%; max-width: 320px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 28px 20px 24px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.12); }
   .achievement-cover { width: 150px; aspect-ratio: 2/3; margin: 0 auto 16px; border-radius: 12px; overflow: hidden; box-shadow: 0 14px 32px rgba(0,0,0,0.22); background: var(--bg); display: flex; align-items: center; justify-content: center; color: var(--text-faint); }
   .achievement-cover img { width: 100%; height: 100%; object-fit: cover; }
-  .achievement-emoji { font-size: 40px; margin: 0 0 6px; animation: celebration-bounce 0.7s ease-in-out; }
   .achievement-heading { font-family: var(--font-display); font-weight: 800; font-size: 19px; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 0.03em; }
   .achievement-sub { font-size: 13px; color: var(--text-soft); margin: 0 0 10px; }
   .achievement-title { font-weight: 700; font-size: 18px; margin: 0 0 2px; line-height: 1.3; }
@@ -500,40 +490,6 @@ function darkenHex(hex, factor) {
   const g = clamp(parseInt(h.substring(2, 4), 16) * factor);
   const b = clamp(parseInt(h.substring(4, 6), 16) * factor);
   return `#${[r, g, b].map(v => v.toString(16).padStart(2, '0')).join('')}`;
-}
-function hexToHsl(hex) {
-  const h = hex.replace('#', '');
-  const r = parseInt(h.substring(0, 2), 16) / 255;
-  const g = parseInt(h.substring(2, 4), 16) / 255;
-  const b = parseInt(h.substring(4, 6), 16) / 255;
-  const max = Math.max(r, g, b), min = Math.min(r, g, b);
-  let hh = 0, s = 0; const l = (max + min) / 2;
-  if (max !== min) {
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    switch (max) {
-      case r: hh = (g - b) / d + (g < b ? 6 : 0); break;
-      case g: hh = (b - r) / d + 2; break;
-      default: hh = (r - g) / d + 4;
-    }
-    hh /= 6;
-  }
-  return { h: hh * 360, s: s * 100, l: l * 100 };
-}
-function hslToHex(h, s, l) {
-  h = ((h % 360) + 360) % 360; s = s / 100; l = l / 100;
-  const c = (1 - Math.abs(2 * l - 1)) * s;
-  const x = c * (1 - Math.abs((h / 60) % 2 - 1));
-  const m = l - c / 2;
-  let r = 0, g = 0, b = 0;
-  if (h < 60) { r = c; g = x; b = 0; }
-  else if (h < 120) { r = x; g = c; b = 0; }
-  else if (h < 180) { r = 0; g = c; b = x; }
-  else if (h < 240) { r = 0; g = x; b = c; }
-  else if (h < 300) { r = x; g = 0; b = c; }
-  else { r = c; g = 0; b = x; }
-  const toHex = v => Math.round((v + m) * 255).toString(16).padStart(2, '0');
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
 function applyAccent(hex) {
   document.documentElement.style.setProperty('--accent', hex);
@@ -663,17 +619,6 @@ function updateReadingHistory(prevBook, newBook) {
     history[history.length - 1] = { ...lastEntry, page: targetPage };
   }
   return history;
-}
-function formatHistoryDateTime(iso) {
-  try {
-    const d = new Date(iso);
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    const hh = String(d.getHours()).padStart(2, '0');
-    const mm = String(d.getMinutes()).padStart(2, '0');
-    return `${y}.${m}.${day} ${hh}:${mm}`;
-  } catch (e) { return ''; }
 }
 function formatDate(d) { if (!d) return '-'; try { return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return d; } }
 function todayStr() { const dt = new Date(); const y = dt.getFullYear(); const m = String(dt.getMonth() + 1).padStart(2, '0'); const day = String(dt.getDate()).padStart(2, '0'); return `${y}-${m}-${day}`; }
@@ -1933,23 +1878,6 @@ function renderQuoteExpandSheet(index) {
         ${q.author && q.author.trim() ? `<span class="quote-expand-author">${esc(q.author.trim())}</span>` : ''}
       </div>
     </div>`;
-}
-
-function renderCountRanking(entries) {
-  if (!entries.length) return `<p class="dash-empty">No data yet.</p>`;
-  const max = Math.max(...entries.map(([, count]) => count));
-  return entries.map(([name, count]) => {
-    const pct = Math.round((count / max) * 100);
-    const opacity = (0.3 + 0.7 * (count / max)).toFixed(2);
-    return `
-      <div class="bar-rank-row">
-        <div class="bar-rank-label">
-          <span class="bar-rank-name">${esc(name)}</span>
-          <span class="bar-rank-count">${count} book${count === 1 ? '' : 's'}</span>
-        </div>
-        <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:rgba(var(--accent-rgb),${opacity});"></div></div>
-      </div>`;
-  }).join('');
 }
 
 function getAvailableYears() {
