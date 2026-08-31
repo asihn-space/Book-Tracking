@@ -221,11 +221,11 @@
   .btn-add-fab-square { position: fixed; bottom: 88px; right: max(18px, calc(50% - 302px)); width: 52px; height: 52px; border-radius: 16px; background: var(--accent); color: var(--accent-contrast); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 24px rgba(var(--accent-rgb), 0.32); z-index: 30; }
 
   /* Bottom nav */
-  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 25; background: var(--surface); border-top: 1px solid var(--border); display: flex; max-width: 640px; margin: 0 auto; padding: 6px 10px calc(6px + env(safe-area-inset-bottom, 0px)); }
-  .bottom-nav-btn { flex: 1 1 0; min-width: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 7px 4px 5px; border: none; background: none; cursor: pointer; font-family: inherit; font-size: 11.5px; font-weight: 600; color: var(--text-faint); border-radius: 12px; }
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 25; background: var(--surface); border-top: 1px solid var(--border); display: flex; max-width: 640px; margin: 0 auto; padding: 4px 10px calc(4px + env(safe-area-inset-bottom, 0px)); }
+  .bottom-nav-btn { flex: 1 1 0; min-width: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 6px 4px; margin: 0 8px; border: none; background: none; cursor: pointer; font-family: inherit; font-size: 11.5px; font-weight: 600; color: var(--text-faint); border-radius: 12px; }
   .bottom-nav-btn svg { display: block; flex-shrink: 0; width: 20px; height: 20px; }
   .bottom-nav-btn span { display: block; width: 100%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .bottom-nav-btn.active { background: var(--accent); color: var(--accent-contrast); margin: 0 8px; }
+  .bottom-nav-btn.active { background: var(--accent); color: var(--accent-contrast); }
 
   /* Dashboard tab (was modal) */
   .dashboard-view { padding-bottom: 90px; }
