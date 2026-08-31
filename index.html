@@ -112,7 +112,7 @@
   .cal-day-cell.selected { border-color: var(--accent); background: rgba(var(--accent-rgb), 0.08); }
   .cal-day-num { font-size: 12px; font-weight: 500; color: var(--text); }
   .cal-day-cell.selected .cal-day-num { font-weight: 700; color: var(--accent); }
-  .cal-dots { display: flex; gap: 1px; align-items: center; }
+  .cal-dots { display: flex; gap: 1px; align-items: center; justify-content: center; min-height: 14.67px; }
   .cal-dot-icon { width: 12px; height: 8px; color: var(--accent); fill: currentColor; display: block; }
   .cal-dots.single .cal-dot-icon { width: 22px; height: 14.67px; }
   .cal-date-head .cal-dot-icon { width: 16px; height: 10.67px; }
@@ -1787,7 +1787,7 @@ function renderCalendarSection() {
     const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     const books = byDate[dateKey] || [];
     const isSelected = state.calendarSelectedDate === dateKey;
-    const dotsHtml = books.length ? `<div class="cal-dots${books.length === 1 ? ' single' : ''}">${books.slice(0, 3).map(() => calBookDotIcon()).join('')}</div>` : '';
+    const dotsHtml = `<div class="cal-dots${books.length === 1 ? ' single' : ''}">${books.length ? books.slice(0, 3).map(() => calBookDotIcon()).join('') : ''}</div>`;
     return `<button type="button" class="cal-day-cell${books.length ? ' has-books' : ''}${isSelected ? ' selected' : ''}" data-action="calendar-pick-day" data-date="${dateKey}"><span class="cal-day-num">${day}</span>${dotsHtml}</button>`;
   }).join('');
 
