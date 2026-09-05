@@ -1600,7 +1600,7 @@ function renderAchievementSection() {
     ${listToShow.map((b, i) => `
       <div class="rank-row">
         <span class="rank-num">${i + 1}</span>
-        <div class="rank-info"><p class="rank-name">${esc(b.title)}</p><p class="rank-sub">${esc(b.author)}${b.totalPages ? `. ${esc(b.totalPages)} pages` : ''}</p></div>
+        <div class="rank-info"><p class="rank-name">${esc(b.title)}</p><p class="rank-sub">${esc(b.author)}${b.totalPages ? `▪︎ ${esc(b.totalPages)} pages` : ''}</p></div>
         <span class="rank-value-rating">${ICONS.star}${Number(b.rating).toFixed(1)}</span>
       </div>`).join('')}
     ${hasMore ? (expanded
