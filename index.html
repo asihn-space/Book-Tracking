@@ -93,6 +93,7 @@
   .month-col-fill { width: 100%; background: var(--accent); border-radius: 3px 3px 0 0; min-height: 0; }
   .month-col-label { font-size: 9.5px; color: var(--text-faint); margin-top: 4px; }
   .year-top5-heading { font-size: 11px; font-weight: 800; color: var(--text-faint); letter-spacing: 0.02em; margin: 5px 0 2px; text-transform: uppercase; }
+  .year-more-btn.link-btn { display: block; margin: 10px 0 0; text-align: left; color: var(--accent); text-decoration: none; font-weight: 700; }
   .dash-empty { font-size: 13px; color: var(--text-soft); text-align: center; padding: 30px 0; }
 
   /* Calendar section */
@@ -221,8 +222,8 @@
   .book-details-badge svg { width: 11px; height: 11px; }
   .detail-timeline-chevron { display: inline-flex; transition: transform 0.15s ease; }
   .detail-timeline-chevron svg { width: 11px; height: 11px; }
-  .bottom-nav-add-btn { flex: 0 0 auto; width: 62px; height: 62px; margin: -12px 4px 0; border-radius: 9999px; background: var(--accent); color: var(--accent-contrast); border: 3px solid var(--bg); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 22px rgba(var(--accent-rgb), 0.38); z-index: 26; }
-  .bottom-nav-add-btn svg { display: block; width: 28px; height: 28px; }
+  .bottom-nav-add-btn { flex: 0 0 auto; width: 54px; height: 54px; margin: 0 4px; align-self: center; border-radius: 9999px; background: var(--accent); color: var(--accent-contrast); border: 2px solid var(--bg); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 26; }
+  .bottom-nav-add-btn svg { display: block; width: 24px; height: 24px; }
   .bottom-nav-add-btn:active { transform: scale(0.94); }
 
   /* Bottom nav */
@@ -237,9 +238,9 @@
 
   /* Library toolbar */
   .library-view { padding-bottom: 90px; }
-  .lib-floating-toolbar { position: fixed; bottom: 88px; left: max(18px, calc(50% - 302px)); right: max(18px, calc(50% - 302px)); display: flex; justify-content: space-between; align-items: center; z-index: 30; pointer-events: none; }
+  .lib-floating-toolbar { position: fixed; bottom: 88px; left: max(18px, calc(50% - 302px)); right: max(18px, calc(50% - 302px)); display: flex; justify-content: flex-end; align-items: center; z-index: 30; pointer-events: none; }
   .lib-floating-toolbar > * { pointer-events: auto; }
-  .view-toggle { display: flex; gap: 3px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 3px; box-shadow: 0 10px 24px rgba(0,0,0,0.14); }
+  .view-toggle { display: flex; flex-direction: column; gap: 3px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 3px; box-shadow: 0 10px 24px rgba(0,0,0,0.14); }
   .view-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; border: none; background: none; cursor: pointer; color: var(--text-faint); }
   .view-btn.active { background: var(--accent); color: var(--accent-contrast); }
   .search-row { display: flex; gap: 8px; margin-bottom: 14px; }
@@ -394,7 +395,7 @@
 <script>
 const STORAGE_KEY = 'reading-log-v2';
 const NAME_KEY = 'reading-log-v2-name';
-const emptyForm = { title:'', author:'', translator:'', publisher:'', language:'', country:'', originYear:'', isbn:'', coverUrl:'', startDate:'', endDate:'', currentPage:'', totalPages:'', rating:7, review:'', status:'tbr', quotes: [], history: [] };
+const emptyForm = { title:'', author:'', translator:'', publisher:'', language:'', country:'', originYear:'', isbn:'', coverUrl:'', startDate:'', endDate:'', currentPage:'', totalPages:'', rating:7, review:'', status:'tbr', format:'Physical', quotes: [], history: [] };
 
 const ACCENT = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#0CBAA6';
 
@@ -515,6 +516,7 @@ let state = {
   quotesOrder: null,
   dashboardCategory: 'year',
   showYearSheet: false,
+  showAllYearBooks: false,
   showStatSheet: false,
   dashboardYearFilter: '',
   calendarYear: new Date().getFullYear(),
@@ -722,13 +724,17 @@ function getYearGrouping(books, yearFilter) {
   });
   return [...map.values()]
     .sort((a, b) => b.year.localeCompare(a.year))
-    .map(e => ({
-      year: e.year,
-      count: e.books.length,
-      totalPages: e.totalPages,
-      perDay: e.totalPages / 365,
-      top5: [...e.books].sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0)).slice(0, 7)
-    }));
+    .map(e => {
+      const allSorted = [...e.books].sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0));
+      return {
+        year: e.year,
+        count: e.books.length,
+        totalPages: e.totalPages,
+        perDay: e.totalPages / 365,
+        top5: allSorted.slice(0, 7),
+        allSorted
+      };
+    });
 }
 
 const FILTER_OPTIONS = [
@@ -749,6 +755,10 @@ const STATUS_OPTIONS = [
   { value: 'ongoing', label: 'Reading' },
   { value: 'dnf', label: "Didn't Finish" },
   { value: 'done', label: 'Finished' }
+];
+const FORMAT_OPTIONS = [
+  { value: 'Physical', label: 'Physical' },
+  { value: 'Ebook', label: 'Ebook' }
 ];
 
 function renderCustomSelect(key, options, currentValue, align) {
@@ -1582,14 +1592,20 @@ function renderAchievementSection() {
   const g = getYearGrouping(state.books, activeYear)[0];
   const m = getYearMonthlyBreakdown(state.books, activeYear)[0];
   if (!g) return `${trigger}<p class="dash-empty">No data yet.</p>`;
-  const top5Html = g.top5.length ? `
-    <p class="year-top5-heading">Top ${g.top5.length} by rating</p>
-    ${g.top5.map((b, i) => `
+  const hasMore = g.allSorted.length > g.top5.length;
+  const expanded = state.showAllYearBooks;
+  const listToShow = expanded ? g.allSorted : g.top5;
+  const top5Html = listToShow.length ? `
+    <p class="year-top5-heading">${expanded ? `All ${g.allSorted.length} books` : `Top ${g.top5.length} by rating`}</p>
+    ${listToShow.map((b, i) => `
       <div class="rank-row">
         <span class="rank-num">${i + 1}</span>
-        <div class="rank-info"><p class="rank-name">${esc(b.title)}</p><p class="rank-sub">${esc(b.author)}</p></div>
+        <div class="rank-info"><p class="rank-name">${esc(b.title)}</p><p class="rank-sub">${esc(b.author)}</p><p class="rank-sub">${b.totalPages ? `${esc(b.totalPages)} pages` : '—'}</p></div>
         <span class="rank-value-rating">${ICONS.star}${Number(b.rating).toFixed(1)}</span>
-      </div>`).join('')}` : '';
+      </div>`).join('')}
+    ${hasMore ? (expanded
+      ? `<button type="button" class="link-btn year-more-btn" data-action="toggle-year-books">Show less</button>`
+      : `<button type="button" class="link-btn year-more-btn" data-action="toggle-year-books">More…</button>`) : ''}` : '';
   let chartHtml = '';
   if (m) {
     const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -1943,6 +1959,9 @@ function renderForm() {
           <label class="field"><span class="field-label">ISBN</span><input id="f-isbn" value="${esc(f.isbn)}" /></label>
           <label class="field"><span class="field-label">Status</span>
             ${renderCustomSelect('formStatus', STATUS_OPTIONS, f.status, 'left')}
+          </label>
+          <label class="field"><span class="field-label">Format</span>
+            ${renderCustomSelect('formFormat', FORMAT_OPTIONS, f.format, 'left')}
           </label>
           <div class="grid-2">
             <label class="field"><span class="field-label">Start Date</span><input type="date" id="f-start" value="${esc(f.startDate)}" /></label>
@@ -2535,6 +2554,7 @@ function attachHandlers() {
         if (value !== 'done') state.form.endDate = '';
         else if (!state.form.endDate) state.form.endDate = todayStr();
       }
+      if (key === 'formFormat') state.form.format = value;
       state.openDropdown = null;
       render();
     });
@@ -2613,7 +2633,7 @@ function attachHandlers() {
       el.addEventListener('click', e => {
         e.stopPropagation();
         const book = state.books.find(b => b.id === id);
-        if (book) { state.form = { ...emptyForm, ...book, status: book.status || getBookStatus(book), quotes: (book.quotes && book.quotes.length) ? [...book.quotes] : [''] }; state.editingId = id; state.expandedId = null; state.showForm = true; render(); }
+        if (book) { state.form = { ...emptyForm, ...book, status: book.status || getBookStatus(book), format: book.format || 'Physical', quotes: (book.quotes && book.quotes.length) ? [...book.quotes] : [''] }; state.editingId = id; state.expandedId = null; state.showForm = true; render(); }
       });
     } else if (action === 'ask-delete') {
       el.addEventListener('click', e => { e.stopPropagation(); state.confirmDeleteId = id; render(); });
@@ -2680,6 +2700,7 @@ function attachHandlers() {
         e.stopPropagation();
         state.dashboardYearFilter = el.getAttribute('data-year') || '';
         state.showYearSheet = false;
+        state.showAllYearBooks = false;
         render();
       });
     } else if (action === 'pick-stat-field') {
@@ -2692,6 +2713,8 @@ function attachHandlers() {
       el.addEventListener('click', () => { state.showYearSheet = true; render(); });
     } else if (action === 'close-year-sheet') {
       el.addEventListener('click', e => { e.stopPropagation(); state.showYearSheet = false; render(); });
+    } else if (action === 'toggle-year-books') {
+      el.addEventListener('click', e => { e.stopPropagation(); state.showAllYearBooks = !state.showAllYearBooks; render(); });
     } else if (action === 'open-stat-sheet') {
       el.addEventListener('click', () => { state.showStatSheet = true; render(); });
     } else if (action === 'close-stat-sheet') {
