@@ -1726,7 +1726,7 @@ function renderPieChart(entries) {
     const startAngle = angle;
     const endAngle = angle + sliceAngle;
     const midAngle = (startAngle + endAngle) / 2;
-    arcs.push(`<path d="${describeArc(cx, cy, r, startAngle, endAngle)}" fill="${shades[i]}" stroke="var(--surface)" stroke-width="1" />`);
+    arcs.push(`<path d="${describeArc(cx, cy, r, startAngle, endAngle)}" fill="${shades[i]}" stroke="${shades[i]}" stroke-width="0.5" />`);
     const pct = Math.round((count / total) * 100);
     const isLeft = midAngle > 180;
     const entry = { name, count, pct, midAngle };
