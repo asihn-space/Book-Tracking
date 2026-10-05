@@ -43,6 +43,7 @@
   .header { position: sticky; top: 0; z-index: 20; background: var(--bg); border-bottom: 1px solid var(--border); padding: 10px 12px; }
   .title { font-family: var(--font-display); font-size: 22px; line-height: 1; font-weight: 800; margin: 0; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: baseline; }
   .header-name { font-family: var(--font-script); font-size: 30px; line-height: 1; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--accent-text); margin-left: 4px; display: inline-block; }
+  .header-name-hidden { visibility: hidden; }
   .header-top-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .settings-btn { background: none; border: none; cursor: pointer; color: var(--text-soft); padding: 4px; flex-shrink: 0; }
   .swatch-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
@@ -144,13 +145,14 @@
   .stat-chip-row::-webkit-scrollbar { display: none; }
   .stat-chip { flex: 1 0 auto; padding: 9px 16px; border-radius: 9999px; background: none; border: none; font-size: 12.5px; font-weight: 700; color: var(--text-soft); cursor: pointer; font-family: var(--font-display); white-space: nowrap; }
   .stat-chip.active { background: var(--accent); color: var(--accent-contrast); box-shadow: 0 3px 10px rgba(var(--accent-rgb), 0.28); }
-  .pie-chart-svg { width: 100%; height: auto; display: block; margin: 4px auto 0; }
+  .pie-chart-svg { width: 100%; max-width: 440px; height: auto; display: block; margin: 4px auto 0; }
 
   main { padding: 16px 16px 40px; }
   .error-banner { margin-bottom: 16px; padding: 10px 12px; border-radius: 8px; font-size: 14px; background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
 
   /* Home / dashboard */
   .welcome-row { margin: 0 0 4px; font-size: 22px; color: var(--text); font-weight: 500; }
+  .welcome-face { font-size: 18px; white-space: nowrap; margin-left: 2px; }
   .welcome-name { font-family: var(--font-script); font-size: 30px; font-weight: 400; color: var(--accent-text); cursor: pointer; margin-left: 3px; }
   .pages-read-row { margin: 0 0 16px; font-size: 13.5px; color: var(--text-soft); }
   .pages-read-row strong { color: var(--accent-text); font-weight: 800; }
@@ -167,6 +169,13 @@
   .chart-count { font-size: 13px; font-weight: 600; color: var(--text-soft); width: 22px; text-align: right; font-variant-numeric: tabular-nums; }
   .home-view { padding-bottom: 90px; }
   .dashboard + .dashboard { margin-top: 14px; }
+  .pages-read-row-tight { margin-bottom: 4px; }
+  .target-lines { margin: 0 0 16px; }
+  .target-line { margin: 0 0 4px; font-size: 13.5px; color: var(--text-soft); }
+  .target-line:last-child { margin-bottom: 0; }
+  .target-line strong { color: var(--accent-text); font-weight: 800; }
+  .settings-row { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 14px; margin-bottom: 10px; background: var(--surface); border: 1px solid var(--accent-text); border-radius: 14px; font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--text); text-align: left; cursor: pointer; }
+  .settings-row svg { color: var(--text-faint); flex-shrink: 0; }
   .dash-summary-strip { display: grid; grid-template-columns: 3fr 3fr 5fr; gap: 8px; margin-bottom: 14px; }
   .dash-summary-tile { background: rgba(var(--accent-rgb), 0.16); border: 1px solid var(--accent-text); border-radius: 14px; padding: 12px 8px; text-align: center; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 10px 22px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.06); }
   .dash-summary-value { font-family: var(--font-display); font-size: 18px; font-weight: 800; color: var(--text); margin: 0; line-height: 1.25; }
@@ -300,7 +309,7 @@
 
   /* Grid view */
   .grid-view { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-  .grid-view .item { padding: 5px; border-radius: 10px; min-width: 0; }
+  .grid-view .item { padding: 5px; border-radius: 10px; min-width: 0; border-color: transparent; }
   .grid-top { cursor: pointer; }
   .cover-grid { width: 100%; margin-bottom: 5px; }
   .rate-badge-grid { display: inline-flex; align-items: center; gap: 3px; font-weight: 700; font-size: 9.5px; font-variant-numeric: tabular-nums; color: var(--accent-dark); background: rgba(255,255,255,0.92); padding: 2.5px 7px; border-radius: 9999px; position: absolute; top: 4px; right: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.18); border: 1px solid rgba(0,0,0,0.06); z-index: 3; }
@@ -411,6 +420,9 @@
 <script>
 const STORAGE_KEY = 'reading-log-v2';
 const NAME_KEY = 'reading-log-v2-name';
+const TARGETS_KEY = 'reading-log-v2-targets';
+const WELCOME_FACES = ['(„• ֊ •„)੭', '(❀❛ ֊ ❛„)♡', '⸜(｡˃ ᵕ ˂ )⸝♡', '≽^•⩊•^≼'];
+const WELCOME_FACE = WELCOME_FACES[Math.floor(Math.random() * WELCOME_FACES.length)];
 const emptyForm = { title:'', author:'', translator:'', publisher:'', language:'', country:'', originYear:'', isbn:'', coverUrl:'', startDate:'', endDate:'', currentPage:'', totalPages:'', rating:7, review:'', status:'tbr', format:'Physical', quotes: [], history: [] };
 
 const ACCENT = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#B9D9D5';
@@ -549,6 +561,11 @@ let state = {
   userName: loadName(),
   accentColor: SAVED_ACCENT,
   showSettings: false,
+  settingsPage: null,
+  targets: loadTargets(),
+  targetYearValue: '',
+  targetMonthValue: '',
+  targetError: '',
   quotesOrder: null,
   dashboardCategory: 'year',
   showYearSheet: false,
@@ -599,6 +616,49 @@ function loadName() {
 function saveName() {
   try { localStorage.setItem(NAME_KEY, state.userName); }
   catch (e) {}
+}
+function loadTargets() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(TARGETS_KEY) || 'null');
+    const ok = v => Number.isInteger(v) && v > 0 ? v : null;
+    return raw ? { year: ok(raw.year), month: ok(raw.month) } : { year: null, month: null };
+  } catch (e) { return { year: null, month: null }; }
+}
+function saveTargets() {
+  try { localStorage.setItem(TARGETS_KEY, JSON.stringify(state.targets)); }
+  catch (e) {}
+}
+function parseTargetValue(v) {
+  const t = String(v == null ? '' : v).trim();
+  if (!t) return { ok: true, value: null };
+  if (!/^\d+$/.test(t)) return { ok: false };
+  const n = parseInt(t, 10);
+  if (n < 1 || n > 9999) return { ok: false };
+  return { ok: true, value: n };
+}
+function saveTargetsFromForm() {
+  const y = parseTargetValue(state.targetYearValue);
+  const m = parseTargetValue(state.targetMonthValue);
+  if (!y.ok || !m.ok) {
+    state.targetError = 'Enter a whole number greater than 0, or leave it blank.';
+    render();
+    return;
+  }
+  state.targets = { year: y.value, month: m.value };
+  state.targetError = '';
+  saveTargets();
+  state.settingsPage = null;
+  render();
+}
+function getTargetProgress() {
+  const now = new Date();
+  const y = String(now.getFullYear());
+  const ym = y + '-' + String(now.getMonth() + 1).padStart(2, '0');
+  const done = state.books.filter(b => getBookStatus(b) === 'done' && b.endDate);
+  return {
+    year: done.filter(b => b.endDate.slice(0, 4) === y).length,
+    month: done.filter(b => b.endDate.slice(0, 7) === ym).length
+  };
 }
 function saveBooks() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.books)); state.error = ''; }
@@ -848,7 +908,7 @@ function render() {
   app.innerHTML = `
     <div class="header">
       <div class="header-top-row">
-        <h1 class="title">Book Tracking<span class="header-name" data-action="edit-name">${esc(state.userName)}</span></h1>
+        <h1 class="title">Book Tracking<span class="header-name${state.activeTab === 'home' ? ' header-name-hidden" aria-hidden="true' : '" data-action="edit-name'}">${esc(state.userName)}</span></h1>
         <div class="header-actions">
           <button class="settings-btn" id="settings-btn" aria-label="Settings">${ICONS.gear}</button>
         </div>
@@ -884,10 +944,10 @@ function getStatusColor(key) {
 }
 function getStatusPillStyle(key) {
   if (key === 'done') {
-    return `background:rgba(var(--accent-rgb),0.1);color: var(--accent-text);border:1px solid rgba(var(--accent-rgb),0.33);`;
+    return `background:rgba(var(--accent-rgb),0.1);color: var(--accent-text);border:1px solid var(--accent-text);`;
   }
   const c = STATUS_META[key].color;
-  return `background:${c}1A;color:${c};border:1px solid ${c}55;`;
+  return `background:${c}1A;color:${c};border:1px solid ${c};`;
 }
 
 function renderHome() {
@@ -946,8 +1006,9 @@ function renderHome() {
   }).join('');
   return `
     <div class="home-view">
-      <p class="welcome-row">Welcome! <span class="welcome-name" data-action="edit-name">${esc(state.userName)}</span></p>
-      <p class="pages-read-row">You've read <strong>${getTotalPagesRead(state.books)}</strong> pages so far</p>
+      <p class="welcome-row">Welcome, <span class="welcome-name" data-action="edit-name">${esc(state.userName)}</span> <span class="welcome-face">${WELCOME_FACE}</span></p>
+      <p class="pages-read-row${(state.targets.year || state.targets.month) ? ' pages-read-row-tight' : ''}">You've read <strong>${getTotalPagesRead(state.books)}</strong> pages so far!</p>
+      ${renderTargetLines()}
       ${renderDashboardSummaryStrip()}
       <div class="dashboard dashboard-float">
         <p class="section-title">Summary</p>
@@ -1512,15 +1573,19 @@ function renderPresetEditModal() {
 }
 
 function renderSettingsModal() {
-  return `
-    <div class="modal">
-      <div class="modal-inner">
+  const page = state.settingsPage;
+  const titles = { accent: 'Accent Color', target: 'Set Target' };
+  const header = `
         <div class="modal-header">
-          <h2>Settings</h2>
+          <div style="display:flex;align-items:center;gap:6px;">
+            ${page ? `<button id="settings-back" aria-label="Back">${ICONS.calChevronLeft}</button>` : ''}
+            <h2>${page ? titles[page] : 'Settings'}</h2>
+          </div>
           <button id="close-settings" aria-label="Close">${ICONS.x}</button>
-        </div>
-        <div class="modal-body">
-          <p class="field-label" style="margin-bottom:12px;">Accent color</p>
+        </div>`;
+  let body = '';
+  if (page === 'accent') {
+    body = `
           <div class="swatch-grid">
             ${ACCENT_PRESETS.map((hex, i) => `
               <div class="swatch-wrap">
@@ -1531,10 +1596,55 @@ function renderSettingsModal() {
               </div>
             `).join('')}
           </div>
-          <p class="swatch-hint">Tap a color to apply it. Tap the pencil to set your own hex code.</p>
+          <p class="swatch-hint">Tap a color to apply it. Tap the pencil to set your own hex code.</p>`;
+  } else if (page === 'target') {
+    body = `
+          <label class="field">
+            <span class="field-label">Yearly Target (books)</span>
+            <input id="f-target-year" type="number" inputmode="numeric" min="1" step="1" value="${esc(state.targetYearValue)}" placeholder="e.g. 24" />
+          </label>
+          <label class="field">
+            <span class="field-label">Monthly Target (books)</span>
+            <input id="f-target-month" type="number" inputmode="numeric" min="1" step="1" value="${esc(state.targetMonthValue)}" placeholder="e.g. 2" />
+          </label>
+          ${state.targetError ? `<p class="preset-edit-error" style="margin:0 0 12px;">${esc(state.targetError)}</p>` : ''}
+          <p class="swatch-hint" style="margin:0 0 16px;">Counts books you finish this year and this month. Leave a field blank to turn that target off.</p>
+          <div class="form-actions">
+            <button type="button" id="save-target-btn" class="btn btn-primary">${ICONS.check} Save</button>
+          </div>`;
+  } else {
+    body = `
+          <button type="button" class="settings-row" data-page="accent"><span>Accent Color</span>${ICONS.calChevronRight}</button>
+          <button type="button" class="settings-row" data-page="target"><span>Set Target</span>${ICONS.calChevronRight}</button>`;
+  }
+  return `
+    <div class="modal">
+      <div class="modal-inner">${header}
+        <div class="modal-body">${body}
         </div>
       </div>
     </div>`;
+}
+
+function renderTargetLines() {
+  const t = state.targets || {};
+  if (!t.year && !t.month) return '';
+  const prog = getTargetProgress();
+  const plural = n => `${n} book${n === 1 ? '' : 's'}`;
+  const line = (period, done, target) => {
+    const left = target - done;
+    const text = left > 0
+      ? `You're <strong>${plural(left)}</strong> away from your ${period} goal of <strong>${target}</strong>!`
+      : `You've hit your ${period} goal of <strong>${plural(target)}</strong>!`;
+    return `<p class="target-line">${text}</p>`;
+  };
+  const now = new Date();
+  const month = now.toLocaleDateString('en-US', { month: 'long' });
+  return `
+      <div class="target-lines">
+        ${t.year ? line(String(now.getFullYear()), prog.year, t.year) : ''}
+        ${t.month ? line(month, prog.month, t.month) : ''}
+      </div>`;
 }
 
 function truncateLabel(s, max) {
@@ -1668,7 +1778,7 @@ function renderAchievementSection() {
       </div>
       ${top5Html}
     </div>
-    ${chartHtml ? `<div class="year-group"><p class="year-group-title">Finishes by Month</p>${chartHtml}</div>` : ''}`;
+    ${chartHtml ? `<div class="year-group"><p class="year-top5-heading">Finishes by Month</p>${chartHtml}</div>` : ''}`;
 }
 
 function polarToCartesian(cx, cy, r, angleDeg) {
@@ -1714,7 +1824,7 @@ function renderPieChart(entries) {
 
   const total = slices.reduce((s, [, c]) => s + c, 0);
   const W = 440, H = 400;
-  const cx = W / 2, cy = H / 2, r = 96;
+  const cx = W / 2, cy = H / 2, r = 112;
   let angle = 0;
   const arcs = [];
   const leftLabels = [];
@@ -1737,13 +1847,13 @@ function renderPieChart(entries) {
   // Label diletakkan sejajar dengan posisi slice-nya (bukan dibagi rata),
   // lalu digeser seperlunya supaya tidak saling tumpang tindih.
   const MIN_GAP = 40, TOP = 18, BOTTOM = 360;
-  const LEFT_END_X = 104;            // teks sisi kiri rata kanan di x ini
-  const RIGHT_START_X = W - 104;     // teks sisi kanan rata kiri di x ini
+  const LEFT_END_X = 92;             // teks sisi kiri rata kanan di x ini
+  const RIGHT_START_X = W - 92;      // teks sisi kanan rata kiri di x ini
 
   function layout(list, side) {
     const items = list.map(l => {
       const edgePoint = polarToCartesian(cx, cy, r, l.midAngle);
-      const elbow = polarToCartesian(cx, cy, r + 12, l.midAngle);
+      const elbow = polarToCartesian(cx, cy, r + 8, l.midAngle);
       return { ...l, edgePoint, elbow, y: Math.max(TOP, Math.min(BOTTOM, elbow.y)) };
     });
     items.sort((a, b) => a.y - b.y);
@@ -1773,8 +1883,8 @@ function renderPieChart(entries) {
     const halo = 'stroke="var(--surface)" stroke-width="4" paint-order="stroke fill" stroke-linejoin="round"';
     return `
       <polyline points="${l.edgePoint.x.toFixed(1)},${l.edgePoint.y.toFixed(1)} ${l.elbow.x.toFixed(1)},${l.elbow.y.toFixed(1)} ${l.lineEndX},${l.y.toFixed(1)}" fill="none" stroke="var(--text-faint)" stroke-width="1.5" stroke-linejoin="round" />
-      <text x="${l.textX}" y="${(l.y + 5).toFixed(1)}" text-anchor="${anchor}" font-size="14" font-weight="700" fill="var(--text)" font-family="Outfit, sans-serif" ${halo}>${esc(truncateLabel(l.name, 13))}</text>
-      <text x="${l.textX}" y="${(l.y + 21).toFixed(1)}" text-anchor="${anchor}" font-size="12" fill="var(--text-soft)" font-family="Outfit, sans-serif" ${halo}>${l.count} book${l.count === 1 ? '' : 's'} · ${l.pct}%</text>`;
+      <text x="${l.textX}" y="${(l.y + 5).toFixed(1)}" text-anchor="${anchor}" font-size="12" font-weight="700" fill="var(--text)" font-family="Outfit, sans-serif" ${halo}>${esc(truncateLabel(l.name, 11))}</text>
+      <text x="${l.textX}" y="${(l.y + 21).toFixed(1)}" text-anchor="${anchor}" font-size="10.5" fill="var(--text-soft)" font-family="Outfit, sans-serif" ${halo}>${l.count} book${l.count === 1 ? '' : 's'} · ${l.pct}%</text>`;
   }
 
   const labelsSvg = [...leftLaidOut.map(l => labelSvg(l, 'left')), ...rightLaidOut.map(l => labelSvg(l, 'right'))].join('');
@@ -2521,9 +2631,27 @@ function attachHandlers() {
   if (addBtnNav) addBtnNav.addEventListener('click', openAddForm);
 
   const settingsBtn = document.getElementById('settings-btn');
-  if (settingsBtn) settingsBtn.addEventListener('click', () => { state.showSettings = true; render(); });
+  if (settingsBtn) settingsBtn.addEventListener('click', () => { state.showSettings = true; state.settingsPage = null; render(); });
   const closeSettingsBtn = document.getElementById('close-settings');
-  if (closeSettingsBtn) closeSettingsBtn.addEventListener('click', () => { state.showSettings = false; render(); });
+  if (closeSettingsBtn) closeSettingsBtn.addEventListener('click', () => { state.showSettings = false; state.settingsPage = null; state.targetError = ''; render(); });
+  const settingsBackBtn = document.getElementById('settings-back');
+  if (settingsBackBtn) settingsBackBtn.addEventListener('click', () => { state.settingsPage = null; state.targetError = ''; render(); });
+  app.querySelectorAll('.settings-row').forEach(btn => btn.addEventListener('click', () => {
+    const page = btn.getAttribute('data-page');
+    if (page === 'target') {
+      state.targetYearValue = state.targets.year ? String(state.targets.year) : '';
+      state.targetMonthValue = state.targets.month ? String(state.targets.month) : '';
+      state.targetError = '';
+    }
+    state.settingsPage = page;
+    render();
+  }));
+  const targetYearInput = document.getElementById('f-target-year');
+  if (targetYearInput) targetYearInput.addEventListener('input', e => { state.targetYearValue = e.target.value; });
+  const targetMonthInput = document.getElementById('f-target-month');
+  if (targetMonthInput) targetMonthInput.addEventListener('input', e => { state.targetMonthValue = e.target.value; });
+  const saveTargetBtn = document.getElementById('save-target-btn');
+  if (saveTargetBtn) saveTargetBtn.addEventListener('click', saveTargetsFromForm);
 
   const nameEditInput = document.getElementById('f-name-edit');
   if (nameEditInput) nameEditInput.addEventListener('input', e => { state.nameEditValue = e.target.value; });
