@@ -27,11 +27,11 @@
     --text: #18181B;
     --text-soft: #71717A;
     --text-faint: #A1A1AA;
-    --accent: #0CBAA6;
-    --accent-rgb: 12, 186, 166;
-    --accent-contrast: #FFFFFF;
-    --accent-dark: #077367;
-    --accent-text: #0CBAA6;
+    --accent: #B9D9D5;
+    --accent-rgb: 185, 217, 213;
+    --accent-contrast: #18181B;
+    --accent-dark: #738784;
+    --accent-text: #809693;
     --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
     --font-body: 'Outfit', system-ui, -apple-system, sans-serif;
     --font-script: 'Sacramento', cursive;
@@ -81,7 +81,7 @@
   .rank-sub { font-size: 11.5px; color: var(--text-soft); margin: 2px 0 0; }
   .rank-value { font-size: 13px; font-weight: 700; color: var(--accent-text); flex-shrink: 0; white-space: nowrap; }
   .rank-value-rating { display: inline-flex; align-items: center; gap: 3px; font-weight: 700; font-size: 13px; color: #CA8A04; flex-shrink: 0; }
-  .year-group { margin-bottom: 8px; padding: 14px; background: var(--surface); border: 1px solid transparent; border-radius: 14px; box-shadow: 0 10px 22px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.06); }
+  .year-group { margin-bottom: 8px; padding: 14px; background: var(--surface); border: 1px solid var(--accent-text); border-radius: 14px; box-shadow: 0 10px 22px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.06); }
   .year-group:last-child { margin-bottom: 0; }
   .year-group-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px; margin-bottom: 4px; }
   .year-group-title { font-family: var(--font-body); color: var(--accent-text); font-weight: 800; font-size: 14px; margin: 0; }
@@ -156,8 +156,8 @@
   .pages-read-row strong { color: var(--accent-text); font-weight: 800; }
   .header-actions { display: flex; gap: 2px; }
   .section-title { font-family: var(--font-display); font-size: 15px; font-weight: 800; color: var(--text); text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 14px; }
-  .dashboard { padding: 18px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 10px 22px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.06); }
-  .dashboard-float { border-color: transparent; }
+  .dashboard { padding: 18px 16px; background: var(--surface); border: 1px solid var(--accent-text); border-radius: 16px; box-shadow: 0 10px 22px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.06); }
+  .dashboard-float { border-color: var(--accent-text); }
   .chart { display: flex; flex-direction: column; gap: 14px; }
   .chart-row { display: flex; align-items: center; gap: 10px; }
   .chart-label { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 500; color: var(--text-soft); width: 108px; flex-shrink: 0; }
@@ -259,10 +259,10 @@
   .view-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; border: none; background: none; cursor: pointer; color: var(--text-faint); }
   .view-btn.active { background: var(--accent); color: var(--accent-contrast); }
   .search-row { display: flex; gap: 8px; margin-bottom: 14px; }
-  .search-box { flex: 1.3; min-width: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); }
+  .search-box { flex: 1.3; min-width: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px; border-radius: 8px; background: var(--surface); border: 1px solid var(--accent-text); }
   .search-box input { border: none; outline: none; background: transparent; width: 100%; padding: 10px 0; font-size: 14px; font-family: inherit; color: var(--text); }
   .custom-select-wrap { position: relative; flex: 1; min-width: 0; }
-  .custom-select-trigger { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 4px; font-size: 12.5px; padding: 0 10px; height: 100%; border-radius: 8px; background: var(--surface); color: var(--text); border: 1px solid var(--border); font-family: inherit; cursor: pointer; }
+  .custom-select-trigger { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 4px; font-size: 12.5px; padding: 0 10px; height: 100%; border-radius: 8px; background: var(--surface); color: var(--text); border: 1px solid var(--accent-text); font-family: inherit; cursor: pointer; }
   .custom-select-trigger svg { flex-shrink: 0; color: var(--text-faint); }
   .custom-select-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .field .custom-select-wrap { width: 100%; }
@@ -276,7 +276,7 @@
 
   /* List view */
   .list-view { display: flex; flex-direction: column; gap: 6px; }
-  .item { border-radius: 14px; padding: 10px; background: var(--surface); border: 1px solid transparent; box-shadow: 0 3px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04); }
+  .item { border-radius: 14px; padding: 10px; background: var(--surface); border: 1px solid var(--accent-text); box-shadow: 0 3px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04); }
   .item-row { display: flex; gap: 10px; cursor: pointer; position: relative; align-items: flex-start; }
   .cover { border-radius: 6px; overflow: hidden; aspect-ratio: 2/3; background: var(--bg); display: flex; align-items: center; justify-content: center; color: var(--text-faint); flex-shrink: 0; position: relative; }
   .cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -393,7 +393,7 @@
   button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .celebration-overlay { position: absolute; inset: 0; z-index: 15; pointer-events: none; overflow: hidden; border-radius: inherit; width: 100%; height: 100%; display: block; }
   .achievement-body { display: flex; flex-direction: column; align-items: center; padding: 24px 20px 32px; position: relative; overflow: hidden; }
-  .achievement-card { position: relative; z-index: 6; width: 100%; max-width: 320px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 28px 20px 24px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.12); }
+  .achievement-card { position: relative; z-index: 6; width: 100%; max-width: 320px; background: var(--surface); border: 1px solid var(--accent-text); border-radius: 20px; padding: 28px 20px 24px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.12); }
   .achievement-cover { width: 150px; aspect-ratio: 2/3; margin: 0 auto 16px; border-radius: 12px; overflow: hidden; box-shadow: 0 14px 32px rgba(0,0,0,0.22); background: var(--bg); display: flex; align-items: center; justify-content: center; color: var(--text-faint); }
   .achievement-cover img { width: 100%; height: 100%; object-fit: cover; }
   .achievement-heading { font-family: var(--font-display); font-weight: 800; font-size: 19px; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 0.03em; }
@@ -413,7 +413,7 @@ const STORAGE_KEY = 'reading-log-v2';
 const NAME_KEY = 'reading-log-v2-name';
 const emptyForm = { title:'', author:'', translator:'', publisher:'', language:'', country:'', originYear:'', isbn:'', coverUrl:'', startDate:'', endDate:'', currentPage:'', totalPages:'', rating:7, review:'', status:'tbr', format:'Physical', quotes: [], history: [] };
 
-const ACCENT = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#0CBAA6';
+const ACCENT = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#B9D9D5';
 
 const STATUS_ORDER = ['tbr','ongoing','dnf','done'];
 const STATUS_META = {
@@ -464,7 +464,7 @@ function calBookDotIcon() {
 
 const ACCENT_KEY = 'reading-log-v2-accent';
 const ACCENT_PRESETS_KEY = 'reading-log-v2-accent-presets';
-const DEFAULT_ACCENT_PRESETS = ['#0CBAA6', '#857686', '#E9A4A4', '#C1DCDC', '#F4A6B6', '#D0C5B1'];
+const DEFAULT_ACCENT_PRESETS = ['#B9D9D5', '#857686', '#E9A4A4', '#FFE6BB', '#F4A6B6', '#D0C5B1'];
 
 function loadAccentPresets() {
   try {
@@ -483,8 +483,8 @@ function isValidHex(hex) {
 let ACCENT_PRESETS = loadAccentPresets();
 
 function loadAccent() {
-  try { return localStorage.getItem(ACCENT_KEY) || '#0CBAA6'; }
-  catch (e) { return '#0CBAA6'; }
+  try { return localStorage.getItem(ACCENT_KEY) || '#B9D9D5'; }
+  catch (e) { return '#B9D9D5'; }
 }
 function saveAccentToStorage(hex) {
   try { localStorage.setItem(ACCENT_KEY, hex); } catch (e) {}
@@ -2095,7 +2095,7 @@ function generateAchievementCanvas(book, days, callback) {
     canvas.width = 1080;
     canvas.height = 1920;
     const ctx = canvas.getContext('2d');
-    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#0CBAA6';
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#B9D9D5';
     const accentText = getContrastTextColor(accent);
     const cx = canvas.width / 2;
 
@@ -2253,7 +2253,7 @@ function generateQuoteCollageCanvas(quotes, callback) {
     canvas.width = 1080;
     canvas.height = 1920;
     const ctx = canvas.getContext('2d');
-    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#0CBAA6';
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#B9D9D5';
     const cx = canvas.width / 2;
     const textWidth = 860;
     const areaTop = 340;
