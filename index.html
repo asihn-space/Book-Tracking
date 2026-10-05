@@ -102,12 +102,10 @@
   .cal-nav-btn { background: none; border: none; cursor: pointer; color: var(--text-soft); padding: 4px; display: flex; border-radius: 8px; }
   .cal-nav-btn:hover { background: var(--bg); }
   .cal-month-label { font-family: var(--font-display); font-weight: 800; font-size: 15px; margin: 0; color: var(--accent-text); text-transform: uppercase; letter-spacing: 0.03em; }
-  .cal-weekdays { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); margin-bottom: 6px; }
+  .cal-weekdays { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); column-gap: 1px; padding: 0 1px; margin-bottom: 6px; }
   .cal-weekday { text-align: center; font-size: 10px; font-weight: 700; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.02em; }
-  .cal-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-  .cal-day-cell { position: relative; display: block; aspect-ratio: 2/3; min-width: 0; padding: 0; margin: 0; overflow: hidden; border: 0; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); border-radius: 0; background: var(--surface); font-family: inherit; text-align: left; cursor: default; }
-  .cal-day-cell:nth-child(7n) { border-right: 0; }
-  .cal-day-cell:nth-last-child(-n+7) { border-bottom: 0; }
+  .cal-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 0; overflow: hidden; }
+  .cal-day-cell { position: relative; display: block; aspect-ratio: 2/3; min-width: 0; padding: 0; margin: 0; overflow: hidden; border: 0; border-radius: 0; background: var(--surface); font-family: inherit; text-align: left; cursor: default; }
   .cal-day-cell.has-books { cursor: pointer; }
   .cal-day-cell.cal-day-blank { background: var(--bg); }
   .cal-day-cell.selected::after { content: ''; position: absolute; inset: 0; z-index: 4; box-shadow: inset 0 0 0 2px var(--accent); pointer-events: none; }
@@ -170,7 +168,7 @@
   .home-view { padding-bottom: 90px; }
   .dashboard + .dashboard { margin-top: 14px; }
   .dash-summary-strip { display: grid; grid-template-columns: 3fr 3fr 5fr; gap: 8px; margin-bottom: 14px; }
-  .dash-summary-tile { background: rgba(var(--accent-rgb), 0.16); border: 1px solid rgba(var(--accent-rgb), 0.22); border-radius: 14px; padding: 12px 8px; text-align: center; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 10px 22px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.06); }
+  .dash-summary-tile { background: rgba(var(--accent-rgb), 0.16); border: 1.5px solid var(--accent-text); border-radius: 14px; padding: 12px 8px; text-align: center; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 10px 22px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.06); }
   .dash-summary-value { font-family: var(--font-display); font-size: 18px; font-weight: 800; color: var(--text); margin: 0; line-height: 1.25; }
   .dash-summary-value-text { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
   .dash-summary-label { font-size: 10px; font-weight: 600; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.02em; margin: 3px 0 0; line-height: 1.3; }
@@ -1569,10 +1567,11 @@ function renderDashboardSummaryStrip() {
 
 const STATISTICS_FIELDS = [
   { key: 'writer', label: 'Writer', getKey: b => b.author && b.author.trim() },
-  { key: 'translator', label: 'Translator', getKey: b => b.translator && b.translator.trim() },
   { key: 'publisher', label: 'Publisher', getKey: b => b.publisher && b.publisher.trim() },
+  { key: 'language', label: 'Language', getKey: b => b.language && b.language.trim() },
   { key: 'country', label: 'Country', getKey: b => b.country && b.country.trim() },
-  { key: 'language', label: 'Language', getKey: b => b.language && b.language.trim() }
+  { key: 'format', label: 'Format', getKey: b => b.format && b.format.trim() },
+  { key: 'translator', label: 'Translator', getKey: b => b.translator && b.translator.trim() }
 ];
 
 function renderStatisticsSection() {
@@ -1714,7 +1713,8 @@ function renderPieChart(entries) {
   if (restTotal > 0) slices.push(['Others', restTotal]);
 
   const total = slices.reduce((s, [, c]) => s + c, 0);
-  const cx = 200, cy = 200, r = 105;
+  const W = 440, H = 400;
+  const cx = W / 2, cy = H / 2, r = 96;
   let angle = 0;
   const arcs = [];
   const leftLabels = [];
@@ -1734,34 +1734,52 @@ function renderPieChart(entries) {
     angle = endAngle;
   });
 
+  // Label diletakkan sejajar dengan posisi slice-nya (bukan dibagi rata),
+  // lalu digeser seperlunya supaya tidak saling tumpang tindih.
+  const MIN_GAP = 40, TOP = 18, BOTTOM = 360;
+  const LEFT_END_X = 104;            // teks sisi kiri rata kanan di x ini
+  const RIGHT_START_X = W - 104;     // teks sisi kanan rata kiri di x ini
+
   function layout(list, side) {
-    list.sort((a, b) => polarToCartesian(cx, cy, r, a.midAngle).y - polarToCartesian(cx, cy, r, b.midAngle).y);
-    const n = list.length;
-    const spacing = 300 / Math.max(n, 1);
-    return list.map((l, idx) => {
-      const labelY = 50 + spacing * (idx + 0.5);
+    const items = list.map(l => {
       const edgePoint = polarToCartesian(cx, cy, r, l.midAngle);
-      const labelX = side === 'left' ? 14 : 386;
-      const bendX = side === 'left' ? 64 : 336;
-      return { ...l, edgePoint, labelX, labelY, bendX };
+      const elbow = polarToCartesian(cx, cy, r + 12, l.midAngle);
+      return { ...l, edgePoint, elbow, y: Math.max(TOP, Math.min(BOTTOM, elbow.y)) };
     });
+    items.sort((a, b) => a.y - b.y);
+    for (let i = 1; i < items.length; i++) {
+      items[i].y = Math.max(items[i].y, items[i - 1].y + MIN_GAP);
+    }
+    for (let i = items.length - 1; i >= 0; i--) {
+      const limit = i === items.length - 1 ? BOTTOM : items[i + 1].y - MIN_GAP;
+      if (items[i].y > limit) items[i].y = limit;
+    }
+    for (let i = 0; i < items.length; i++) {
+      const limit = i === 0 ? TOP : items[i - 1].y + MIN_GAP;
+      if (items[i].y < limit) items[i].y = limit;
+    }
+    return items.map(l => ({
+      ...l,
+      textX: side === 'left' ? LEFT_END_X : RIGHT_START_X,
+      lineEndX: side === 'left' ? LEFT_END_X + 6 : RIGHT_START_X - 6
+    }));
   }
 
   const leftLaidOut = layout(leftLabels, 'left');
   const rightLaidOut = layout(rightLabels, 'right');
 
   function labelSvg(l, side) {
-    const anchor = side === 'left' ? 'start' : 'end';
-    const lineY = l.labelY - 8;
+    const anchor = side === 'left' ? 'end' : 'start';
+    const halo = 'stroke="var(--surface)" stroke-width="4" paint-order="stroke fill" stroke-linejoin="round"';
     return `
-      <polyline points="${l.edgePoint.x},${l.edgePoint.y} ${l.bendX},${lineY} ${l.labelX},${lineY}" fill="none" stroke="var(--text-faint)" stroke-width="1.5" />
-      <text x="${l.labelX}" y="${l.labelY - 6}" text-anchor="${anchor}" font-size="13" font-weight="700" fill="var(--text)" font-family="Outfit, sans-serif" stroke="var(--surface)" stroke-width="4" paint-order="stroke fill" stroke-linejoin="round">${esc(truncateLabel(l.name, 16))}</text>
-      <text x="${l.labelX}" y="${l.labelY + 10}" text-anchor="${anchor}" font-size="11" fill="var(--text-soft)" font-family="Outfit, sans-serif" stroke="var(--surface)" stroke-width="4" paint-order="stroke fill" stroke-linejoin="round">${l.count} book${l.count === 1 ? '' : 's'} · ${l.pct}%</text>`;
+      <polyline points="${l.edgePoint.x.toFixed(1)},${l.edgePoint.y.toFixed(1)} ${l.elbow.x.toFixed(1)},${l.elbow.y.toFixed(1)} ${l.lineEndX},${l.y.toFixed(1)}" fill="none" stroke="var(--text-faint)" stroke-width="1.5" stroke-linejoin="round" />
+      <text x="${l.textX}" y="${(l.y + 5).toFixed(1)}" text-anchor="${anchor}" font-size="14" font-weight="700" fill="var(--text)" font-family="Outfit, sans-serif" ${halo}>${esc(truncateLabel(l.name, 13))}</text>
+      <text x="${l.textX}" y="${(l.y + 21).toFixed(1)}" text-anchor="${anchor}" font-size="12" fill="var(--text-soft)" font-family="Outfit, sans-serif" ${halo}>${l.count} book${l.count === 1 ? '' : 's'} · ${l.pct}%</text>`;
   }
 
   const labelsSvg = [...leftLaidOut.map(l => labelSvg(l, 'left')), ...rightLaidOut.map(l => labelSvg(l, 'right'))].join('');
 
-  return `<svg viewBox="0 0 400 400" class="pie-chart-svg">${arcs.join('')}${labelsSvg}</svg>`;
+  return `<svg viewBox="0 0 ${W} ${H}" class="pie-chart-svg">${arcs.join('')}${labelsSvg}</svg>`;
 }
 
 function getCalendarDoneBooksByDate() {
