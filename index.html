@@ -2513,6 +2513,7 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
         document.fonts.load('28px "Noto Serif"'),
         document.fonts.load('800 52px "Plus Jakarta Sans"'),
         document.fonts.load('700 26px "Plus Jakarta Sans"'),
+        document.fonts.load('400 24px Outfit'),
         document.fonts.load('500 30px Outfit'),
         document.fonts.load('600 20px Outfit'),
         document.fonts.load('italic 500 32px Outfit')
@@ -2579,8 +2580,8 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
       ctx.fillStyle = '#3F3F46';
       ctx.fillText(isYear ? 'books finished this year' : 'books finished this month', cx, 890);
       drawOrnament(960, 90, 14, 5);
-      ctx.font = '34px "Noto Serif", serif';
-      ctx.fillStyle = '#71717A';
+      ctx.font = isYear ? 'italic 34px "Noto Serif", serif' : '34px "Noto Serif", serif';
+      ctx.fillStyle = isYear ? accentTxt : '#71717A';
       const ml = getWrappedLines(ctx, message, 820);
       ml.forEach((l, i) => ctx.fillText(l, cx, 1040 + i * 54));
       ctx.font = '500 30px Outfit, sans-serif';
@@ -2593,7 +2594,7 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
 
     // ----- top book -----
     const top = data.top;
-    let y = 385;
+    let y = isYear ? 345 : 385;
     ctx.font = '500 36px Outfit, sans-serif';
     ctx.fillStyle = '#3F3F46';
     ctx.fillText('You really got into', cx, y);
@@ -2620,16 +2621,17 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
     y = pillTop + pillH;
 
     // by author (serif)
-    ctx.font = '28px "Noto Serif", serif';
+    ctx.font = isYear ? '400 24px Outfit, sans-serif' : '28px "Noto Serif", serif';
     ctx.fillStyle = '#71717A';
     if (top.author && top.author.trim()) {
       const subLines = wrapupFitLines(ctx, `by ${top.author.trim()}`, 900, 2);
-      subLines.forEach((l, i) => ctx.fillText(l, cx, y + 60 + i * 40));
-      y += 60 + (subLines.length - 1) * 40;
+      const aOff = isYear ? 44 : 60, aLh = isYear ? 32 : 40;
+      subLines.forEach((l, i) => ctx.fillText(l, cx, y + aOff + i * aLh));
+      y += aOff + (subLines.length - 1) * aLh;
     }
 
     // ----- count line: books + pages -----
-    y += 110;
+    y += isYear ? 96 : 110;
     const totalPagesMonth = data.books.reduce((sum, b) => sum + (Number(b.totalPages) || 0), 0);
     const numFmt = v => v.toLocaleString('en-US');
     const plain = '500 38px Outfit, sans-serif';
@@ -2666,36 +2668,38 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
     // ----- busiest month (year only) -----
     if (isYear && data.busiest) {
       const bm = new Date(year, data.busiest.month, 1).toLocaleDateString('en-US', { month: 'long' });
-      ctx.font = '600 28px Outfit, sans-serif';
-      ctx.fillStyle = accentTxt;
-      ctx.fillText(`Busiest month: ${bm} (${data.busiest.count} book${data.busiest.count === 1 ? '' : 's'})`, cx, y + 62);
-      y += 56;
+      ctx.font = '400 28px Outfit, sans-serif';
+      ctx.fillStyle = '#3F3F46';
+      ctx.fillText(`Busiest month: ${bm} (${data.busiest.count} book${data.busiest.count === 1 ? '' : 's'})`, cx, y + 54);
+      y += 48;
     }
 
     // ----- funny line (serif) -----
-    ctx.font = '28px "Noto Serif", serif';
-    ctx.fillStyle = '#71717A';
+    ctx.font = isYear ? 'italic 28px "Noto Serif", serif' : '28px "Noto Serif", serif';
+    ctx.fillStyle = isYear ? accentTxt : '#71717A';
     const jokeLines = getWrappedLines(ctx, message, 820).slice(0, 3);
-    jokeLines.forEach((l, i) => ctx.fillText(l, cx, y + 68 + i * 42));
-    y += 68 + (jokeLines.length - 1) * 42;
+    const jOff = isYear ? 62 : 68;
+    jokeLines.forEach((l, i) => ctx.fillText(l, cx, y + jOff + i * 42));
+    y += jOff + (jokeLines.length - 1) * 42;
 
-    drawOrnament(y + 56, 90, 14, 5);
+    drawOrnament(y + (isYear ? 48 : 56), 90, 14, 5);
 
     // ----- "Books Finished:" heading (same face as "You really got into") -----
-    ctx.font = '500 36px Outfit, sans-serif';
+    ctx.font = isYear ? '400 30px Outfit, sans-serif' : '500 36px Outfit, sans-serif';
     ctx.fillStyle = '#3F3F46';
-    ctx.fillText(isYear ? 'Top Reads:' : 'Books Finished:', cx, y + 130);
-    const listTop = y + 165;
+    ctx.fillText(isYear ? 'Top Reads:' : 'Books Finished:', cx, y + (isYear ? 100 : 130));
+    const listTop = y + (isYear ? 130 : 165);
 
     // ----- quote block geometry (reserved at the bottom) -----
     let quoteBlock = null;
     if (data.quote) {
-      ctx.font = '28px "Noto Serif", serif';
+      const qFont = isYear ? 'italic 24px "Noto Serif", serif' : '28px "Noto Serif", serif';
+      ctx.font = qFont;
       const ql = wrapupFitLines(ctx, `\u201C${data.quote.text}\u201D`, 940, 6);
-      const qlh = 42;
+      const qlh = isYear ? 36 : 42;
       const hasAuthor = !!(data.quote.book.author && data.quote.book.author.trim());
       const h = 46 + ql.length * qlh + 20 + 38 + (hasAuthor ? 8 + 18 : 0);
-      quoteBlock = { ql, qlh, hasAuthor, h, top: 1820 - h };
+      quoteBlock = { ql, qlh, hasAuthor, h, top: 1820 - h, font: qFont };
     }
 
     // ----- book list (2 columns) -----
@@ -2811,7 +2815,7 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
       drawOrnament(qb.top + 10, 90, 14, 5);
       let qy = qb.top + 46;
       ctx.textAlign = 'center';
-      ctx.font = '28px "Noto Serif", serif';
+      ctx.font = qb.font;
       ctx.fillStyle = '#2c2c2a';
       qb.ql.forEach((l, i) => ctx.fillText(l, cx, qy + qb.qlh * (i + 1) - qb.qlh * 0.3));
       qy += qb.ql.length * qb.qlh + 20;
