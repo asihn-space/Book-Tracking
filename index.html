@@ -70,7 +70,7 @@
   .sheet-option-btn.active { background: rgba(var(--accent-rgb), 0.12); color: var(--accent); }
   .sheet-option-btn.active svg { color: var(--accent); }
   .sheet-title { font-family: var(--font-display); font-size: 17px; font-weight: 800; margin: 0 0 12px; padding: 0 2px; }
-  .rank-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--border); }
+  .rank-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
   .bar-track { height: 10px; background: var(--bg); border-radius: 9999px; overflow: hidden; }
   .bar-fill { height: 100%; border-radius: 9999px; }
   .rank-row:last-child { border-bottom: none; }
@@ -209,10 +209,10 @@
   .timeline-day-title { font-size: 12px; font-weight: 700; color: var(--text); margin: 0 0 8px; }
   .timeline-day-date { font-size: 11px; font-weight: 500; color: var(--text-faint); margin-left: 2px; }
   .timeline-subs { display: flex; flex-direction: column; gap: 8px; }
-  .timeline-subs { --tl-row: 18px; --tl-gap: 8px; --tl-axis: 10px; --tl-dot: 7px; }
+  .timeline-subs { --tl-row: 18px; --tl-gap: 8px; --tl-axis: 10px; --tl-dot: 5px; }
   .timeline-sub { position: relative; padding-left: 24px; display: flex; align-items: center; gap: 8px; height: var(--tl-row); line-height: var(--tl-row); }
   .timeline-sub::before { content: ''; position: absolute; left: var(--tl-axis); top: 50%; width: var(--tl-dot); height: var(--tl-dot); transform: translate(-50%, -50%); border-radius: 50%; background: var(--accent); z-index: 1; }
-  .timeline-sub::after { content: ''; position: absolute; left: var(--tl-axis); top: 50%; bottom: calc(-1 * (var(--tl-gap) + var(--tl-row) / 2)); width: 2px; transform: translateX(-50%); background: var(--accent); z-index: 0; }
+  .timeline-sub::after { content: ''; position: absolute; left: var(--tl-axis); top: 50%; bottom: calc(-1 * (var(--tl-gap) + var(--tl-row) / 2)); width: 1.5px; transform: translateX(-50%); background: var(--accent); z-index: 0; }
   .timeline-sub-last::after { display: none; }
   .timeline-time { font-size: 12px; font-weight: 600; color: var(--text-faint); min-width: 36px; flex: 0 0 36px; font-variant-numeric: tabular-nums; }
   .timeline-sub-pages { font-size: 12px; color: var(--text-soft); }
