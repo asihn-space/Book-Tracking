@@ -447,6 +447,7 @@ const ICONS = {
   edit: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>',
   trash: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>',
   book: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+  mailSm: '<svg style="color:var(--accent-text);flex-shrink:0;" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" fill="currentColor"/><path style="stroke:var(--surface);" d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>',
   bookOutline: '<svg class="cover-placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
   check: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
   chevronDown: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>',
@@ -595,6 +596,7 @@ let state = {
   showWrapup: false,
   wrapupImg: '',
   wrapupName: '',
+  wrapupTitle: 'Month in Pages',
   activeTab: 'home',
   libraryView: 'list',
   expandedId: null,
@@ -1937,7 +1939,10 @@ function renderCalendarSection() {
       <div class="cal-weekdays">${weekdayLabels.map(w => `<div class="cal-weekday">${w}</div>`).join('')}</div>
       <div class="cal-days">${dayCellsHtml}</div>
     </div>
-    <button type="button" class="btn-secondary-sm" data-action="open-wrapup" style="width:100%;margin-top:10px;font-family:'Noto Serif', serif;font-weight:400;font-size:14px;color:var(--accent-text);border:1px solid var(--accent-text);border-radius:14px;padding:12px;box-shadow:0 10px 22px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.06);">${ICONS.image} Month in Pages</button>`;
+    <div style="display:flex;gap:10px;margin-top:10px;">
+    <button type="button" class="btn-secondary-sm" data-action="open-wrapup" style="flex:1;min-width:0;font-family:Outfit, sans-serif;font-weight:500;font-size:14px;color:var(--text);border:1px solid var(--accent-text);border-radius:14px;padding:12px;box-shadow:0 10px 22px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.06);">${ICONS.mailSm} Month in Pages</button>
+    <button type="button" class="btn-secondary-sm" data-action="open-yearly-wrapup" style="flex:1;min-width:0;font-family:Outfit, sans-serif;font-weight:500;font-size:14px;color:var(--text);border:1px solid var(--accent-text);border-radius:14px;padding:12px;box-shadow:0 10px 22px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.06);">${ICONS.mailSm} Year in Pages</button>
+    </div>`;
 }
 
 function renderCalendarPopup() {
@@ -2374,6 +2379,22 @@ function getMonthlyWrapupData(year, month) {
   return { prefix, books, top, longestGap, quote: pickWrapupQuote(books) };
 }
 
+function getYearlyWrapupData(year) {
+  const prefix = String(year);
+  const books = state.books
+    .filter(b => getBookStatus(b) === 'done' && b.endDate && b.endDate.startsWith(prefix + '-'))
+    .sort((a, b) => a.endDate.localeCompare(b.endDate));
+  let top = null;
+  books.forEach(b => { if (!top || (Number(b.rating) || 0) > (Number(top.rating) || 0)) top = b; });
+  const byRating = books.slice().sort((a, b) =>
+    (Number(b.rating) || 0) - (Number(a.rating) || 0) || a.endDate.localeCompare(b.endDate));
+  const perMonth = Array(12).fill(0);
+  books.forEach(b => { const m = parseInt(b.endDate.slice(5, 7), 10) - 1; if (m >= 0 && m < 12) perMonth[m]++; });
+  const maxCount = Math.max(...perMonth);
+  const busiest = maxCount > 0 ? { month: perMonth.indexOf(maxCount), count: maxCount } : null;
+  return { prefix, books, byRating, top, busiest, longestGap: 0, quote: pickWrapupQuote(books) };
+}
+
 // Random quote from any book finished that month; avoids repeating the one shown last time.
 let lastWrapupQuoteKey = null;
 function pickWrapupQuote(books) {
@@ -2389,8 +2410,39 @@ function pickWrapupQuote(books) {
   return pick;
 }
 
-function pickWrapupMessage(data) {
+function pickWrapupMessage(data, isYear) {
   const n = data.books.length;
+  if (isYear) {
+    let ypool;
+    if (n === 0) {
+      ypool = [
+        'Zero books this year. Your TBR pile has officially become furniture.',
+        'A whole year and not one book finished. Your bookmark is basically a fossil now.',
+        '0 books. Bold strategy: collect them, admire them, never open them.'
+      ];
+    } else if (n <= 6) {
+      ypool = [
+        "Quality over quantity. That's what we tell ourselves, right?",
+        'Slow and steady wins the race. Emphasis on slow.'
+      ];
+    } else if (n <= 15) {
+      ypool = [
+        'A solid year of reading. Your bookshelf approves.',
+        'Not bad at all. Your library card is blushing.'
+      ];
+    } else if (n <= 30) {
+      ypool = [
+        'Almost a book every other week. Your TBR pile is getting nervous.',
+        'That is some serious page-turning. Your bookmark deserves a raise.'
+      ];
+    } else {
+      ypool = [
+        'Okay, show-off. Do you even sleep?',
+        'Your TBR pile has filed for protection.'
+      ];
+    }
+    return ypool[hashStr(data.prefix) % ypool.length];
+  }
   const gap = data.longestGap;
   let pool;
   if (n === 0) {
@@ -2466,7 +2518,8 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
         document.fonts.load('italic 500 32px Outfit')
       ]);
     } catch (e) { /* fall back to whatever is available */ }
-    const data = getMonthlyWrapupData(year, month);
+    const isYear = month == null;
+    const data = isYear ? getYearlyWrapupData(year) : getMonthlyWrapupData(year, month);
     const n = data.books.length;
     const monthName = new Date(year, month, 1).toLocaleDateString('en-US', { month: 'long' });
 
@@ -2507,15 +2560,15 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
 
     // ----- header -----
     ctx.textAlign = 'center';
-    ctx.font = '600 19px Outfit, sans-serif';
+    ctx.font = '600 28px Outfit, sans-serif';
     ctx.fillStyle = accentTxt;
-    drawTracked(`${monthName.toUpperCase()} ${year}`, cx, 150, 5);
+    drawTracked(isYear ? String(year) : `${monthName.toUpperCase()} ${year}`, cx, 152, 8);
     ctx.font = '96px "Alex Brush", cursive';
     ctx.fillStyle = accentTxt;
-    ctx.fillText('Month in Pages', cx, 245);
+    ctx.fillText(isYear ? 'Year in Pages' : 'Month in Pages', cx, 245);
     drawOrnament(288, 70, 12, 4);
 
-    const message = pickWrapupMessage(data);
+    const message = pickWrapupMessage(data, isYear);
 
     // ----- empty month -----
     if (n === 0) {
@@ -2524,7 +2577,7 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
       ctx.fillText('0', cx, 800);
       ctx.font = '500 40px Outfit, sans-serif';
       ctx.fillStyle = '#3F3F46';
-      ctx.fillText('books finished this month', cx, 890);
+      ctx.fillText(isYear ? 'books finished this year' : 'books finished this month', cx, 890);
       drawOrnament(960, 90, 14, 5);
       ctx.font = '34px "Noto Serif", serif';
       ctx.fillStyle = '#71717A';
@@ -2532,7 +2585,7 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
       ml.forEach((l, i) => ctx.fillText(l, cx, 1040 + i * 54));
       ctx.font = '500 30px Outfit, sans-serif';
       ctx.fillStyle = '#A1A1AA';
-      ctx.fillText("Next month is a fresh page.", cx, 1040 + ml.length * 54 + 70);
+      ctx.fillText(isYear ? "Next year is a fresh page." : "Next month is a fresh page.", cx, 1040 + ml.length * 54 + 70);
       ctx.font = '500 22px Outfit, sans-serif';
       ctx.fillText('via Book Tracking', cx, 1872);
       return callback(canvas);
@@ -2591,7 +2644,7 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
       seg.push({ t: numFmt(totalPagesMonth), f: bold, c: accentTxt });
       seg.push({ t: ` page${totalPagesMonth === 1 ? '' : 's'}`, f: plain, c: '#3F3F46' });
     }
-    seg.push({ t: ' this month', f: plain, c: '#3F3F46' });
+    seg.push({ t: isYear ? ' this year' : ' this month', f: plain, c: '#3F3F46' });
     const measureSegs = k => seg.reduce((a, s2) => {
       ctx.font = s2.f.replace(/(\d+)px/, (m, px) => `${px * k}px`);
       s2.w = ctx.measureText(s2.t).width;
@@ -2610,6 +2663,15 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
     });
     ctx.textAlign = 'center';
 
+    // ----- busiest month (year only) -----
+    if (isYear && data.busiest) {
+      const bm = new Date(year, data.busiest.month, 1).toLocaleDateString('en-US', { month: 'long' });
+      ctx.font = '600 28px Outfit, sans-serif';
+      ctx.fillStyle = accentTxt;
+      ctx.fillText(`Busiest month: ${bm} (${data.busiest.count} book${data.busiest.count === 1 ? '' : 's'})`, cx, y + 62);
+      y += 56;
+    }
+
     // ----- funny line (serif) -----
     ctx.font = '28px "Noto Serif", serif';
     ctx.fillStyle = '#71717A';
@@ -2622,7 +2684,7 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
     // ----- "Books Finished:" heading (same face as "You really got into") -----
     ctx.font = '500 36px Outfit, sans-serif';
     ctx.fillStyle = '#3F3F46';
-    ctx.fillText('Books Finished:', cx, y + 130);
+    ctx.fillText(isYear ? 'Top Reads:' : 'Books Finished:', cx, y + 130);
     const listTop = y + 165;
 
     // ----- quote block geometry (reserved at the bottom) -----
@@ -2651,7 +2713,7 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
     const rows = Math.ceil(shown / 2);
     const rowH = Math.min(230, avail / rows);
     const offY = Math.min((avail - rows * rowH) / 2, 24);
-    const shownBooks = data.books.slice(0, shown);
+    const shownBooks = (isYear ? data.byRating : data.books).slice(0, shown);
     const covers = await Promise.all(shownBooks.map(b => wrapupLoadImage(b.coverUrl)));
 
     const marginX = 70, colGap = 40;
@@ -2771,12 +2833,25 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
   });
 }
 
+function openYearlyWrapup() {
+  const y = state.calendarYear;
+  generateMonthlyWrapupCanvas(y, null, canvas => {
+    wrapupCanvasCache = canvas;
+    state.wrapupImg = canvas.toDataURL('image/png');
+    state.wrapupName = `year-in-pages-${y}`;
+    state.wrapupTitle = 'Year in Pages';
+    state.showWrapup = true;
+    render();
+  });
+}
+
 function openMonthlyWrapup() {
   const y = state.calendarYear, m = state.calendarMonth;
   generateMonthlyWrapupCanvas(y, m, canvas => {
     wrapupCanvasCache = canvas;
     state.wrapupImg = canvas.toDataURL('image/png');
     state.wrapupName = `month-in-pages-${y}-${String(m + 1).padStart(2, '0')}`;
+    state.wrapupTitle = 'Month in Pages';
     state.showWrapup = true;
     render();
   });
@@ -2798,7 +2873,7 @@ function shareWrapupImage() {
   wrapupCanvasCache.toBlob(async blob => {
     const file = new File([blob], `${state.wrapupName || 'month-in-pages'}.png`, { type: 'image/png' });
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      try { await navigator.share({ files: [file], title: 'My Month in Pages' }); } catch (err) { /* cancelled */ }
+      try { await navigator.share({ files: [file], title: 'My ' + (state.wrapupTitle || 'Month in Pages') }); } catch (err) { /* cancelled */ }
     } else {
       saveWrapupImage();
       alert("Sharing isn't supported here, so the image was downloaded instead — you can share it from your Gallery app.");
@@ -2811,11 +2886,11 @@ function renderWrapupModal() {
     <div class="modal">
       <div class="modal-inner">
         <div class="modal-header">
-          <h2>Month in Pages</h2>
+          <h2>${esc(state.wrapupTitle || 'Month in Pages')}</h2>
           <button id="close-wrapup" aria-label="Close">${ICONS.x}</button>
         </div>
         <div class="modal-body" style="display:flex;flex-direction:column;align-items:center;">
-          <img src="${state.wrapupImg}" alt="Month in Pages" style="width:100%;max-width:340px;border-radius:16px;box-shadow:0 14px 32px rgba(0,0,0,0.18);display:block;" />
+          <img src="${state.wrapupImg}" alt="${esc(state.wrapupTitle || 'Month in Pages')}" style="width:100%;max-width:340px;border-radius:16px;box-shadow:0 14px 32px rgba(0,0,0,0.18);display:block;" />
           <div class="achievement-actions">
             <div class="form-actions" style="margin:0;">
               <button type="button" class="btn" id="save-wrapup-btn">${ICONS.download} Save image</button>
@@ -3330,6 +3405,8 @@ function attachHandlers() {
       });
     } else if (action === 'open-wrapup') {
       el.addEventListener('click', () => { openMonthlyWrapup(); });
+    } else if (action === 'open-yearly-wrapup') {
+      el.addEventListener('click', () => { openYearlyWrapup(); });
     } else if (action === 'set-accent') {
       el.addEventListener('click', () => {
         const hex = el.getAttribute('data-hex');
