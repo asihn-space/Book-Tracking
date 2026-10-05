@@ -264,6 +264,10 @@
 
   /* Dashboard tab (was modal) */
   .dashboard-view { padding-bottom: 90px; }
+  @keyframes dash-in-right { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes dash-in-left { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: translateX(0); } }
+  .dash-content.dash-in-right { animation: dash-in-right 0.22s ease-out; }
+  .dash-content.dash-in-left { animation: dash-in-left 0.22s ease-out; }
 
   /* Library toolbar */
   .library-view { padding-bottom: 90px; }
@@ -331,6 +335,17 @@
   .detail-sheet-handle { width: 40px; height: 4px; border-radius: 9999px; background: var(--border); margin: 0 auto 14px; }
   .picker-sheet-backdrop { position: fixed; inset: 0; z-index: 40; background: transparent; }
   .picker-sheet { position: fixed; bottom: 132px; right: max(18px, calc(50% - 302px)); z-index: 41; width: 168px; max-height: 300px; overflow-y: auto; background: var(--surface); border-radius: 14px; box-shadow: 0 14px 34px rgba(0,0,0,0.2); padding: 8px; transform-origin: bottom right; animation: picker-sheet-pop 0.15s ease-out; }
+  .ystat-backdrop { position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,0.42); display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .ystat-dialog { width: 100%; max-width: 360px; background: var(--surface); border-radius: 18px; padding: 18px 16px 16px; box-shadow: 0 20px 48px rgba(0,0,0,0.28); font-family: Outfit, sans-serif; }
+  .ystat-title { font-size: 17px; font-weight: 700; margin: 0 2px 2px; color: var(--text); }
+  .ystat-sub { font-size: 12.5px; color: var(--text-faint); margin: 0 2px 12px; }
+  .ystat-row { display: flex; align-items: center; gap: 12px; width: 100%; padding: 11px 10px; border: none; background: none; border-radius: 10px; font-family: inherit; font-size: 15px; font-weight: 500; color: var(--text); text-align: left; cursor: pointer; }
+  .ystat-row.on { background: rgba(var(--accent-rgb), 0.12); }
+  .ystat-row.dim { opacity: 0.4; cursor: default; }
+  .ystat-box { width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--accent-text); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--accent-contrast); }
+  .ystat-row.on .ystat-box { background: var(--accent-text); }
+  .ystat-box svg { width: 14px; height: 14px; }
+  .ystat-actions { display: flex; gap: 10px; margin-top: 14px; }
   .picker-sheet-title { font-family: var(--font-display); font-size: 11.5px; font-weight: 700; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.04em; margin: 2px 2px 8px; }
   @keyframes picker-sheet-pop { from { opacity: 0; transform: scale(0.94) translateY(6px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
@@ -597,6 +612,13 @@ let state = {
   wrapupImg: '',
   wrapupName: '',
   wrapupTitle: 'Month in Pages',
+  wrapupImg2: '',
+  wrapupImg3: '',
+  wrapupYear: null,
+  yearStatPies: null,
+  yearStatDraft: [],
+  showYearStatPicker: false,
+  wrapupPage: 0,
   activeTab: 'home',
   libraryView: 'list',
   expandedId: null,
@@ -940,6 +962,7 @@ function render() {
     ${state.showNameEdit ? renderNameEditModal() : ''}
     ${state.showAchievement ? renderAchievementModal() : ''}
     ${state.showWrapup ? renderWrapupModal() : ''}
+    ${state.showYearStatPicker ? renderYearStatPicker() : ''}
     ${state.showForm ? renderForm() : ''}
   `;
   attachHandlers();
@@ -1977,10 +2000,12 @@ function renderDashboardTab() {
   ];
   const catRow = `<div class="dash-cat-row">${tabs.map(t => `<button type="button" class="dash-cat-chip ${t.key === cat ? 'active' : ''}" data-action="pick-dashboard-cat" data-cat="${t.key}">${t.icon}<span>${t.label}</span></button>`).join('')}</div>`;
   const content = cat === 'statistics' ? renderStatisticsSection() : cat === 'calendar' ? renderCalendarSection() : renderAchievementSection();
+  const anim = state.dashAnim ? ` dash-in-${state.dashAnim}` : '';
+  state.dashAnim = null;
   return `
     <div class="dashboard-view">
       ${catRow}
-      ${content}
+      <div class="dash-content${anim}">${content}</div>
     </div>
     ${cat === 'calendar' ? renderCalendarPopup() : ''}
     ${state.showYearSheet ? renderYearSheet() : ''}
@@ -2563,11 +2588,11 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
     ctx.textAlign = 'center';
     ctx.font = '600 28px Outfit, sans-serif';
     ctx.fillStyle = accentTxt;
-    drawTracked(isYear ? String(year) : `${monthName.toUpperCase()} ${year}`, cx, 152, 8);
-    ctx.font = '96px "Alex Brush", cursive';
+    drawTracked(isYear ? String(year) : `${monthName.toUpperCase()} ${year}`, cx, isYear ? 140 : 152, 8);
+    ctx.font = isYear ? '76px "Alex Brush", cursive' : '96px "Alex Brush", cursive';
     ctx.fillStyle = accentTxt;
-    ctx.fillText(isYear ? 'Year in Pages' : 'Month in Pages', cx, 245);
-    drawOrnament(288, 70, 12, 4);
+    ctx.fillText(isYear ? 'Year in Pages' : 'Month in Pages', cx, isYear ? 212 : 245);
+    drawOrnament(isYear ? 248 : 288, 70, 12, 4);
 
     const message = pickWrapupMessage(data, isYear);
 
@@ -2580,8 +2605,8 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
       ctx.fillStyle = '#3F3F46';
       ctx.fillText(isYear ? 'books finished this year' : 'books finished this month', cx, 890);
       drawOrnament(960, 90, 14, 5);
-      ctx.font = isYear ? 'italic 34px "Noto Serif", serif' : '34px "Noto Serif", serif';
-      ctx.fillStyle = isYear ? accentTxt : '#71717A';
+      ctx.font = '34px "Noto Serif", serif';
+      ctx.fillStyle = isYear ? '#3F3F46' : '#71717A';
       const ml = getWrappedLines(ctx, message, 820);
       ml.forEach((l, i) => ctx.fillText(l, cx, 1040 + i * 54));
       ctx.font = '500 30px Outfit, sans-serif';
@@ -2594,8 +2619,8 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
 
     // ----- top book -----
     const top = data.top;
-    let y = isYear ? 345 : 385;
-    ctx.font = '500 36px Outfit, sans-serif';
+    let y = isYear ? 300 : 385;
+    ctx.font = isYear ? '500 30px Outfit, sans-serif' : '500 36px Outfit, sans-serif';
     ctx.fillStyle = '#3F3F46';
     ctx.fillText('You really got into', cx, y);
 
@@ -2621,21 +2646,22 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
     y = pillTop + pillH;
 
     // by author (serif)
-    ctx.font = isYear ? '400 24px Outfit, sans-serif' : '28px "Noto Serif", serif';
+    ctx.font = '400 24px Outfit, sans-serif';
     ctx.fillStyle = '#71717A';
     if (top.author && top.author.trim()) {
       const subLines = wrapupFitLines(ctx, `by ${top.author.trim()}`, 900, 2);
-      const aOff = isYear ? 44 : 60, aLh = isYear ? 32 : 40;
+      const aOff = 44, aLh = 32;
       subLines.forEach((l, i) => ctx.fillText(l, cx, y + aOff + i * aLh));
-      y += aOff + (subLines.length - 1) * aLh;
+      // Month keeps its original vertical advance so the rest of the layout doesn't shift
+      y += isYear ? aOff + (subLines.length - 1) * aLh : 60 + (subLines.length - 1) * 40;
     }
 
     // ----- count line: books + pages -----
-    y += isYear ? 96 : 110;
+    y += isYear ? 84 : 110;
     const totalPagesMonth = data.books.reduce((sum, b) => sum + (Number(b.totalPages) || 0), 0);
     const numFmt = v => v.toLocaleString('en-US');
-    const plain = '500 38px Outfit, sans-serif';
-    const bold = '800 48px "Plus Jakarta Sans", sans-serif';
+    const plain = isYear ? '500 32px Outfit, sans-serif' : '500 38px Outfit, sans-serif';
+    const bold = isYear ? '800 40px "Plus Jakarta Sans", sans-serif' : '800 48px "Plus Jakarta Sans", sans-serif';
     const seg = [
       { t: 'You finished ', f: plain, c: '#3F3F46' },
       { t: numFmt(n), f: bold, c: accentTxt },
@@ -2675,10 +2701,10 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
     }
 
     // ----- funny line (serif) -----
-    ctx.font = isYear ? 'italic 28px "Noto Serif", serif' : '28px "Noto Serif", serif';
-    ctx.fillStyle = isYear ? accentTxt : '#71717A';
-    const jokeLines = getWrappedLines(ctx, message, 820).slice(0, 3);
-    const jOff = isYear ? 62 : 68;
+    ctx.font = '28px "Noto Serif", serif';
+    ctx.fillStyle = isYear ? '#3F3F46' : '#71717A';
+    const jokeLines = getWrappedLines(ctx, message, isYear ? 960 : 820).slice(0, 3);
+    const jOff = isYear ? 78 : 68;
     jokeLines.forEach((l, i) => ctx.fillText(l, cx, y + jOff + i * 42));
     y += jOff + (jokeLines.length - 1) * 42;
 
@@ -2693,7 +2719,7 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
     // ----- quote block geometry (reserved at the bottom) -----
     let quoteBlock = null;
     if (data.quote) {
-      const qFont = isYear ? 'italic 24px "Noto Serif", serif' : '28px "Noto Serif", serif';
+      const qFont = isYear ? '24px "Noto Serif", serif' : '28px "Noto Serif", serif';
       ctx.font = qFont;
       const ql = wrapupFitLines(ctx, `\u201C${data.quote.text}\u201D`, 940, 6);
       const qlh = isYear ? 36 : 42;
@@ -2703,13 +2729,13 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
     }
 
     // ----- book list (2 columns) -----
-    const MIN_ROW = 120;
+    const MIN_ROW = isYear ? 165 : 120;
     const bottomLimit = quoteBlock ? quoteBlock.top - 40 : 1810;
     let listBottom = bottomLimit;
     let avail = listBottom - listTop;
     let shown = Math.min(n, Math.max(1, Math.floor(avail / MIN_ROW)) * 2);
     if (n > shown) {
-      listBottom = bottomLimit - 60;
+      listBottom = bottomLimit - (isYear ? 50 : 60);
       avail = listBottom - listTop;
       shown = Math.min(n, Math.max(1, Math.floor(avail / MIN_ROW)) * 2);
     }
@@ -2807,7 +2833,7 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
     if (more > 0) {
       ctx.font = '600 26px Outfit, sans-serif';
       ctx.fillStyle = accentTxt;
-      ctx.fillText(`+ ${more} more book${more === 1 ? '' : 's'}`, cx, listBottom + 50);
+      ctx.fillText(`+ ${more} more book${more === 1 ? '' : 's'}`, cx, listBottom + (isYear ? 30 : 50));
     }
 
     if (quoteBlock) {
@@ -2837,15 +2863,443 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
   });
 }
 
+// ---------- Year in Pages: finished-books list (2nd image) ----------
+let wrapupCanvasCache2 = null;
+
+function generateYearlyBookListCanvas(year, callback) {
+  document.fonts.ready.then(async () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#B9D9D5';
+    const accentTxt = getAccentTextColor(accent);
+    const cx = canvas.width / 2;
+    try {
+      await Promise.all([
+        document.fonts.load('76px "Alex Brush"'),
+        document.fonts.load('28px "Noto Serif"'),
+        document.fonts.load('700 26px "Plus Jakarta Sans"'),
+        document.fonts.load('400 24px Outfit'),
+        document.fonts.load('500 30px Outfit'),
+        document.fonts.load('600 20px Outfit')
+      ]);
+    } catch (e) { /* fall back to whatever is available */ }
+
+    const books = state.books
+      .filter(b => getBookStatus(b) === 'done' && b.endDate && b.endDate.startsWith(year + '-'))
+      .sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0) || a.endDate.localeCompare(b.endDate));
+    const n = books.length;
+
+    await new Promise(res => {
+      const bg = new Image();
+      bg.onload = () => { ctx.drawImage(bg, 0, 0, canvas.width, canvas.height); res(); };
+      bg.onerror = () => { ctx.fillStyle = '#EAE7E4'; ctx.fillRect(0, 0, canvas.width, canvas.height); res(); };
+      bg.src = ACHIEVEMENT_BG;
+    });
+
+    function drawTracked(text, x, y, spacing) {
+      const chars = text.split('');
+      const widths = chars.map(c => ctx.measureText(c).width);
+      const total = widths.reduce((a, b) => a + b, 0) + spacing * (chars.length - 1);
+      let cursorX = x - total / 2;
+      const prev = ctx.textAlign;
+      ctx.textAlign = 'left';
+      chars.forEach((c, i) => { ctx.fillText(c, cursorX, y); cursorX += widths[i] + spacing; });
+      ctx.textAlign = prev;
+    }
+    function drawOrnament(y, armLength, gap, size) {
+      ctx.save();
+      ctx.strokeStyle = accent;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(cx - gap - armLength, y); ctx.lineTo(cx - gap, y);
+      ctx.moveTo(cx + gap, y); ctx.lineTo(cx + gap + armLength, y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(cx, y - size); ctx.lineTo(cx + size, y); ctx.lineTo(cx, y + size); ctx.lineTo(cx - size, y);
+      ctx.closePath();
+      ctx.fillStyle = accent;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // ----- header (same as Year in Pages) -----
+    ctx.textAlign = 'center';
+    ctx.font = '600 28px Outfit, sans-serif';
+    ctx.fillStyle = accentTxt;
+    drawTracked(String(year), cx, 140, 8);
+    ctx.font = '76px "Alex Brush", cursive';
+    ctx.fillText('Finished Books', cx, 212);
+    drawOrnament(248, 70, 12, 4);
+
+    // ----- summary line -----
+    const totalPages = books.reduce((sum, b) => sum + (Number(b.totalPages) || 0), 0);
+    ctx.font = '400 28px Outfit, sans-serif';
+    ctx.fillStyle = '#3F3F46';
+    let summary = `${n} book${n === 1 ? '' : 's'}`;
+    if (totalPages > 0) summary += `  \u00B7  ${totalPages.toLocaleString('en-US')} page${totalPages === 1 ? '' : 's'}`;
+    ctx.fillText(summary, cx, 306);
+
+    if (n === 0) {
+      ctx.font = '34px "Noto Serif", serif';
+      ctx.fillStyle = '#3F3F46';
+      ctx.fillText('No finished books yet.', cx, 560);
+      ctx.font = '500 22px Outfit, sans-serif';
+      ctx.fillStyle = '#A1A1AA';
+      ctx.fillText('via Book Tracking', cx, 1872);
+      return callback(canvas);
+    }
+
+    // ----- layout: 2 columns, switches to 3 when there are many books -----
+    const listTop = 360, bottomLimit = 1810;
+    const MIN_ROW = 112, MORE_H = 60;
+    let availFull = bottomLimit - listTop;
+    let cols = n > 2 * Math.floor(availFull / MIN_ROW) ? 3 : 2;
+    let shown = Math.min(n, cols * Math.floor(availFull / MIN_ROW));
+    let avail = availFull;
+    if (n > shown) {
+      avail = availFull - MORE_H;
+      shown = Math.min(n, cols * Math.floor(avail / MIN_ROW));
+    }
+    const more = n - shown;
+    const rows = Math.ceil(shown / cols);
+    const rowH = Math.min(190, avail / rows);
+    const offY = Math.min((avail - rows * rowH) / 2, 60);
+    const shownBooks = books.slice(0, shown);
+    const covers = await Promise.all(shownBooks.map(b => wrapupLoadImage(b.coverUrl)));
+
+    const marginX = 70, colGap = cols === 3 ? 30 : 40;
+    const colW = (canvas.width - marginX * 2 - colGap * (cols - 1)) / cols;
+    const ch = rowH - 24;
+    const cw = Math.round(ch * 2 / 3);
+    const sf = Math.max(0.72, Math.min(1.25, ch / 156));
+
+    shownBooks.forEach((b, i) => {
+      const col = i % cols, row = Math.floor(i / cols);
+      const x0 = marginX + col * (colW + colGap);
+      const y0 = listTop + offY + row * rowH + 12;
+
+      // cover
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,0.22)';
+      ctx.shadowBlur = 14;
+      ctx.shadowOffsetY = 6;
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath(); ctx.roundRect(x0, y0, cw, ch, 8); ctx.fill();
+      ctx.restore();
+      ctx.save();
+      ctx.beginPath(); ctx.roundRect(x0, y0, cw, ch, 8); ctx.clip();
+      const img = covers[i];
+      if (img) {
+        const ir = img.width / img.height, cr = cw / ch;
+        let dw, dh, dx, dy;
+        if (ir > cr) { dh = ch; dw = ch * ir; dx = x0 - (dw - cw) / 2; dy = y0; }
+        else { dw = cw; dh = cw / ir; dx = x0; dy = y0 - (dh - ch) / 2; }
+        ctx.drawImage(img, dx, dy, dw, dh);
+      } else {
+        const h1 = hashStr(b.title || '?') % 360, h2 = (h1 + 34) % 360;
+        const g = ctx.createLinearGradient(x0, y0, x0 + cw, y0 + ch);
+        g.addColorStop(0, `hsl(${h1} 62% 90%)`);
+        g.addColorStop(1, `hsl(${h2} 58% 80%)`);
+        ctx.fillStyle = g;
+        ctx.fillRect(x0, y0, cw, ch);
+        ctx.fillStyle = 'rgba(0,0,0,0.35)';
+        ctx.font = `800 ${Math.round(cw * 0.5)}px "Plus Jakarta Sans", sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.fillText(getCoverInitial(b.title), x0 + cw / 2, y0 + ch / 2 + cw * 0.18);
+      }
+      ctx.restore();
+
+      // text
+      const tx = x0 + cw + (cols === 3 ? 14 : 20);
+      const tw = colW - cw - (cols === 3 ? 14 : 20);
+      ctx.textAlign = 'left';
+      const titleSize = Math.round(26 * sf), titleLH = Math.round(32 * sf);
+      ctx.font = `700 ${titleSize}px "Plus Jakarta Sans", sans-serif`;
+      const tl = wrapupFitLines(ctx, b.title || 'Untitled', tw, ch >= 130 ? 3 : 2);
+      const authorSize = Math.round(21 * sf), ratingSize = Math.round(20 * sf);
+      const ratingVal = Number(b.rating) || 0;
+      const hasRating = ratingVal > 0;
+      const blockH = tl.length * titleLH + 10 + authorSize + (hasRating ? 8 + ratingSize : 0);
+      let ty = y0 + Math.max(0, (ch - blockH) / 2);
+      ctx.font = `700 ${titleSize}px "Plus Jakarta Sans", sans-serif`;
+      ctx.fillStyle = '#2c2c2a';
+      tl.forEach((l, li) => ctx.fillText(l, tx, ty + titleSize + li * titleLH));
+      ty += tl.length * titleLH + 10;
+      ctx.font = `500 ${authorSize}px Outfit, sans-serif`;
+      ctx.fillStyle = '#71717A';
+      const al = wrapupFitLines(ctx, b.author || 'Unknown author', tw, 1);
+      ctx.fillText(al[0], tx, ty + authorSize * 0.85);
+      ty += authorSize;
+      if (hasRating) {
+        const starR = ratingSize * 0.52;
+        const scx = tx + starR, scy = ty + 8 + ratingSize * 0.52;
+        ctx.fillStyle = '#CA8A04';
+        ctx.beginPath();
+        for (let k = 0; k < 10; k++) {
+          const rad = k % 2 === 0 ? starR : starR * 0.45;
+          const ang = -Math.PI / 2 + k * Math.PI / 5;
+          const px = scx + Math.cos(ang) * rad, py = scy + Math.sin(ang) * rad;
+          if (k === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.font = `600 ${ratingSize}px Outfit, sans-serif`;
+        ctx.fillStyle = '#CA8A04';
+        ctx.fillText(`${ratingVal.toFixed(1)}/10`, tx + starR * 2 + 8, ty + 8 + ratingSize * 0.85);
+      }
+      ctx.textAlign = 'center';
+    });
+
+    ctx.textAlign = 'center';
+    if (more > 0) {
+      const lastBottom = listTop + offY + rows * rowH;
+      ctx.font = '600 26px Outfit, sans-serif';
+      ctx.fillStyle = accentTxt;
+      ctx.fillText(`+ ${more} more book${more === 1 ? '' : 's'}`, cx, lastBottom + 30);
+    }
+    ctx.font = '500 22px Outfit, sans-serif';
+    ctx.fillStyle = '#A1A1AA';
+    ctx.fillText('via Book Tracking', cx, 1872);
+    callback(canvas);
+  });
+}
+
+// ---------- Year in Pages: statistics (3rd image) ----------
+let wrapupCanvasCache3 = null;
+// Which four pies to show in the Year in Pages statistics image (keys from STATISTICS_FIELDS).
+const DEFAULT_YEAR_STAT_PIES = ['writer', 'language', 'country', 'format'];
+const YEAR_STAT_KEY = 'reading-log-v2-year-stat-pies';
+function getYearStatPies() {
+  if (!state.yearStatPies) {
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem(YEAR_STAT_KEY)); } catch (e) {}
+    const valid = Array.isArray(saved) && saved.length === 4 && new Set(saved).size === 4 &&
+      saved.every(k => STATISTICS_FIELDS.some(f => f.key === k));
+    state.yearStatPies = valid ? saved : DEFAULT_YEAR_STAT_PIES.slice();
+  }
+  return state.yearStatPies;
+}
+function saveYearStatPies(keys) {
+  try { localStorage.setItem(YEAR_STAT_KEY, JSON.stringify(keys)); } catch (e) {}
+}
+
+function generateYearlyStatsCanvas(year, callback) {
+  document.fonts.ready.then(async () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#B9D9D5';
+    const accentTxt = getAccentTextColor(accent);
+    const cx = canvas.width / 2;
+    try {
+      await Promise.all([
+        document.fonts.load('76px "Alex Brush"'),
+        document.fonts.load('28px "Noto Serif"'),
+        document.fonts.load('400 24px Outfit'),
+        document.fonts.load('500 30px Outfit'),
+        document.fonts.load('600 24px Outfit')
+      ]);
+    } catch (e) { /* fall back to whatever is available */ }
+
+    const books = state.books.filter(b => getBookStatus(b) === 'done' && b.endDate && b.endDate.startsWith(year + '-'));
+    const n = books.length;
+
+    await new Promise(res => {
+      const bg = new Image();
+      bg.onload = () => { ctx.drawImage(bg, 0, 0, canvas.width, canvas.height); res(); };
+      bg.onerror = () => { ctx.fillStyle = '#EAE7E4'; ctx.fillRect(0, 0, canvas.width, canvas.height); res(); };
+      bg.src = ACHIEVEMENT_BG;
+    });
+
+    function drawTracked(text, x, y, spacing) {
+      const chars = text.split('');
+      const widths = chars.map(c => ctx.measureText(c).width);
+      const total = widths.reduce((a, b) => a + b, 0) + spacing * (chars.length - 1);
+      let cursorX = x - total / 2;
+      const prev = ctx.textAlign;
+      ctx.textAlign = 'left';
+      chars.forEach((c, i) => { ctx.fillText(c, cursorX, y); cursorX += widths[i] + spacing; });
+      ctx.textAlign = prev;
+    }
+    function drawOrnament(y, armLength, gap, size) {
+      ctx.save();
+      ctx.strokeStyle = accent;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(cx - gap - armLength, y); ctx.lineTo(cx - gap, y);
+      ctx.moveTo(cx + gap, y); ctx.lineTo(cx + gap + armLength, y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(cx, y - size); ctx.lineTo(cx + size, y); ctx.lineTo(cx, y + size); ctx.lineTo(cx - size, y);
+      ctx.closePath();
+      ctx.fillStyle = accent;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // ----- header (same as the other Year in Pages images) -----
+    ctx.textAlign = 'center';
+    ctx.font = '600 28px Outfit, sans-serif';
+    ctx.fillStyle = accentTxt;
+    drawTracked(String(year), cx, 140, 8);
+    ctx.font = '76px "Alex Brush", cursive';
+    ctx.fillText('Statistics', cx, 212);
+    drawOrnament(248, 70, 12, 4);
+
+    const totalPages = books.reduce((sum, b) => sum + (Number(b.totalPages) || 0), 0);
+    ctx.font = '400 28px Outfit, sans-serif';
+    ctx.fillStyle = '#3F3F46';
+    let summary = `${n} book${n === 1 ? '' : 's'}`;
+    if (totalPages > 0) summary += `  \u00B7  ${totalPages.toLocaleString('en-US')} page${totalPages === 1 ? '' : 's'}`;
+    ctx.fillText(summary, cx, 306);
+
+    if (n === 0) {
+      ctx.font = '34px "Noto Serif", serif';
+      ctx.fillStyle = '#3F3F46';
+      ctx.fillText('No finished books yet.', cx, 560);
+      ctx.font = '500 22px Outfit, sans-serif';
+      ctx.fillStyle = '#A1A1AA';
+      ctx.fillText('via Book Tracking', cx, 1872);
+      return callback(canvas);
+    }
+
+    // ----- bar chart: finishes by month -----
+    const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const counts = Array(12).fill(0);
+    books.forEach(b => { const m = parseInt(b.endDate.slice(5, 7), 10) - 1; if (m >= 0 && m < 12) counts[m]++; });
+    const maxCount = Math.max(1, ...counts);
+    ctx.font = '400 30px Outfit, sans-serif';
+    ctx.fillStyle = '#3F3F46';
+    ctx.fillText('Finishes by Month', cx, 392);
+
+    const chartLeft = 70, chartW = 940, slotW = chartW / 12, barW = 46;
+    const baseY = 690, maxH = 230;
+    ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(chartLeft, baseY); ctx.lineTo(chartLeft + chartW, baseY); ctx.stroke();
+    counts.forEach((c, i) => {
+      const x = chartLeft + slotW * i + slotW / 2;
+      if (c > 0) {
+        const h = Math.max(14, Math.round((c / maxCount) * maxH));
+        ctx.fillStyle = accent;
+        ctx.beginPath(); ctx.roundRect(x - barW / 2, baseY - h, barW, h, [10, 10, 0, 0]); ctx.fill();
+        ctx.font = '600 24px Outfit, sans-serif';
+        ctx.fillStyle = '#3F3F46';
+        ctx.fillText(String(c), x, baseY - h - 12);
+      }
+      ctx.font = '400 20px Outfit, sans-serif';
+      ctx.fillStyle = '#71717A';
+      ctx.fillText(monthLabels[i], x, baseY + 34);
+    });
+
+    drawOrnament(786, 90, 14, 5);
+
+    // ----- 2 x 2 pie charts -----
+    const picked = getYearStatPies();
+    const fields = STATISTICS_FIELDS.filter(f => picked.includes(f.key)).slice(0, 4);
+    const gridTop = 830, cellW = 470, cellH = 490, marginX = 70;
+    const R = 100;
+    const baseHex = state.accentColor || '#B9D9D5';
+
+    fields.forEach((f, idx) => {
+      const col = idx % 2, row = Math.floor(idx / 2);
+      const ccx = marginX + col * cellW + cellW / 2;
+      const top = gridTop + row * cellH;
+      const cyPie = top + 62 + R;
+
+      ctx.textAlign = 'center';
+      ctx.font = '500 26px Outfit, sans-serif';
+      ctx.fillStyle = '#3F3F46';
+      ctx.fillText(f.label, ccx, top + 30);
+
+      const entries = rankBy(books, f.getKey);
+      if (!entries.length) {
+        ctx.font = '400 22px Outfit, sans-serif';
+        ctx.fillStyle = '#A1A1AA';
+        ctx.fillText('No data yet', ccx, cyPie + 8);
+        return;
+      }
+      const slices = entries.slice(0, 5);
+      const restTotal = entries.slice(5).reduce((s, [, c]) => s + c, 0);
+      if (restTotal > 0) slices.push(['Others', restTotal]);
+      const total = slices.reduce((s, [, c]) => s + c, 0);
+      const shades = getPieShades(slices.length, baseHex);
+
+      // pie
+      let a = -Math.PI / 2;
+      slices.forEach(([, count], i) => {
+        const ang = (count / total) * Math.PI * 2;
+        ctx.beginPath();
+        if (slices.length === 1) {
+          ctx.arc(ccx, cyPie, R, 0, Math.PI * 2);
+          ctx.fillStyle = shades[i];
+          ctx.fill();
+        } else {
+          ctx.moveTo(ccx, cyPie);
+          ctx.arc(ccx, cyPie, R, a, a + ang);
+          ctx.closePath();
+          ctx.fillStyle = shades[i];
+          ctx.fill();
+          ctx.lineWidth = 2.5;
+          ctx.strokeStyle = '#FFFFFF';
+          ctx.stroke();
+        }
+        a += ang;
+      });
+
+      // legend
+      const lx = ccx - 190, lw = 380;
+      let ly = cyPie + R + 40;
+      slices.forEach(([name, count], i) => {
+        const pct = Math.round((count / total) * 100);
+        ctx.fillStyle = shades[i];
+        ctx.beginPath(); ctx.arc(lx + 8, ly - 7, 7, 0, Math.PI * 2); ctx.fill();
+        ctx.textAlign = 'left';
+        ctx.font = '500 20px Outfit, sans-serif';
+        ctx.fillStyle = '#2c2c2a';
+        const nm = wrapupFitLines(ctx, name, 220, 1)[0];
+        ctx.fillText(nm, lx + 26, ly);
+        ctx.textAlign = 'right';
+        ctx.font = '400 18px Outfit, sans-serif';
+        ctx.fillStyle = '#71717A';
+        ctx.fillText(`${count} \u00B7 ${pct}%`, lx + lw, ly);
+        ly += 30;
+      });
+      ctx.textAlign = 'center';
+    });
+
+    ctx.textAlign = 'center';
+    ctx.font = '500 22px Outfit, sans-serif';
+    ctx.fillStyle = '#A1A1AA';
+    ctx.fillText('via Book Tracking', cx, 1872);
+    callback(canvas);
+  });
+}
+
 function openYearlyWrapup() {
   const y = state.calendarYear;
   generateMonthlyWrapupCanvas(y, null, canvas => {
-    wrapupCanvasCache = canvas;
-    state.wrapupImg = canvas.toDataURL('image/png');
-    state.wrapupName = `year-in-pages-${y}`;
-    state.wrapupTitle = 'Year in Pages';
-    state.showWrapup = true;
-    render();
+    generateYearlyBookListCanvas(y, canvas2 => {
+      generateYearlyStatsCanvas(y, canvas3 => {
+        wrapupCanvasCache = canvas;
+        wrapupCanvasCache2 = canvas2;
+        wrapupCanvasCache3 = canvas3;
+        state.wrapupImg = canvas.toDataURL('image/png');
+        state.wrapupImg2 = canvas2.toDataURL('image/png');
+        state.wrapupImg3 = canvas3.toDataURL('image/png');
+        state.wrapupName = `year-in-pages-${y}`;
+        state.wrapupName2 = `finished-books-${y}`;
+        state.wrapupName3 = `year-statistics-${y}`;
+        state.wrapupTitle = 'Year in Pages';
+        state.wrapupYear = y;
+        state.wrapupPage = 0;
+        state.showWrapup = true;
+        render();
+      });
+    });
   });
 }
 
@@ -2856,26 +3310,41 @@ function openMonthlyWrapup() {
     state.wrapupImg = canvas.toDataURL('image/png');
     state.wrapupName = `month-in-pages-${y}-${String(m + 1).padStart(2, '0')}`;
     state.wrapupTitle = 'Month in Pages';
+    state.wrapupImg2 = '';
+    state.wrapupImg3 = '';
+    state.wrapupPage = 0;
     state.showWrapup = true;
     render();
   });
 }
 
+function activeWrapup() {
+  if (state.wrapupPage === 1 && state.wrapupImg2 && wrapupCanvasCache2) {
+    return { canvas: wrapupCanvasCache2, name: state.wrapupName2 || 'finished-books' };
+  }
+  if (state.wrapupPage === 2 && state.wrapupImg3 && wrapupCanvasCache3) {
+    return { canvas: wrapupCanvasCache3, name: state.wrapupName3 || 'year-statistics' };
+  }
+  return { canvas: wrapupCanvasCache, name: state.wrapupName || 'month-in-pages' };
+}
+
 function saveWrapupImage() {
-  if (!wrapupCanvasCache) return;
-  wrapupCanvasCache.toBlob(blob => {
+  const cur = activeWrapup();
+  if (!cur.canvas) return;
+  cur.canvas.toBlob(blob => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = `${state.wrapupName || 'month-in-pages'}.png`;
+    a.href = url; a.download = `${cur.name}.png`;
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }, 'image/png');
 }
 
 function shareWrapupImage() {
-  if (!wrapupCanvasCache) return;
-  wrapupCanvasCache.toBlob(async blob => {
-    const file = new File([blob], `${state.wrapupName || 'month-in-pages'}.png`, { type: 'image/png' });
+  const cur = activeWrapup();
+  if (!cur.canvas) return;
+  cur.canvas.toBlob(async blob => {
+    const file = new File([blob], `${cur.name}.png`, { type: 'image/png' });
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       try { await navigator.share({ files: [file], title: 'My ' + (state.wrapupTitle || 'Month in Pages') }); } catch (err) { /* cancelled */ }
     } else {
@@ -2883,6 +3352,51 @@ function shareWrapupImage() {
       alert("Sharing isn't supported here, so the image was downloaded instead — you can share it from your Gallery app.");
     }
   }, 'image/png');
+}
+
+function renderYearStatPicker() {
+  const draft = state.yearStatDraft;
+  const full = draft.length >= 4;
+  const rows = STATISTICS_FIELDS.map(f => {
+    const on = draft.includes(f.key);
+    return `<button type="button" class="ystat-row${on ? ' on' : ''}${(!on && full) ? ' dim' : ''}" data-action="toggle-year-stat-field" data-field="${f.key}">
+      <span class="ystat-box">${on ? ICONS.check : ''}</span>${esc(f.label)}
+    </button>`;
+  }).join('');
+  const ready = draft.length === 4;
+  return `
+    <div class="ystat-backdrop" data-action="close-year-stat-picker">
+      <div class="ystat-dialog" data-action="stop">
+        <p class="ystat-title">Choose 4 statistics</p>
+        <p class="ystat-sub">${draft.length} of 4 selected${full ? ' · deselect one to change' : ''}</p>
+        ${rows}
+        <div class="ystat-actions">
+          <button type="button" class="btn" style="flex:1;" data-action="close-year-stat-picker">Cancel</button>
+          <button type="button" class="btn btn-primary" style="flex:1;${ready ? '' : 'opacity:0.45;pointer-events:none;'}" data-action="apply-year-stat-picker">Apply</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function openYearStatPicker() {
+  state.yearStatDraft = getYearStatPies().slice();
+  state.showYearStatPicker = true;
+  render();
+}
+
+function applyYearStatPicker() {
+  if (state.yearStatDraft.length !== 4) return;
+  const keys = STATISTICS_FIELDS.map(f => f.key).filter(k => state.yearStatDraft.includes(k));
+  state.yearStatPies = keys;
+  saveYearStatPies(keys);
+  const y = state.wrapupYear || state.calendarYear;
+  generateYearlyStatsCanvas(y, canvas3 => {
+    wrapupCanvasCache3 = canvas3;
+    state.wrapupImg3 = canvas3.toDataURL('image/png');
+    state.wrapupPage = 2;
+    state.showYearStatPicker = false;
+    render();
+  });
 }
 
 function renderWrapupModal() {
@@ -2894,7 +3408,10 @@ function renderWrapupModal() {
           <button id="close-wrapup" aria-label="Close">${ICONS.x}</button>
         </div>
         <div class="modal-body" style="display:flex;flex-direction:column;align-items:center;">
-          <img src="${state.wrapupImg}" alt="${esc(state.wrapupTitle || 'Month in Pages')}" style="width:100%;max-width:340px;border-radius:16px;box-shadow:0 14px 32px rgba(0,0,0,0.18);display:block;" />
+          <img src="${(state.wrapupPage === 2 && state.wrapupImg3) ? state.wrapupImg3 : (state.wrapupPage === 1 && state.wrapupImg2) ? state.wrapupImg2 : state.wrapupImg}" alt="${esc(state.wrapupTitle || 'Month in Pages')}" style="width:100%;max-width:340px;border-radius:16px;box-shadow:0 14px 32px rgba(0,0,0,0.18);display:block;" />
+          ${state.wrapupImg2 ? `<div class="dash-cat-row" style="width:100%;max-width:340px;margin:14px 0 0;">
+            ${[['Recap', 0], ['Book List', 1], ['Statistics', 2]].map(([label, pg]) => `<button type="button" class="dash-cat-chip ${state.wrapupPage === pg ? 'active' : ''}" data-wrapup-page="${pg}" style="font-family:Outfit, sans-serif;font-weight:500;font-size:14px;">${label}</button>`).join('')}
+          </div>` : ''}
           <div class="achievement-actions">
             <div class="form-actions" style="margin:0;">
               <button type="button" class="btn" id="save-wrapup-btn">${ICONS.download} Save image</button>
@@ -3218,6 +3735,13 @@ function attachHandlers() {
     render();
   });
   const closeAchievementHandler = () => { state.showAchievement = false; state.achievementBook = null; render(); };
+  document.querySelectorAll('[data-wrapup-page]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const pg = Number(btn.getAttribute('data-wrapup-page'));
+      if (pg === 2) { openYearStatPicker(); return; }
+      state.wrapupPage = pg; render();
+    });
+  });
   const closeWrapupBtn = document.getElementById('close-wrapup');
   if (closeWrapupBtn) closeWrapupBtn.addEventListener('click', () => { state.showWrapup = false; render(); });
   const saveWrapupBtn = document.getElementById('save-wrapup-btn');
@@ -3461,6 +3985,19 @@ function attachHandlers() {
         state.showStatSheet = false;
         render();
       });
+    } else if (action === 'toggle-year-stat-field') {
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        const k = el.getAttribute('data-field');
+        const d = state.yearStatDraft;
+        if (d.includes(k)) state.yearStatDraft = d.filter(x => x !== k);
+        else if (d.length < 4) state.yearStatDraft = [...d, k];
+        render();
+      });
+    } else if (action === 'apply-year-stat-picker') {
+      el.addEventListener('click', e => { e.stopPropagation(); applyYearStatPicker(); });
+    } else if (action === 'close-year-stat-picker') {
+      el.addEventListener('click', e => { e.stopPropagation(); state.showYearStatPicker = false; render(); });
     } else if (action === 'open-year-sheet') {
       el.addEventListener('click', () => { state.showYearSheet = true; render(); });
     } else if (action === 'close-year-sheet') {
@@ -3565,6 +4102,56 @@ function attachHandlers() {
     if (cancelBtn) cancelBtn.addEventListener('click', closeHandler);
   }
 }
+
+// ---------- Swipe between dashboard categories (Achievement / Calendar / Statistics) ----------
+(function initDashboardSwipe() {
+  const ORDER = ['year', 'calendar', 'statistics'];
+  let sx = 0, sy = 0, st = 0, tracking = false;
+
+  function inHorizontalScroller(el) {
+    const app = document.getElementById('app');
+    while (el && el !== app && el.nodeType === 1) {
+      if (el.scrollWidth > el.clientWidth + 2) {
+        const ox = getComputedStyle(el).overflowX;
+        if (ox === 'auto' || ox === 'scroll') return true;
+      }
+      el = el.parentElement;
+    }
+    return false;
+  }
+  function overlayOpen() {
+    return !!(state.showSettings || state.showNameEdit || state.showAchievement || state.showWrapup ||
+      state.showForm || state.expandedId || state.showYearSheet || state.showStatSheet ||
+      state.calendarSelectedDate || document.querySelector('.modal, .detail-sheet, .timeline-popup-backdrop'));
+  }
+
+  document.addEventListener('touchstart', e => {
+    tracking = false;
+    if (state.activeTab !== 'dashboard' || e.touches.length !== 1) return;
+    if (overlayOpen()) return;
+    const t = e.target;
+    if (t.closest && t.closest('input, textarea, select')) return;
+    if (inHorizontalScroller(t)) return;
+    sx = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now();
+    tracking = true;
+  }, { passive: true });
+
+  document.addEventListener('touchend', e => {
+    if (!tracking) return;
+    tracking = false;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - sx, dy = t.clientY - sy;
+    if (Date.now() - st > 700) return;
+    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.6) return;
+    const idx = ORDER.indexOf(state.dashboardCategory);
+    const next = dx < 0 ? idx + 1 : idx - 1; // swipe left -> next, swipe right -> previous
+    if (idx < 0 || next < 0 || next >= ORDER.length) return;
+    state.dashboardCategory = ORDER[next];
+    state.dashAnim = dx < 0 ? 'right' : 'left';
+    render();
+    window.scrollTo(0, 0);
+  }, { passive: true });
+})();
 
 document.addEventListener('click', () => {
   if (state.openDropdown) {
