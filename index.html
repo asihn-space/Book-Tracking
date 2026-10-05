@@ -46,12 +46,13 @@
   .header-name-hidden { visibility: hidden; }
   .header-top-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .settings-btn { background: none; border: none; cursor: pointer; color: var(--text-soft); padding: 4px; flex-shrink: 0; }
-  .swatch-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .swatch-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 56px)); justify-content: space-between; gap: 6px; }
   .swatch-btn { width: 100%; aspect-ratio: 1; border-radius: 9999px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; outline-offset: 3px; }
-  .swatch-btn.active { outline: 3px solid var(--text); }
+  .swatch-btn.active { outline: 2px solid var(--text); outline-offset: 2px; }
   .swatch-wrap { position: relative; }
-  .swatch-edit-btn { position: absolute; bottom: -3px; right: -3px; width: 20px; height: 20px; border-radius: 9999px; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-soft); cursor: pointer; padding: 0; }
+  .swatch-edit-btn { position: absolute; bottom: -4px; right: -4px; width: 20px; height: 20px; border-radius: 9999px; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-soft); cursor: pointer; padding: 0; }
   .preset-edit-preview { width: 100%; height: 56px; border-radius: 12px; margin-bottom: 16px; border: 1px solid var(--border); }
+  .preset-inline-edit { margin-top: 20px; }
   .preset-edit-error { font-size: 12.5px; color: #B91C1C; margin: -8px 0 12px; }
   .swatch-hint { font-size: 12.5px; color: var(--text-soft); margin: 14px 0 0; }
 
@@ -174,8 +175,12 @@
   .target-line { margin: 0 0 4px; font-size: 13.5px; color: var(--text-soft); }
   .target-line:last-child { margin-bottom: 0; }
   .target-line strong { color: var(--accent-text); font-weight: 800; }
-  .settings-row { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 14px; margin-bottom: 10px; background: var(--surface); border: 1px solid var(--accent-text); border-radius: 14px; font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--text); text-align: left; cursor: pointer; }
-  .settings-row svg { color: var(--text-faint); flex-shrink: 0; }
+  .settings-list { margin: -20px -16px 0; }
+  .settings-item { border-bottom: 1px solid var(--border); }
+  .settings-row { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 18px 16px; background: none; border: none; border-radius: 0; font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--text); text-align: left; cursor: pointer; }
+  .settings-row svg { color: var(--text-faint); flex-shrink: 0; transition: transform 0.18s ease; }
+  .settings-row[aria-expanded="true"] svg { transform: rotate(180deg); }
+  .settings-panel { padding: 4px 16px 24px; }
   .dash-summary-strip { display: grid; grid-template-columns: 3fr 3fr 5fr; gap: 8px; margin-bottom: 14px; }
   .dash-summary-tile { background: rgba(var(--accent-rgb), 0.16); border: 1px solid var(--accent-text); border-radius: 14px; padding: 12px 8px; text-align: center; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 10px 22px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.06); }
   .dash-summary-value { font-family: var(--font-display); font-size: 18px; font-weight: 800; color: var(--text); margin: 0; line-height: 1.25; }
@@ -587,6 +592,9 @@ let state = {
   presetEditError: '',
   showAchievement: false,
   achievementBook: null,
+  showWrapup: false,
+  wrapupImg: '',
+  wrapupName: '',
   activeTab: 'home',
   libraryView: 'list',
   expandedId: null,
@@ -927,9 +935,9 @@ function render() {
     </nav>
     ${state.expandedId ? renderDetailModal(state.books.find(b => b.id === state.expandedId)) : ''}
     ${state.showSettings ? renderSettingsModal() : ''}
-    ${state.editingPresetIndex !== null ? renderPresetEditModal() : ''}
     ${state.showNameEdit ? renderNameEditModal() : ''}
     ${state.showAchievement ? renderAchievementModal() : ''}
+    ${state.showWrapup ? renderWrapupModal() : ''}
     ${state.showForm ? renderForm() : ''}
   `;
   attachHandlers();
@@ -1546,46 +1554,27 @@ function renderNameEditModal() {
     </div>`;
 }
 
-function renderPresetEditModal() {
+function renderPresetInlineEditor() {
   const i = state.editingPresetIndex;
   const preview = isValidHex(state.presetEditValue) ? state.presetEditValue : ACCENT_PRESETS[i];
   return `
-    <div class="modal">
-      <div class="modal-inner">
-        <div class="modal-header">
-          <h2>Edit color</h2>
-          <button id="close-preset-edit" aria-label="Close">${ICONS.x}</button>
-        </div>
-        <div class="modal-body">
-          <div class="preset-edit-preview" style="background:${preview};"></div>
-          <label class="field">
-            <span class="field-label">Hex code</span>
-            <input id="f-preset-edit" value="${esc(state.presetEditValue)}" placeholder="#RRGGBB" maxlength="7" style="text-transform:uppercase;" />
-          </label>
-          ${state.presetEditError ? `<p class="preset-edit-error">${esc(state.presetEditError)}</p>` : ''}
-          <div class="form-actions">
-            <button type="button" id="cancel-preset-edit" class="btn">Cancel</button>
-            <button type="button" id="save-preset-edit" class="btn btn-primary">${ICONS.check} Save</button>
-          </div>
-        </div>
-      </div>
-    </div>`;
+          <div class="preset-inline-edit">
+            <div class="preset-edit-preview" style="background:${preview};"></div>
+            <label class="field">
+              <span class="field-label">Hex code</span>
+              <input id="f-preset-edit" value="${esc(state.presetEditValue)}" placeholder="#RRGGBB" maxlength="7" style="text-transform:uppercase;" />
+            </label>
+            ${state.presetEditError ? `<p class="preset-edit-error">${esc(state.presetEditError)}</p>` : ''}
+            <div class="form-actions" style="margin-bottom:0;">
+              <button type="button" id="cancel-preset-edit" class="btn">Cancel</button>
+              <button type="button" id="save-preset-edit" class="btn btn-primary">${ICONS.check} Save</button>
+            </div>
+          </div>`;
 }
 
 function renderSettingsModal() {
   const page = state.settingsPage;
-  const titles = { accent: 'Accent Color', target: 'Set Target' };
-  const header = `
-        <div class="modal-header">
-          <div style="display:flex;align-items:center;gap:6px;">
-            ${page ? `<button id="settings-back" aria-label="Back">${ICONS.calChevronLeft}</button>` : ''}
-            <h2>${page ? titles[page] : 'Settings'}</h2>
-          </div>
-          <button id="close-settings" aria-label="Close">${ICONS.x}</button>
-        </div>`;
-  let body = '';
-  if (page === 'accent') {
-    body = `
+  const accentPanel = `
           <div class="swatch-grid">
             ${ACCENT_PRESETS.map((hex, i) => `
               <div class="swatch-wrap">
@@ -1596,9 +1585,8 @@ function renderSettingsModal() {
               </div>
             `).join('')}
           </div>
-          <p class="swatch-hint">Tap a color to apply it. Tap the pencil to set your own hex code.</p>`;
-  } else if (page === 'target') {
-    body = `
+          ${state.editingPresetIndex !== null ? renderPresetInlineEditor() : '<p class="swatch-hint">Tap a color to apply it. Tap the pencil to set your own hex code.</p>'}`;
+  const targetPanel = `
           <label class="field">
             <span class="field-label">Yearly Target (books)</span>
             <input id="f-target-year" type="number" inputmode="numeric" min="1" step="1" value="${esc(state.targetYearValue)}" placeholder="e.g. 24" />
@@ -1609,18 +1597,24 @@ function renderSettingsModal() {
           </label>
           ${state.targetError ? `<p class="preset-edit-error" style="margin:0 0 12px;">${esc(state.targetError)}</p>` : ''}
           <p class="swatch-hint" style="margin:0 0 16px;">Counts books you finish this year and this month. Leave a field blank to turn that target off.</p>
-          <div class="form-actions">
+          <div class="form-actions" style="margin-bottom:0;">
             <button type="button" id="save-target-btn" class="btn btn-primary">${ICONS.check} Save</button>
           </div>`;
-  } else {
-    body = `
-          <button type="button" class="settings-row" data-page="accent"><span>Accent Color</span>${ICONS.calChevronRight}</button>
-          <button type="button" class="settings-row" data-page="target"><span>Set Target</span>${ICONS.calChevronRight}</button>`;
-  }
+  const item = (key, label, panel) => `
+          <div class="settings-item">
+            <button type="button" class="settings-row" data-page="${key}" aria-expanded="${page === key}"><span>${label}</span>${ICONS.chevronDown}</button>
+            ${page === key ? `<div class="settings-panel">${panel}</div>` : ''}
+          </div>`;
   return `
     <div class="modal">
-      <div class="modal-inner">${header}
-        <div class="modal-body">${body}
+      <div class="modal-inner">
+        <div class="modal-header">
+          <h2>Settings</h2>
+          <button id="close-settings" aria-label="Close">${ICONS.x}</button>
+        </div>
+        <div class="modal-body">
+          <div class="settings-list">${item('accent', 'Accent Color', accentPanel)}${item('target', 'Set Target', targetPanel)}
+          </div>
         </div>
       </div>
     </div>`;
@@ -1942,7 +1936,8 @@ function renderCalendarSection() {
       </div>
       <div class="cal-weekdays">${weekdayLabels.map(w => `<div class="cal-weekday">${w}</div>`).join('')}</div>
       <div class="cal-days">${dayCellsHtml}</div>
-    </div>`;
+    </div>
+    <button type="button" class="btn-secondary-sm" data-action="open-wrapup" style="width:100%;margin-top:10px;font-family:'Noto Serif', serif;font-weight:400;font-size:14px;color:var(--accent-text);border:1px solid var(--accent-text);border-radius:14px;padding:12px;box-shadow:0 10px 22px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.06);">${ICONS.image} Month in Pages</button>`;
 }
 
 function renderCalendarPopup() {
@@ -2357,6 +2352,481 @@ function shareAchievementImage() {
 }
 
 
+// ---------- Month in Pages ----------
+let wrapupCanvasCache = null;
+
+function getMonthlyWrapupData(year, month) {
+  const prefix = `${year}-${String(month + 1).padStart(2, '0')}`;
+  const books = state.books
+    .filter(b => getBookStatus(b) === 'done' && b.endDate && b.endDate.startsWith(prefix))
+    .sort((a, b) => a.endDate.localeCompare(b.endDate));
+  const now = new Date();
+  const isCurrent = now.getFullYear() === year && now.getMonth() === month;
+  const lastDay = isCurrent ? now.getDate() : calDaysInMonth(year, month);
+  const finishDays = new Set(books.map(b => Number(b.endDate.slice(8, 10))));
+  let gap = 0, longestGap = 0;
+  for (let d = 1; d <= lastDay; d++) {
+    if (finishDays.has(d)) gap = 0;
+    else { gap++; if (gap > longestGap) longestGap = gap; }
+  }
+  let top = null;
+  books.forEach(b => { if (!top || (Number(b.rating) || 0) > (Number(top.rating) || 0)) top = b; });
+  return { prefix, books, top, longestGap, quote: pickWrapupQuote(books) };
+}
+
+// Random quote from any book finished that month; avoids repeating the one shown last time.
+let lastWrapupQuoteKey = null;
+function pickWrapupQuote(books) {
+  const pool = [];
+  books.forEach(b => {
+    (b.quotes || []).map(q => (q || '').trim()).filter(Boolean).forEach(text => pool.push({ text, book: b }));
+  });
+  if (!pool.length) return null;
+  const keyOf = c => `${c.book.id}|${c.text}`;
+  const fresh = pool.length > 1 ? pool.filter(c => keyOf(c) !== lastWrapupQuoteKey) : pool;
+  const pick = fresh[Math.floor(Math.random() * fresh.length)];
+  lastWrapupQuoteKey = keyOf(pick);
+  return pick;
+}
+
+function pickWrapupMessage(data) {
+  const n = data.books.length;
+  const gap = data.longestGap;
+  let pool;
+  if (n === 0) {
+    pool = [
+      'Zero books finished. Your TBR pile is staring at you. Judging. Silently.',
+      'Not a single book finished. Your bookmark has been in the same spot since forever.',
+      '0 books. Bold strategy: buy them, admire them, never open them.'
+    ];
+  } else if (gap > 10) {
+    pool = [
+      `${gap} days without finishing a single book. Your bookmark filed a missing person report.`,
+      `A ${gap}-day reading slump? Your book was just resting its eyes... and so were you.`,
+      `You almost quit reading for ${gap} days. Luckily the plot (and the guilt) pulled you back.`
+    ];
+  } else if (n <= 2) {
+    pool = [
+      "Quality over quantity. That's what we tell ourselves, right?",
+      'Slow and steady wins the race. Emphasis on slow.'
+    ];
+  } else if (n <= 5) {
+    pool = [
+      'A very respectable pace. Your library card is blushing.',
+      'Not bad at all. Your bookshelf approves.'
+    ];
+  } else {
+    pool = [
+      'Okay, show-off. Do you even sleep?',
+      'Your TBR pile is shaking in fear.'
+    ];
+  }
+  return pool[hashStr(data.prefix) % pool.length];
+}
+
+function wrapupFitLines(ctx, text, maxW, maxLines) {
+  const lines = getWrappedLines(ctx, text, maxW);
+  if (lines.length <= maxLines) return lines;
+  const out = lines.slice(0, maxLines);
+  let last = out[maxLines - 1];
+  while (last.length > 1 && ctx.measureText(last + '…').width > maxW) last = last.slice(0, -1).trimEnd();
+  out[maxLines - 1] = last + '…';
+  return out;
+}
+
+function wrapupLoadImage(url) {
+  return new Promise(resolve => {
+    if (!url) return resolve(null);
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    const timer = setTimeout(() => resolve(null), 6000);
+    img.onload = () => { clearTimeout(timer); resolve(img); };
+    img.onerror = () => { clearTimeout(timer); resolve(null); };
+    img.src = url;
+  });
+}
+
+function generateMonthlyWrapupCanvas(year, month, callback) {
+  document.fonts.ready.then(async () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#B9D9D5';
+    const accentTxt = getAccentTextColor(accent);
+    const cx = canvas.width / 2;
+    try {
+      await Promise.all([
+        document.fonts.load('96px "Alex Brush"'),
+        document.fonts.load('28px "Noto Serif"'),
+        document.fonts.load('800 52px "Plus Jakarta Sans"'),
+        document.fonts.load('700 26px "Plus Jakarta Sans"'),
+        document.fonts.load('500 30px Outfit'),
+        document.fonts.load('600 20px Outfit'),
+        document.fonts.load('italic 500 32px Outfit')
+      ]);
+    } catch (e) { /* fall back to whatever is available */ }
+    const data = getMonthlyWrapupData(year, month);
+    const n = data.books.length;
+    const monthName = new Date(year, month, 1).toLocaleDateString('en-US', { month: 'long' });
+
+    // background
+    await new Promise(res => {
+      const bg = new Image();
+      bg.onload = () => { ctx.drawImage(bg, 0, 0, canvas.width, canvas.height); res(); };
+      bg.onerror = () => { ctx.fillStyle = '#EAE7E4'; ctx.fillRect(0, 0, canvas.width, canvas.height); res(); };
+      bg.src = ACHIEVEMENT_BG;
+    });
+
+    function drawTracked(text, x, y, spacing) {
+      const chars = text.split('');
+      const widths = chars.map(c => ctx.measureText(c).width);
+      const total = widths.reduce((a, b) => a + b, 0) + spacing * (chars.length - 1);
+      let cursorX = x - total / 2;
+      const prev = ctx.textAlign;
+      ctx.textAlign = 'left';
+      chars.forEach((c, i) => { ctx.fillText(c, cursorX, y); cursorX += widths[i] + spacing; });
+      ctx.textAlign = prev;
+    }
+    function drawOrnament(y, armLength, gap, size, color, alpha) {
+      ctx.save();
+      ctx.globalAlpha = alpha == null ? 1 : alpha;
+      ctx.strokeStyle = color || accent;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(cx - gap - armLength, y); ctx.lineTo(cx - gap, y);
+      ctx.moveTo(cx + gap, y); ctx.lineTo(cx + gap + armLength, y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(cx, y - size); ctx.lineTo(cx + size, y); ctx.lineTo(cx, y + size); ctx.lineTo(cx - size, y);
+      ctx.closePath();
+      ctx.fillStyle = color || accent;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // ----- header -----
+    ctx.textAlign = 'center';
+    ctx.font = '600 19px Outfit, sans-serif';
+    ctx.fillStyle = accentTxt;
+    drawTracked(`${monthName.toUpperCase()} ${year}`, cx, 150, 5);
+    ctx.font = '96px "Alex Brush", cursive';
+    ctx.fillStyle = accentTxt;
+    ctx.fillText('Month in Pages', cx, 245);
+    drawOrnament(288, 70, 12, 4);
+
+    const message = pickWrapupMessage(data);
+
+    // ----- empty month -----
+    if (n === 0) {
+      ctx.font = '320px "Alex Brush", cursive';
+      ctx.fillStyle = accentTxt;
+      ctx.fillText('0', cx, 800);
+      ctx.font = '500 40px Outfit, sans-serif';
+      ctx.fillStyle = '#3F3F46';
+      ctx.fillText('books finished this month', cx, 890);
+      drawOrnament(960, 90, 14, 5);
+      ctx.font = '34px "Noto Serif", serif';
+      ctx.fillStyle = '#71717A';
+      const ml = getWrappedLines(ctx, message, 820);
+      ml.forEach((l, i) => ctx.fillText(l, cx, 1040 + i * 54));
+      ctx.font = '500 30px Outfit, sans-serif';
+      ctx.fillStyle = '#A1A1AA';
+      ctx.fillText("Next month is a fresh page.", cx, 1040 + ml.length * 54 + 70);
+      ctx.font = '500 22px Outfit, sans-serif';
+      ctx.fillText('via Book Tracking', cx, 1872);
+      return callback(canvas);
+    }
+
+    // ----- top book -----
+    const top = data.top;
+    let y = 385;
+    ctx.font = '500 36px Outfit, sans-serif';
+    ctx.fillStyle = '#3F3F46';
+    ctx.fillText('You really got into', cx, y);
+
+    // title in an accent pill (text centred on the cap-height, not the font box)
+    ctx.font = '800 38px "Plus Jakarta Sans", sans-serif';
+    const titleLines = wrapupFitLines(ctx, top.title.toUpperCase(), 800, 2);
+    const tlh = 48;
+    const padX = 48, padV = 30;
+    const capH = ctx.measureText('H').actualBoundingBoxAscent || 27;
+    const textW = Math.max(...titleLines.map(l => ctx.measureText(l).width));
+    const pillW = Math.min(canvas.width - 100, Math.max(300, textW + padX * 2));
+    const pillH = Math.round(capH + (titleLines.length - 1) * tlh + padV * 2);
+    const pillTop = y + 36;
+    ctx.fillStyle = accent;
+    ctx.beginPath();
+    ctx.roundRect(cx - pillW / 2, pillTop, pillW, pillH, Math.min(pillH / 2, 48));
+    ctx.fill();
+    ctx.fillStyle = getContrastTextColor(accent);
+    titleLines.forEach((l, i) => {
+      const lineCenter = pillTop + pillH / 2 + (i - (titleLines.length - 1) / 2) * tlh;
+      ctx.fillText(l, cx, lineCenter + capH / 2);
+    });
+    y = pillTop + pillH;
+
+    // by author (serif)
+    ctx.font = '28px "Noto Serif", serif';
+    ctx.fillStyle = '#71717A';
+    if (top.author && top.author.trim()) {
+      const subLines = wrapupFitLines(ctx, `by ${top.author.trim()}`, 900, 2);
+      subLines.forEach((l, i) => ctx.fillText(l, cx, y + 60 + i * 40));
+      y += 60 + (subLines.length - 1) * 40;
+    }
+
+    // ----- count line: books + pages -----
+    y += 110;
+    const totalPagesMonth = data.books.reduce((sum, b) => sum + (Number(b.totalPages) || 0), 0);
+    const numFmt = v => v.toLocaleString('en-US');
+    const plain = '500 38px Outfit, sans-serif';
+    const bold = '800 48px "Plus Jakarta Sans", sans-serif';
+    const seg = [
+      { t: 'You finished ', f: plain, c: '#3F3F46' },
+      { t: numFmt(n), f: bold, c: accentTxt },
+      { t: ` book${n === 1 ? '' : 's'}`, f: plain, c: '#3F3F46' }
+    ];
+    if (totalPagesMonth > 0) {
+      seg.push({ t: ' and ', f: plain, c: '#3F3F46' });
+      seg.push({ t: numFmt(totalPagesMonth), f: bold, c: accentTxt });
+      seg.push({ t: ` page${totalPagesMonth === 1 ? '' : 's'}`, f: plain, c: '#3F3F46' });
+    }
+    seg.push({ t: ' this month', f: plain, c: '#3F3F46' });
+    const measureSegs = k => seg.reduce((a, s2) => {
+      ctx.font = s2.f.replace(/(\d+)px/, (m, px) => `${px * k}px`);
+      s2.w = ctx.measureText(s2.t).width;
+      return a + s2.w;
+    }, 0);
+    let kScale = 1;
+    const fullW = measureSegs(1);
+    if (fullW > 940) { kScale = 940 / fullW; measureSegs(kScale); }
+    let sx = cx - seg.reduce((a, s2) => a + s2.w, 0) / 2;
+    ctx.textAlign = 'left';
+    seg.forEach(s2 => {
+      ctx.font = s2.f.replace(/(\d+)px/, (m, px) => `${px * kScale}px`);
+      ctx.fillStyle = s2.c;
+      ctx.fillText(s2.t, sx, y);
+      sx += s2.w;
+    });
+    ctx.textAlign = 'center';
+
+    // ----- funny line (serif) -----
+    ctx.font = '28px "Noto Serif", serif';
+    ctx.fillStyle = '#71717A';
+    const jokeLines = getWrappedLines(ctx, message, 820).slice(0, 3);
+    jokeLines.forEach((l, i) => ctx.fillText(l, cx, y + 68 + i * 42));
+    y += 68 + (jokeLines.length - 1) * 42;
+
+    drawOrnament(y + 56, 90, 14, 5);
+
+    // ----- "Books Finished:" heading (same face as "You really got into") -----
+    ctx.font = '500 36px Outfit, sans-serif';
+    ctx.fillStyle = '#3F3F46';
+    ctx.fillText('Books Finished:', cx, y + 130);
+    const listTop = y + 165;
+
+    // ----- quote block geometry (reserved at the bottom) -----
+    let quoteBlock = null;
+    if (data.quote) {
+      ctx.font = '28px "Noto Serif", serif';
+      const ql = wrapupFitLines(ctx, `\u201C${data.quote.text}\u201D`, 940, 6);
+      const qlh = 42;
+      const hasAuthor = !!(data.quote.book.author && data.quote.book.author.trim());
+      const h = 46 + ql.length * qlh + 20 + 38 + (hasAuthor ? 8 + 18 : 0);
+      quoteBlock = { ql, qlh, hasAuthor, h, top: 1820 - h };
+    }
+
+    // ----- book list (2 columns) -----
+    const MIN_ROW = 120;
+    const bottomLimit = quoteBlock ? quoteBlock.top - 40 : 1810;
+    let listBottom = bottomLimit;
+    let avail = listBottom - listTop;
+    let shown = Math.min(n, Math.max(1, Math.floor(avail / MIN_ROW)) * 2);
+    if (n > shown) {
+      listBottom = bottomLimit - 60;
+      avail = listBottom - listTop;
+      shown = Math.min(n, Math.max(1, Math.floor(avail / MIN_ROW)) * 2);
+    }
+    const more = n - shown;
+    const rows = Math.ceil(shown / 2);
+    const rowH = Math.min(230, avail / rows);
+    const offY = Math.min((avail - rows * rowH) / 2, 24);
+    const shownBooks = data.books.slice(0, shown);
+    const covers = await Promise.all(shownBooks.map(b => wrapupLoadImage(b.coverUrl)));
+
+    const marginX = 70, colGap = 40;
+    const colW = (canvas.width - marginX * 2 - colGap) / 2;
+    const ch = rowH - 24;
+    const cw = Math.round(ch * 2 / 3);
+    const sf = Math.max(0.72, Math.min(1.25, ch / 156));
+
+    shownBooks.forEach((b, i) => {
+      const col = i % 2, row = Math.floor(i / 2);
+      const x0 = marginX + col * (colW + colGap);
+      const y0 = listTop + offY + row * rowH + 12;
+
+      // cover
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,0.22)';
+      ctx.shadowBlur = 14;
+      ctx.shadowOffsetY = 6;
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath(); ctx.roundRect(x0, y0, cw, ch, 8); ctx.fill();
+      ctx.restore();
+      ctx.save();
+      ctx.beginPath(); ctx.roundRect(x0, y0, cw, ch, 8); ctx.clip();
+      const img = covers[i];
+      if (img) {
+        const ir = img.width / img.height, cr = cw / ch;
+        let dw, dh, dx, dy;
+        if (ir > cr) { dh = ch; dw = ch * ir; dx = x0 - (dw - cw) / 2; dy = y0; }
+        else { dw = cw; dh = cw / ir; dx = x0; dy = y0 - (dh - ch) / 2; }
+        ctx.drawImage(img, dx, dy, dw, dh);
+      } else {
+        const h1 = hashStr(b.title || '?') % 360, h2 = (h1 + 34) % 360;
+        const g = ctx.createLinearGradient(x0, y0, x0 + cw, y0 + ch);
+        g.addColorStop(0, `hsl(${h1} 62% 90%)`);
+        g.addColorStop(1, `hsl(${h2} 58% 80%)`);
+        ctx.fillStyle = g;
+        ctx.fillRect(x0, y0, cw, ch);
+        ctx.fillStyle = 'rgba(0,0,0,0.35)';
+        ctx.font = `800 ${Math.round(cw * 0.5)}px "Plus Jakarta Sans", sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.fillText(getCoverInitial(b.title), x0 + cw / 2, y0 + ch / 2 + cw * 0.18);
+      }
+      ctx.restore();
+
+      // text
+      const tx = x0 + cw + 20;
+      const tw = colW - cw - 20;
+      ctx.textAlign = 'left';
+      const titleSize = Math.round(26 * sf), titleLH = Math.round(32 * sf);
+      ctx.font = `700 ${titleSize}px "Plus Jakarta Sans", sans-serif`;
+      const tl = wrapupFitLines(ctx, b.title || 'Untitled', tw, ch >= 130 ? 3 : 2);
+      const authorSize = Math.round(21 * sf), ratingSize = Math.round(20 * sf);
+      const ratingVal = Number(b.rating) || 0;
+      const hasRating = ratingVal > 0;
+      const blockH = tl.length * titleLH + 10 + authorSize + (hasRating ? 8 + ratingSize : 0);
+      let ty = y0 + Math.max(0, (ch - blockH) / 2);
+      ctx.font = `700 ${titleSize}px "Plus Jakarta Sans", sans-serif`;
+      ctx.fillStyle = '#2c2c2a';
+      tl.forEach((l, li) => ctx.fillText(l, tx, ty + titleSize + li * titleLH));
+      ty += tl.length * titleLH + 10;
+      ctx.font = `500 ${authorSize}px Outfit, sans-serif`;
+      ctx.fillStyle = '#71717A';
+      const al = wrapupFitLines(ctx, b.author || 'Unknown author', tw, 1);
+      ctx.fillText(al[0], tx, ty + authorSize * 0.85);
+      ty += authorSize;
+      if (hasRating) {
+        const starR = ratingSize * 0.52;
+        const scx = tx + starR, scy = ty + 8 + ratingSize * 0.52;
+        ctx.fillStyle = '#CA8A04';
+        ctx.beginPath();
+        for (let k = 0; k < 10; k++) {
+          const rad = k % 2 === 0 ? starR : starR * 0.45;
+          const ang = -Math.PI / 2 + k * Math.PI / 5;
+          const px = scx + Math.cos(ang) * rad, py = scy + Math.sin(ang) * rad;
+          if (k === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.font = `600 ${ratingSize}px Outfit, sans-serif`;
+        ctx.fillStyle = '#CA8A04';
+        ctx.fillText(`${ratingVal.toFixed(1)}/10`, tx + starR * 2 + 8, ty + 8 + ratingSize * 0.85);
+      }
+      ctx.textAlign = 'center';
+    });
+
+    ctx.textAlign = 'center';
+    if (more > 0) {
+      ctx.font = '600 26px Outfit, sans-serif';
+      ctx.fillStyle = accentTxt;
+      ctx.fillText(`+ ${more} more book${more === 1 ? '' : 's'}`, cx, listBottom + 50);
+    }
+
+    if (quoteBlock) {
+      const qb = quoteBlock;
+      drawOrnament(qb.top + 10, 60, 10, 3.5, '#B8B2AA', 0.9);
+      let qy = qb.top + 46;
+      ctx.textAlign = 'center';
+      ctx.font = '28px "Noto Serif", serif';
+      ctx.fillStyle = '#2c2c2a';
+      qb.ql.forEach((l, i) => ctx.fillText(l, cx, qy + qb.qlh * (i + 1) - qb.qlh * 0.3));
+      qy += qb.ql.length * qb.qlh + 20;
+      ctx.font = '38px "Alex Brush", cursive';
+      ctx.fillStyle = accentTxt;
+      ctx.fillText(data.quote.book.title, cx, qy + 38 * 0.72);
+      qy += 38;
+      if (qb.hasAuthor) {
+        qy += 8;
+        ctx.font = '600 18px Outfit, sans-serif';
+        ctx.fillStyle = '#8A8580';
+        drawTracked(data.quote.book.author.trim().toUpperCase(), cx, qy + 18 * 0.78, 2);
+      }
+    }
+    ctx.font = '500 22px Outfit, sans-serif';
+    ctx.fillStyle = '#A1A1AA';
+    ctx.fillText('via Book Tracking', cx, 1872);
+    callback(canvas);
+  });
+}
+
+function openMonthlyWrapup() {
+  const y = state.calendarYear, m = state.calendarMonth;
+  generateMonthlyWrapupCanvas(y, m, canvas => {
+    wrapupCanvasCache = canvas;
+    state.wrapupImg = canvas.toDataURL('image/png');
+    state.wrapupName = `month-in-pages-${y}-${String(m + 1).padStart(2, '0')}`;
+    state.showWrapup = true;
+    render();
+  });
+}
+
+function saveWrapupImage() {
+  if (!wrapupCanvasCache) return;
+  wrapupCanvasCache.toBlob(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `${state.wrapupName || 'month-in-pages'}.png`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 'image/png');
+}
+
+function shareWrapupImage() {
+  if (!wrapupCanvasCache) return;
+  wrapupCanvasCache.toBlob(async blob => {
+    const file = new File([blob], `${state.wrapupName || 'month-in-pages'}.png`, { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], title: 'My Month in Pages' }); } catch (err) { /* cancelled */ }
+    } else {
+      saveWrapupImage();
+      alert("Sharing isn't supported here, so the image was downloaded instead — you can share it from your Gallery app.");
+    }
+  }, 'image/png');
+}
+
+function renderWrapupModal() {
+  return `
+    <div class="modal">
+      <div class="modal-inner">
+        <div class="modal-header">
+          <h2>Month in Pages</h2>
+          <button id="close-wrapup" aria-label="Close">${ICONS.x}</button>
+        </div>
+        <div class="modal-body" style="display:flex;flex-direction:column;align-items:center;">
+          <img src="${state.wrapupImg}" alt="Month in Pages" style="width:100%;max-width:340px;border-radius:16px;box-shadow:0 14px 32px rgba(0,0,0,0.18);display:block;" />
+          <div class="achievement-actions">
+            <div class="form-actions" style="margin:0;">
+              <button type="button" class="btn" id="save-wrapup-btn">${ICONS.download} Save image</button>
+              <button type="button" class="btn btn-primary" id="share-wrapup-btn">${ICONS.share} Share</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
 function generateQuoteCollageCanvas(quotes, callback) {
   document.fonts.ready.then(() => {
     const canvas = document.createElement('canvas');
@@ -2633,17 +3103,23 @@ function attachHandlers() {
   const settingsBtn = document.getElementById('settings-btn');
   if (settingsBtn) settingsBtn.addEventListener('click', () => { state.showSettings = true; state.settingsPage = null; render(); });
   const closeSettingsBtn = document.getElementById('close-settings');
-  if (closeSettingsBtn) closeSettingsBtn.addEventListener('click', () => { state.showSettings = false; state.settingsPage = null; state.targetError = ''; render(); });
+  if (closeSettingsBtn) closeSettingsBtn.addEventListener('click', () => { state.showSettings = false; state.settingsPage = null; state.targetError = ''; state.editingPresetIndex = null; state.presetEditError = ''; render(); });
   const settingsBackBtn = document.getElementById('settings-back');
   if (settingsBackBtn) settingsBackBtn.addEventListener('click', () => { state.settingsPage = null; state.targetError = ''; render(); });
   app.querySelectorAll('.settings-row').forEach(btn => btn.addEventListener('click', () => {
     const page = btn.getAttribute('data-page');
-    if (page === 'target') {
-      state.targetYearValue = state.targets.year ? String(state.targets.year) : '';
-      state.targetMonthValue = state.targets.month ? String(state.targets.month) : '';
+    state.editingPresetIndex = null;
+    state.presetEditError = '';
+    if (state.settingsPage === page) {
+      state.settingsPage = null;
+    } else {
+      if (page === 'target') {
+        state.targetYearValue = state.targets.year ? String(state.targets.year) : '';
+        state.targetMonthValue = state.targets.month ? String(state.targets.month) : '';
+      }
       state.targetError = '';
+      state.settingsPage = page;
     }
-    state.settingsPage = page;
     render();
   }));
   const targetYearInput = document.getElementById('f-target-year');
@@ -2663,6 +3139,12 @@ function attachHandlers() {
     render();
   });
   const closeAchievementHandler = () => { state.showAchievement = false; state.achievementBook = null; render(); };
+  const closeWrapupBtn = document.getElementById('close-wrapup');
+  if (closeWrapupBtn) closeWrapupBtn.addEventListener('click', () => { state.showWrapup = false; render(); });
+  const saveWrapupBtn = document.getElementById('save-wrapup-btn');
+  if (saveWrapupBtn) saveWrapupBtn.addEventListener('click', saveWrapupImage);
+  const shareWrapupBtn = document.getElementById('share-wrapup-btn');
+  if (shareWrapupBtn) shareWrapupBtn.addEventListener('click', shareWrapupImage);
   const closeAchievementBtn = document.getElementById('close-achievement');
   if (closeAchievementBtn) closeAchievementBtn.addEventListener('click', closeAchievementHandler);
   if (state.showAchievement) launchConfetti('achievement-confetti');
@@ -2843,7 +3325,11 @@ function attachHandlers() {
         state.presetEditValue = ACCENT_PRESETS[i];
         state.presetEditError = '';
         render();
+        const inp = document.getElementById('f-preset-edit');
+        if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
       });
+    } else if (action === 'open-wrapup') {
+      el.addEventListener('click', () => { openMonthlyWrapup(); });
     } else if (action === 'set-accent') {
       el.addEventListener('click', () => {
         const hex = el.getAttribute('data-hex');
