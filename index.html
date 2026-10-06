@@ -2701,7 +2701,7 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
       ctx.fillText('0', cx, 800);
       ctx.font = '500 40px Outfit, sans-serif';
       ctx.fillStyle = '#3F3F46';
-      ctx.fillText(isYear ? 'books finished this year' : 'books finished this month', cx, 890);
+      ctx.fillText(isYear ? 'books finished this year :(' : 'books finished this month :(', cx, 890);
       drawOrnament(960, 90, 14, 5);
       ctx.font = '34px "Noto Serif", serif';
       ctx.fillStyle = isYear ? '#3F3F46' : '#71717A';
@@ -2770,7 +2770,7 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
       seg.push({ t: numFmt(totalPagesMonth), f: bold, c: accentTxt });
       seg.push({ t: ` page${totalPagesMonth === 1 ? '' : 's'}`, f: plain, c: '#3F3F46' });
     }
-    seg.push({ t: isYear ? ' this year' : ' this month', f: plain, c: '#3F3F46' });
+    seg.push({ t: isYear ? ' this year!' : ' this month!', f: plain, c: '#3F3F46' });
     const measureSegs = k => seg.reduce((a, s2) => {
       ctx.font = s2.f.replace(/(\d+)px/, (m, px) => `${px * k}px`);
       s2.w = ctx.measureText(s2.t).width;
