@@ -605,7 +605,7 @@ let state = {
   targetMonthValue: '',
   targetError: '',
   quotesOrder: null,
-  dashboardCategory: 'year',
+  dashboardCategory: 'calendar',
   showYearSheet: false,
   showAllYearBooks: false,
   showStatSheet: false,
@@ -2449,7 +2449,10 @@ function saveAchievementImage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       const safeName = (book.title || 'book').replace(/[^a-z0-9]+/gi, '-').toLowerCase();
-      a.href = url; a.download = `${safeName}-finished.png`;
+      const d = new Date();
+      const p2 = n => String(n).padStart(2, '0');
+      const stamp = `${d.getFullYear()}${p2(d.getMonth() + 1)}${p2(d.getDate())}-${p2(d.getHours())}${p2(d.getMinutes())}${p2(d.getSeconds())}`;
+      a.href = url; a.download = `${safeName}-finished-${stamp}.png`;
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       URL.revokeObjectURL(url);
     }, 'image/png');
@@ -3435,7 +3438,12 @@ function saveWrapupImage() {
     // Share sheet hanya lewat tombol Share.
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = `${cur.name}.png`;
+    // Nama file dibuat unik (tanggal+jam) supaya tidak bentrok dengan file lama di Downloads
+    // (nama bentrok memicu dialog "Unduh file?" di Android).
+    const d = new Date();
+    const p2 = n => String(n).padStart(2, '0');
+    const stamp = `${d.getFullYear()}${p2(d.getMonth() + 1)}${p2(d.getDate())}-${p2(d.getHours())}${p2(d.getMinutes())}${p2(d.getSeconds())}`;
+    a.href = url; a.download = `${cur.name}-${stamp}.png`;
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }, 'image/png');
