@@ -40,13 +40,13 @@
   html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overflow-y: scroll; scrollbar-gutter: stable; }
   body { margin: 0; font-family: var(--font-body); background: var(--bg); color: var(--text); }
   #app { max-width: 640px; margin: 0 auto; min-height: 100vh; }
-  .header { position: sticky; top: 0; z-index: 20; background: var(--bg); border-bottom: 1px solid var(--border); padding: 10px 12px; }
+  .header { position: sticky; top: 0; z-index: 20; background: var(--bg); border-bottom: 1px solid var(--accent-text); padding: 10px 12px; }
   .title { font-family: var(--font-display); font-size: 22px; line-height: 1; font-weight: 800; margin: 0; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: baseline; }
   .header-name { font-family: var(--font-script); font-size: 30px; line-height: 1; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--accent-text); margin-left: 4px; display: inline-block; }
   .header-name-hidden { visibility: hidden; }
   .header-top-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .settings-btn { background: none; border: none; cursor: pointer; color: var(--text-soft); padding: 4px; flex-shrink: 0; }
-  .swatch-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 56px)); justify-content: space-between; gap: 6px; }
+  .swatch-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 56px)); justify-content: space-between; gap: 6px; }
   .swatch-btn { width: 100%; aspect-ratio: 1; border-radius: 9999px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; outline-offset: 3px; }
   .swatch-btn.active { outline: 2px solid var(--text); outline-offset: 2px; }
   .swatch-wrap { position: relative; }
@@ -154,7 +154,7 @@
   /* Home / dashboard */
   .welcome-row { margin: 0 0 4px; font-size: 22px; color: var(--text); font-weight: 500; }
   .welcome-face { font-size: 18px; white-space: nowrap; margin-left: 2px; }
-  .welcome-name { font-family: var(--font-script); font-size: 30px; font-weight: 400; color: var(--accent-text); cursor: pointer; margin-left: 3px; }
+  .welcome-name { font-family: var(--font-script); font-size: 30px; font-weight: 400; color: var(--accent-text); margin-left: 3px; }
   .pages-read-row { margin: 0 0 16px; font-size: 13.5px; color: var(--text-soft); }
   .pages-read-row strong { color: var(--accent-text); font-weight: 800; }
   .header-actions { display: flex; gap: 2px; }
@@ -256,7 +256,7 @@
   .bottom-nav-add-btn:active { transform: scale(0.94); }
 
   /* Bottom nav */
-  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 25; background: var(--surface); border-top: 1px solid var(--border); display: flex; max-width: 640px; margin: 0 auto; padding: 4px 10px calc(4px + env(safe-area-inset-bottom, 0px)); }
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 25; background: var(--surface); border-top: 1px solid var(--accent-text); display: flex; max-width: 640px; margin: 0 auto; padding: 4px 10px calc(4px + env(safe-area-inset-bottom, 0px)); }
   .bottom-nav-btn { flex: 1 1 0; min-width: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 6px 4px; margin: 0 8px; border: none; background: none; cursor: pointer; font-family: inherit; font-size: 11.5px; font-weight: 600; color: var(--text-faint); border-radius: 12px; }
   .bottom-nav-btn svg { display: block; flex-shrink: 0; width: 20px; height: 20px; }
   .bottom-nav-btn span { display: block; width: 100%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -271,10 +271,11 @@
 
   /* Library toolbar */
   .library-view { padding-bottom: 90px; }
-  .lib-floating-toolbar { position: fixed; bottom: 88px; left: max(18px, calc(50% - 302px)); right: max(18px, calc(50% - 302px)); display: flex; justify-content: flex-end; align-items: center; z-index: 30; pointer-events: none; }
+  .lib-floating-toolbar { position: fixed; bottom: 106px; left: max(18px, calc(50% - 302px)); right: max(18px, calc(50% - 302px)); display: flex; justify-content: flex-end; align-items: center; z-index: 30; pointer-events: none; }
   .lib-floating-toolbar > * { pointer-events: auto; }
-  .view-toggle { display: flex; flex-direction: column; gap: 3px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 3px; box-shadow: 0 10px 24px rgba(0,0,0,0.14); }
-  .view-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; border: none; background: none; cursor: pointer; color: var(--text-faint); }
+  .view-toggle { display: flex; flex-direction: column; gap: 4px; background: var(--surface); border: 1px solid var(--accent-text); border-radius: 10px; padding: 4px; box-shadow: 0 10px 24px rgba(0,0,0,0.14); }
+  .view-btn svg { width: 20px; height: 20px; }
+  .view-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 6px; border: none; background: none; cursor: pointer; color: var(--text-faint); }
   .view-btn.active { background: var(--accent); color: var(--accent-contrast); }
   .search-row { display: flex; gap: 8px; margin-bottom: 14px; }
   .search-box { flex: 1.3; min-width: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px; border-radius: 8px; background: var(--surface); border: 1px solid var(--accent-text); }
@@ -398,6 +399,17 @@
 
   /* Modal / form */
   .modal { position: fixed; inset: 0; z-index: 40; background: var(--bg); display: flex; flex-direction: column; }
+  .drawer-backdrop { position: fixed; inset: 0; z-index: 40; background: rgba(0,0,0,0.38); }
+  .drawer { position: absolute; top: 0; right: 0; bottom: 0; width: 50%; min-width: 260px; max-width: 380px; background: var(--bg); display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.2); }
+  .drawer-backdrop.drawer-enter { animation: backdrop-in 0.22s ease-out; }
+  .drawer.drawer-enter { animation: drawer-in 0.26s cubic-bezier(0.22, 0.8, 0.3, 1); }
+  .drawer-backdrop.drawer-leaving { animation: backdrop-out 0.2s ease-in forwards; }
+  .drawer.drawer-leaving { animation: drawer-out 0.2s ease-in forwards; }
+  @keyframes drawer-in { from { transform: translateX(100%); } to { transform: none; } }
+  @keyframes drawer-out { from { transform: none; } to { transform: translateX(100%); } }
+  @keyframes backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes backdrop-out { from { opacity: 1; } to { opacity: 0; } }
+  .drawer .swatch-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; justify-content: stretch; }
   .modal-inner { max-width: 640px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; height: 100%; }
   .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid var(--border); }
   .modal-header h2 { font-size: 18px; font-weight: 700; margin: 0; }
@@ -497,13 +509,16 @@ function calBookDotIcon() {
 
 const ACCENT_KEY = 'reading-log-v2-accent';
 const ACCENT_PRESETS_KEY = 'reading-log-v2-accent-presets';
-const DEFAULT_ACCENT_PRESETS = ['#B9D9D5', '#857686', '#E9A4A4', '#FFE6BB', '#F4A6B6', '#D0C5B1'];
+const DEFAULT_ACCENT_PRESETS = ['#B9D9D5', '#857686', '#FFE6BB', '#F4A6B6', '#D0C5B1'];
 
 function loadAccentPresets() {
   try {
     const raw = localStorage.getItem(ACCENT_PRESETS_KEY);
     const arr = raw ? JSON.parse(raw) : null;
-    return Array.isArray(arr) && arr.length === 6 ? arr : [...DEFAULT_ACCENT_PRESETS];
+    if (Array.isArray(arr) && arr.length === 5) return arr;
+    // Older saves had 6 presets; the 3rd one (index 2) was dropped, keep the user's other custom colors.
+    if (Array.isArray(arr) && arr.length === 6) return arr.filter((_, i) => i !== 2);
+    return [...DEFAULT_ACCENT_PRESETS];
   } catch (e) { return [...DEFAULT_ACCENT_PRESETS]; }
 }
 function saveAccentPresets() {
@@ -583,6 +598,7 @@ let state = {
   accentColor: SAVED_ACCENT,
   showSettings: false,
   settingsPage: null,
+  settingsAnimate: false,
   targets: loadTargets(),
   targetYearValue: '',
   targetMonthValue: '',
@@ -601,7 +617,6 @@ let state = {
   sortBy: '',
   statusFilter: '',
   openDropdown: null,
-  showNameEdit: false,
   nameEditValue: '',
   editingPresetIndex: null,
   presetEditValue: '',
@@ -627,6 +642,9 @@ let state = {
   expandedQuoteIndex: null,
   quoteSelectMode: false,
   selectedQuoteIndices: [],
+  showQuoteShare: false,
+  quoteShareLayout: 0,
+  quoteShareImgs: ['', ''],
   confirmDeleteId: null,
   showForm: false,
   editingId: null,
@@ -940,7 +958,7 @@ function render() {
   app.innerHTML = `
     <div class="header">
       <div class="header-top-row">
-        <h1 class="title">Book Tracking<span class="header-name${state.activeTab === 'home' ? ' header-name-hidden" aria-hidden="true' : '" data-action="edit-name'}">${esc(state.userName)}</span></h1>
+        <h1 class="title">Book Tracking<span class="header-name${state.activeTab === 'home' ? ' header-name-hidden" aria-hidden="true' : ''}">${esc(state.userName)}</span></h1>
         <div class="header-actions">
           <button class="settings-btn" id="settings-btn" aria-label="Settings">${ICONS.gear}</button>
         </div>
@@ -959,10 +977,10 @@ function render() {
     </nav>
     ${state.expandedId ? renderDetailModal(state.books.find(b => b.id === state.expandedId)) : ''}
     ${state.showSettings ? renderSettingsModal() : ''}
-    ${state.showNameEdit ? renderNameEditModal() : ''}
     ${state.showAchievement ? renderAchievementModal() : ''}
     ${state.showWrapup ? renderWrapupModal() : ''}
     ${state.showYearStatPicker ? renderYearStatPicker() : ''}
+    ${state.showQuoteShare ? renderQuoteShareModal() : ''}
     ${state.showForm ? renderForm() : ''}
   `;
   attachHandlers();
@@ -1039,7 +1057,7 @@ function renderHome() {
   }).join('');
   return `
     <div class="home-view">
-      <p class="welcome-row">Welcome, <span class="welcome-name" data-action="edit-name">${esc(state.userName)}</span> <span class="welcome-face">${WELCOME_FACE}</span></p>
+      <p class="welcome-row">Welcome, <span class="welcome-name">${esc(state.userName)}</span> <span class="welcome-face">${WELCOME_FACE}</span></p>
       <p class="pages-read-row${(state.targets.year || state.targets.month) ? ' pages-read-row-tight' : ''}">You've read <strong>${getTotalPagesRead(state.books)}</strong> pages so far!</p>
       ${renderTargetLines()}
       ${renderDashboardSummaryStrip()}
@@ -1560,25 +1578,6 @@ function renderAchievementModal() {
     </div>`;
 }
 
-function renderNameEditModal() {
-  return `
-    <div class="modal">
-      <div class="modal-inner">
-        <div class="modal-header">
-          <h2>Edit Name</h2>
-          <button id="close-name-edit" aria-label="Close">${ICONS.x}</button>
-        </div>
-        <div class="modal-body">
-          <label class="field"><span class="field-label">Your Name</span><input id="f-name-edit" value="${esc(state.nameEditValue)}" placeholder="e.g. Olivia" /></label>
-          <div class="form-actions">
-            <button type="button" id="cancel-name-edit" class="btn">Cancel</button>
-            <button type="button" id="save-name-edit" class="btn btn-primary">${ICONS.check} Save</button>
-          </div>
-        </div>
-      </div>
-    </div>`;
-}
-
 function renderPresetInlineEditor() {
   const i = state.editingPresetIndex;
   const preview = isValidHex(state.presetEditValue) ? state.presetEditValue : ACCENT_PRESETS[i];
@@ -1611,6 +1610,14 @@ function renderSettingsModal() {
             `).join('')}
           </div>
           ${state.editingPresetIndex !== null ? renderPresetInlineEditor() : '<p class="swatch-hint">Tap a color to apply it. Tap the pencil to set your own hex code.</p>'}`;
+  const namePanel = `
+          <label class="field">
+            <span class="field-label">Your Name</span>
+            <input id="f-name-edit" value="${esc(state.nameEditValue)}" placeholder="e.g. Olivia" />
+          </label>
+          <div class="form-actions" style="margin-bottom:0;">
+            <button type="button" id="save-name-edit" class="btn btn-primary">${ICONS.check} Save</button>
+          </div>`;
   const targetPanel = `
           <label class="field">
             <span class="field-label">Yearly Target (books)</span>
@@ -1630,19 +1637,35 @@ function renderSettingsModal() {
             <button type="button" class="settings-row" data-page="${key}" aria-expanded="${page === key}"><span>${label}</span>${ICONS.chevronDown}</button>
             ${page === key ? `<div class="settings-panel">${panel}</div>` : ''}
           </div>`;
+  const enter = state.settingsAnimate ? ' drawer-enter' : '';
+  state.settingsAnimate = false;
   return `
-    <div class="modal">
-      <div class="modal-inner">
+    <div class="drawer-backdrop${enter}" id="settings-backdrop">
+      <div class="drawer${enter}" id="settings-drawer">
         <div class="modal-header">
           <h2>Settings</h2>
-          <button id="close-settings" aria-label="Close">${ICONS.x}</button>
         </div>
         <div class="modal-body">
-          <div class="settings-list">${item('accent', 'Accent Color', accentPanel)}${item('target', 'Set Target', targetPanel)}
+          <div class="settings-list">${item('name', 'Set Name', namePanel)}${item('target', 'Set Target', targetPanel)}${item('accent', 'Accent Color', accentPanel)}
           </div>
         </div>
       </div>
     </div>`;
+}
+
+function closeSettingsDrawer() {
+  const finish = () => {
+    state.showSettings = false; state.settingsPage = null; state.targetError = '';
+    state.editingPresetIndex = null; state.presetEditError = '';
+    render();
+  };
+  const drawer = document.getElementById('settings-drawer');
+  const backdrop = document.getElementById('settings-backdrop');
+  if (!drawer || !backdrop) { finish(); return; }
+  if (drawer.classList.contains('drawer-leaving')) return;
+  drawer.classList.add('drawer-leaving');
+  backdrop.classList.add('drawer-leaving');
+  setTimeout(finish, 200);
 }
 
 function renderTargetLines() {
@@ -3331,12 +3354,22 @@ function activeWrapup() {
 function saveWrapupImage() {
   const cur = activeWrapup();
   if (!cur.canvas) return;
-  cur.canvas.toBlob(blob => {
+  cur.canvas.toBlob(async blob => {
+    const file = new File([blob], `${cur.name}.png`, { type: 'image/png' });
+    // Year in Pages has several images (Recap / Book List / Statistics). Saving more than one by direct
+    // download makes Chrome ask "download multiple files?" with the site address, so on phones / installed
+    // apps hand the file to the system share sheet instead. Month in Pages keeps the direct download.
+    const multiImage = !!state.wrapupImg2;
+    const touch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    if (multiImage && touch && navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file] }); return; }
+      catch (err) { if (err && err.name === 'AbortError') return; /* otherwise fall back to download */ }
+    }
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url; a.download = `${cur.name}.png`;
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   }, 'image/png');
 }
 
@@ -3561,30 +3594,246 @@ function generateQuoteCollageCanvas(quotes, callback) {
   });
 }
 
-function shareQuoteCollage() {
+// ---------- Quote sharing: layout picker (Classic / Cards) ----------
+let quoteShareCanvases = [null, null];
+
+// "Cards" layout: quote cards styled like the Quotes tab, placed on the paper canvas.
+function generateQuoteCardsCanvas(quotes, callback) {
+  document.fonts.ready.then(async () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#B9D9D5';
+    const accentTxt = getAccentTextColor(accent);
+    const cx = canvas.width / 2;
+    try {
+      await Promise.all([
+        document.fonts.load('28px "Noto Serif"'),
+        document.fonts.load('38px "Alex Brush"'),
+        document.fonts.load('84px "Alex Brush"'),
+        document.fonts.load('500 20px Outfit'),
+        document.fonts.load('600 19px Outfit')
+      ]);
+    } catch (e) { /* fall back to whatever is available */ }
+
+    await new Promise(res => {
+      const bg = new Image();
+      bg.onload = () => { ctx.drawImage(bg, 0, 0, canvas.width, canvas.height); res(); };
+      bg.onerror = () => { ctx.fillStyle = '#EAE7E4'; ctx.fillRect(0, 0, canvas.width, canvas.height); res(); };
+      bg.src = ACHIEVEMENT_BG;
+    });
+
+    function drawTracked(text, x, y, spacing) {
+      const chars = text.split('');
+      const widths = chars.map(c => ctx.measureText(c).width);
+      const total = widths.reduce((a, b) => a + b, 0) + spacing * (chars.length - 1);
+      let cursorX = x - total / 2;
+      const prev = ctx.textAlign;
+      ctx.textAlign = 'left';
+      chars.forEach((c, i) => { ctx.fillText(c, cursorX, y); cursorX += widths[i] + spacing; });
+      ctx.textAlign = prev;
+    }
+    function drawOrnament(y, armLength, gap, size) {
+      ctx.save();
+      ctx.strokeStyle = accent;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(cx - gap - armLength, y); ctx.lineTo(cx - gap, y);
+      ctx.moveTo(cx + gap, y); ctx.lineTo(cx + gap + armLength, y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(cx, y - size); ctx.lineTo(cx + size, y); ctx.lineTo(cx, y + size); ctx.lineTo(cx - size, y);
+      ctx.closePath();
+      ctx.fillStyle = accent;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // ----- header (same as the Classic layout) -----
+    ctx.textAlign = 'center';
+    ctx.font = '600 19px Outfit, sans-serif';
+    ctx.fillStyle = accentTxt;
+    drawTracked('A COLLECTION OF LINES I LOVE', cx, 150, 5);
+    ctx.font = '84px "Alex Brush", cursive';
+    ctx.fillText('My Favorite Quotes', cx, 236);
+    drawOrnament(276, 70, 12, 4);
+
+    // ----- card layout: masonry, 2 columns (1 wide card for a single quote) -----
+    const areaTop = 340, areaBottom = 1820, marginX = 70, gap = 24;
+    const cols = quotes.length === 1 ? 1 : 2;
+    const cardW = cols === 1 ? 760 : (canvas.width - marginX * 2 - gap) / 2;
+    const single = cols === 1;
+
+    function layout(scale) {
+      const f = v => Math.round(v * scale);
+      const z = {
+        quote: f(single ? 38 : 28), lh: f(single ? 58 : 43),
+        pad: f(single ? 52 : 36), padTop: f(single ? 76 : 54), padBottom: f(single ? 48 : 34),
+        book: f(single ? 54 : 38), author: f(single ? 24 : 19),
+        afterQuote: f(single ? 38 : 28), afterBook: f(8)
+      };
+      ctx.font = `${z.quote}px "Noto Serif", serif`;
+      const innerW = cardW - z.pad * 2;
+      const cards = quotes.map(q => {
+        const lines = getWrappedLines(ctx, q.text, innerW);
+        const hasAuthor = !!(q.author && q.author.trim());
+        const h = z.padTop + lines.length * z.lh + z.afterQuote + z.book +
+          (hasAuthor ? z.afterBook + z.author : 0) + z.padBottom;
+        return { q, lines, hasAuthor, h };
+      });
+      const colH = Array(cols).fill(0);
+      cards.forEach(c => {
+        const ci = colH.indexOf(Math.min(...colH));
+        c.col = ci; c.y = colH[ci];
+        colH[ci] += c.h + gap;
+      });
+      return { cards, z, total: Math.max(...colH) - gap };
+    }
+
+    const avail = areaBottom - areaTop;
+    let scale = 1, L = layout(scale);
+    while (L.total > avail && scale > 0.5) { scale = Math.round((scale - 0.05) * 100) / 100; L = layout(scale); }
+    const offY = Math.min(Math.max((avail - L.total) / 2, 0), 120);
+    const quoteMark = new Path2D('M9.983 3v7.391c0 5.704-3.731 9.57-8.983 10.609l-.995-2.151c2.432-.917 3.995-3.638 3.995-5.849h-4v-10h9.983zm14.017 0v7.391c0 5.704-3.748 9.571-9 10.609l-.996-2.151c2.433-.917 3.996-3.638 3.996-5.849h-4v-10h10z');
+    const { z } = L;
+
+    L.cards.forEach(c => {
+      const x = cols === 1 ? (canvas.width - cardW) / 2 : marginX + c.col * (cardW + gap);
+      const y = areaTop + offY + c.y;
+
+      // card body
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,0.14)';
+      ctx.shadowBlur = 24;
+      ctx.shadowOffsetY = 8;
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.beginPath(); ctx.roundRect(x, y, cardW, c.h, 28); ctx.fill();
+      ctx.restore();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = accentTxt;
+      ctx.beginPath(); ctx.roundRect(x, y, cardW, c.h, 28); ctx.stroke();
+
+      // faint quote mark, top-left
+      ctx.save();
+      ctx.globalAlpha = 0.22;
+      ctx.fillStyle = accent;
+      const qm = (single ? 64 : 52) * scale;
+      ctx.translate(x + 22 * scale, y + 18 * scale);
+      ctx.scale(qm / 24, qm / 24);
+      ctx.fill(quoteMark);
+      ctx.restore();
+
+      // quote text
+      ctx.textAlign = 'left';
+      ctx.font = `${z.quote}px "Noto Serif", serif`;
+      ctx.fillStyle = '#2c2c2a';
+      c.lines.forEach((line, li) => ctx.fillText(line, x + z.pad, y + z.padTop + li * z.lh + z.lh * 0.72));
+      let ty = y + z.padTop + c.lines.length * z.lh + z.afterQuote;
+
+      // book title (script) + author, right aligned like the cards in the Quotes tab
+      ctx.textAlign = 'right';
+      ctx.font = `${z.book}px "Alex Brush", cursive`;
+      ctx.fillStyle = accentTxt;
+      ctx.fillText(c.q.bookTitle, x + cardW - z.pad, ty + z.book * 0.78, cardW - z.pad * 2);
+      ty += z.book;
+      if (c.hasAuthor) {
+        ty += z.afterBook;
+        ctx.font = `500 ${z.author}px Outfit, sans-serif`;
+        ctx.fillStyle = '#8A8580';
+        ctx.fillText(c.q.author.trim(), x + cardW - z.pad, ty + z.author * 0.82, cardW - z.pad * 2);
+      }
+    });
+
+    ctx.textAlign = 'center';
+    ctx.font = '500 22px Outfit, sans-serif';
+    ctx.fillStyle = '#A1A1AA';
+    ctx.fillText('via Book Tracking', cx, 1872);
+    callback(canvas);
+  });
+}
+
+function openQuoteShare() {
   const allQuotes = getAllQuotes();
   const quotes = state.selectedQuoteIndices.map(i => allQuotes[i]).filter(Boolean);
   if (!quotes.length) return;
-  generateQuoteCollageCanvas(quotes, canvas => {
-    canvas.toBlob(async blob => {
-      const file = new File([blob], 'favorite-quotes.png', { type: 'image/png' });
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        try {
-          await navigator.share({ files: [file], title: 'My Favorite Quotes', text: 'A few of my favorite quotes' });
-        } catch (err) { /* user cancelled, nothing to do */ }
-      } else {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = 'favorite-quotes.png';
-        document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        alert("Sharing isn't supported here, so the image was downloaded instead — you can share it from your Gallery app.");
-      }
-      state.quoteSelectMode = false;
-      state.selectedQuoteIndices = [];
+  generateQuoteCollageCanvas(quotes, classic => {
+    generateQuoteCardsCanvas(quotes, cards => {
+      quoteShareCanvases = [classic, cards];
+      state.quoteShareImgs = [classic.toDataURL('image/png'), cards.toDataURL('image/png')];
+      state.quoteShareLayout = 0;
+      state.showQuoteShare = true;
       render();
-    }, 'image/png');
+    });
   });
+}
+
+function renderQuoteShareModal() {
+  const layout = state.quoteShareLayout;
+  const tabs = [['Classic', 0], ['Cards', 1]].map(([label, i]) =>
+    `<button type="button" class="dash-cat-chip ${layout === i ? 'active' : ''}" data-quote-layout="${i}" style="font-family:Outfit, sans-serif;font-weight:500;font-size:14px;">${label}</button>`
+  ).join('');
+  return `
+    <div class="modal">
+      <div class="modal-inner">
+        <div class="modal-header">
+          <h2>Share Quotes</h2>
+          <button id="close-quoteshare" aria-label="Close">${ICONS.x}</button>
+        </div>
+        <div class="modal-body" style="display:flex;flex-direction:column;align-items:center;">
+          <img src="${state.quoteShareImgs[layout]}" alt="Quote share preview" style="width:100%;max-width:340px;border-radius:14px;box-shadow:0 10px 28px rgba(0,0,0,0.18);" />
+          <div class="dash-cat-row" style="width:100%;max-width:340px;margin:14px 0 0;">${tabs}</div>
+          <div class="achievement-actions">
+            <div class="form-actions" style="margin:0;">
+              <button type="button" class="btn" id="save-quoteshare-btn">${ICONS.download} Save image</button>
+              <button type="button" class="btn btn-primary" id="share-quoteshare-btn">${ICONS.share} Share</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function quoteShareCurrent() {
+  const i = state.quoteShareLayout;
+  return { canvas: quoteShareCanvases[i], name: i === 1 ? 'favorite-quotes-cards' : 'favorite-quotes' };
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function saveQuoteShareImage() {
+  const cur = quoteShareCurrent();
+  if (!cur.canvas) return;
+  cur.canvas.toBlob(async blob => {
+    const file = new File([blob], `${cur.name}.png`, { type: 'image/png' });
+    // Two images in this modal: on phones use the system share sheet to avoid repeated download prompts.
+    const touch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    if (touch && navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file] }); return; }
+      catch (err) { if (err && err.name === 'AbortError') return; }
+    }
+    downloadBlob(blob, `${cur.name}.png`);
+  }, 'image/png');
+}
+
+function shareQuoteShareImage() {
+  const cur = quoteShareCurrent();
+  if (!cur.canvas) return;
+  cur.canvas.toBlob(async blob => {
+    const file = new File([blob], `${cur.name}.png`, { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], title: 'My Favorite Quotes', text: 'A few of my favorite quotes' }); } catch (err) { /* cancelled */ }
+    } else {
+      downloadBlob(blob, `${cur.name}.png`);
+      alert("Sharing isn't supported here, so the image was downloaded instead — you can share it from your Gallery app.");
+    }
+  }, 'image/png');
 }
 
 function updateCoverPreview() {
@@ -3697,9 +3946,11 @@ function attachHandlers() {
   if (addBtnNav) addBtnNav.addEventListener('click', openAddForm);
 
   const settingsBtn = document.getElementById('settings-btn');
-  if (settingsBtn) settingsBtn.addEventListener('click', () => { state.showSettings = true; state.settingsPage = null; render(); });
+  if (settingsBtn) settingsBtn.addEventListener('click', () => { state.showSettings = true; state.settingsPage = null; state.settingsAnimate = true; render(); });
   const closeSettingsBtn = document.getElementById('close-settings');
-  if (closeSettingsBtn) closeSettingsBtn.addEventListener('click', () => { state.showSettings = false; state.settingsPage = null; state.targetError = ''; state.editingPresetIndex = null; state.presetEditError = ''; render(); });
+  if (closeSettingsBtn) closeSettingsBtn.addEventListener('click', closeSettingsDrawer);
+  const settingsBackdrop = document.getElementById('settings-backdrop');
+  if (settingsBackdrop) settingsBackdrop.addEventListener('click', e => { if (e.target === settingsBackdrop) closeSettingsDrawer(); });
   const settingsBackBtn = document.getElementById('settings-back');
   if (settingsBackBtn) settingsBackBtn.addEventListener('click', () => { state.settingsPage = null; state.targetError = ''; render(); });
   app.querySelectorAll('.settings-row').forEach(btn => btn.addEventListener('click', () => {
@@ -3709,6 +3960,9 @@ function attachHandlers() {
     if (state.settingsPage === page) {
       state.settingsPage = null;
     } else {
+      if (page === 'name') {
+        state.nameEditValue = state.userName === 'Reader' ? '' : state.userName;
+      }
       if (page === 'target') {
         state.targetYearValue = state.targets.year ? String(state.targets.year) : '';
         state.targetMonthValue = state.targets.month ? String(state.targets.month) : '';
@@ -3731,7 +3985,7 @@ function attachHandlers() {
   if (saveNameBtn) saveNameBtn.addEventListener('click', () => {
     state.userName = state.nameEditValue.trim() || 'Reader';
     saveName();
-    state.showNameEdit = false;
+    state.settingsPage = null;
     render();
   });
   const closeAchievementHandler = () => { state.showAchievement = false; state.achievementBook = null; render(); };
@@ -3748,6 +4002,15 @@ function attachHandlers() {
   if (saveWrapupBtn) saveWrapupBtn.addEventListener('click', saveWrapupImage);
   const shareWrapupBtn = document.getElementById('share-wrapup-btn');
   if (shareWrapupBtn) shareWrapupBtn.addEventListener('click', shareWrapupImage);
+  document.querySelectorAll('[data-quote-layout]').forEach(btn => {
+    btn.addEventListener('click', () => { state.quoteShareLayout = Number(btn.getAttribute('data-quote-layout')); render(); });
+  });
+  const closeQuoteShareBtn = document.getElementById('close-quoteshare');
+  if (closeQuoteShareBtn) closeQuoteShareBtn.addEventListener('click', () => { state.showQuoteShare = false; render(); });
+  const saveQuoteShareBtn = document.getElementById('save-quoteshare-btn');
+  if (saveQuoteShareBtn) saveQuoteShareBtn.addEventListener('click', saveQuoteShareImage);
+  const shareQuoteShareBtn = document.getElementById('share-quoteshare-btn');
+  if (shareQuoteShareBtn) shareQuoteShareBtn.addEventListener('click', shareQuoteShareImage);
   const closeAchievementBtn = document.getElementById('close-achievement');
   if (closeAchievementBtn) closeAchievementBtn.addEventListener('click', closeAchievementHandler);
   if (state.showAchievement) launchConfetti('achievement-confetti');
@@ -3758,11 +4021,6 @@ function attachHandlers() {
   const shareAchievementBtn = document.getElementById('share-achievement-btn');
   if (shareAchievementBtn) shareAchievementBtn.addEventListener('click', shareAchievementImage);
 
-  const closeNameEditHandler = () => { state.showNameEdit = false; render(); };
-  const closeNameEditBtn = document.getElementById('close-name-edit');
-  if (closeNameEditBtn) closeNameEditBtn.addEventListener('click', closeNameEditHandler);
-  const cancelNameEditBtn = document.getElementById('cancel-name-edit');
-  if (cancelNameEditBtn) cancelNameEditBtn.addEventListener('click', closeNameEditHandler);
 
   const presetEditInput = document.getElementById('f-preset-edit');
   if (presetEditInput) presetEditInput.addEventListener('input', e => {
@@ -3896,7 +4154,7 @@ function attachHandlers() {
     } else if (action === 'cancel-quote-select') {
       el.addEventListener('click', () => { state.quoteSelectMode = false; state.selectedQuoteIndices = []; render(); });
     } else if (action === 'share-quotes') {
-      el.addEventListener('click', () => { shareQuoteCollage(); });
+      el.addEventListener('click', () => { openQuoteShare(); });
     } else if (action === 'edit') {
       el.addEventListener('click', e => {
         e.stopPropagation();
@@ -3913,13 +4171,6 @@ function attachHandlers() {
       el.addEventListener('click', () => { state.libraryView = 'list'; render(); });
     } else if (action === 'view-grid') {
       el.addEventListener('click', () => { state.libraryView = 'grid'; render(); });
-    } else if (action === 'edit-name') {
-      el.addEventListener('click', e => {
-        e.stopPropagation();
-        state.nameEditValue = state.userName === 'Reader' ? '' : state.userName;
-        state.showNameEdit = true;
-        render();
-      });
     } else if (action === 'edit-preset') {
       el.addEventListener('click', e => {
         e.stopPropagation();
@@ -4120,7 +4371,7 @@ function attachHandlers() {
     return false;
   }
   function overlayOpen() {
-    return !!(state.showSettings || state.showNameEdit || state.showAchievement || state.showWrapup ||
+    return !!(state.showSettings || state.showAchievement || state.showWrapup ||
       state.showForm || state.expandedId || state.showYearSheet || state.showStatSheet ||
       state.calendarSelectedDate || document.querySelector('.modal, .detail-sheet, .timeline-popup-backdrop'));
   }
