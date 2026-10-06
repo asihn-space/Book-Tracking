@@ -3429,17 +3429,9 @@ function activeWrapup() {
 function saveWrapupImage() {
   const cur = activeWrapup();
   if (!cur.canvas) return;
-  cur.canvas.toBlob(async blob => {
-    const file = new File([blob], `${cur.name}.png`, { type: 'image/png' });
-    // Year in Pages has several images (Recap / Book List / Statistics). Saving more than one by direct
-    // download makes Chrome ask "download multiple files?" with the site address, so on phones / installed
-    // apps hand the file to the system share sheet instead. Month in Pages keeps the direct download.
-    const multiImage = !!state.wrapupImg2;
-    const touch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
-    if (multiImage && touch && navigator.canShare && navigator.canShare({ files: [file] })) {
-      try { await navigator.share({ files: [file] }); return; }
-      catch (err) { if (err && err.name === 'AbortError') return; /* otherwise fall back to download */ }
-    }
+  cur.canvas.toBlob(blob => {
+    // Save image = langsung unduh ke perangkat (masuk ke Downloads/galeri), tanpa share sheet.
+    // Share sheet hanya lewat tombol Share.
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url; a.download = `${cur.name}.png`;
@@ -3885,14 +3877,8 @@ function downloadBlob(blob, filename) {
 function saveQuoteShareImage() {
   const cur = quoteShareCurrent();
   if (!cur.canvas) return;
-  cur.canvas.toBlob(async blob => {
-    const file = new File([blob], `${cur.name}.png`, { type: 'image/png' });
-    // Two images in this modal: on phones use the system share sheet to avoid repeated download prompts.
-    const touch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
-    if (touch && navigator.canShare && navigator.canShare({ files: [file] })) {
-      try { await navigator.share({ files: [file] }); return; }
-      catch (err) { if (err && err.name === 'AbortError') return; }
-    }
+  // Save image = langsung unduh ke perangkat; share sheet hanya lewat tombol Share.
+  cur.canvas.toBlob(blob => {
     downloadBlob(blob, `${cur.name}.png`);
   }, 'image/png');
 }
