@@ -37,6 +37,7 @@
     --font-script: 'Sacramento', cursive;
   }
   * { box-sizing: border-box; }
+  html, body, * { touch-action: pan-x pan-y; }
   html { touch-action: pan-x pan-y; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overflow-y: scroll; scrollbar-gutter: stable; }
   body { margin: 0; font-family: var(--font-body); background: var(--bg); color: var(--text); }
   #app { max-width: 640px; margin: 0 auto; min-height: 100vh; }
@@ -4482,6 +4483,12 @@ if ('serviceWorker' in navigator) {
 if (navigator.storage && navigator.storage.persist) {
   navigator.storage.persist();
 }
+</script>
+<script>
+// Kunci pinch-zoom: blok gesture 2 jari (cadangan kalau viewport/touch-action diabaikan browser)
+document.addEventListener('touchmove', function (e) { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive: false });
+['gesturestart', 'gesturechange', 'gestureend'].forEach(function (t) { document.addEventListener(t, function (e) { e.preventDefault(); }, { passive: false }); });
+document.addEventListener('wheel', function (e) { if (e.ctrlKey) e.preventDefault(); }, { passive: false });
 </script>
 </body>
 </html>
