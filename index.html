@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Book Tracking</title>
 <link rel="manifest" href="mobile-manifest.json" />
 <meta name="theme-color" content="#18181B" />
@@ -37,10 +37,10 @@
     --font-script: 'Sacramento', cursive;
   }
   * { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overflow-y: scroll; scrollbar-gutter: stable; }
+  html { touch-action: pan-x pan-y; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overflow-y: scroll; scrollbar-gutter: stable; }
   body { margin: 0; font-family: var(--font-body); background: var(--bg); color: var(--text); }
   #app { max-width: 640px; margin: 0 auto; min-height: 100vh; }
-  .header { position: sticky; top: 0; z-index: 20; background: var(--bg); border-bottom: 1px solid var(--accent-text); padding: 10px 12px; }
+  .header { position: sticky; top: 0; z-index: 20; background: var(--bg); border-bottom: 1px solid var(--border); padding: 10px 12px; }
   .title { font-family: var(--font-display); font-size: 22px; line-height: 1; font-weight: 800; margin: 0; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: baseline; }
   .header-name { font-family: var(--font-script); font-size: 30px; line-height: 1; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--accent-text); margin-left: 4px; display: inline-block; }
   .header-name-hidden { visibility: hidden; }
@@ -146,7 +146,7 @@
   .stat-chip-row::-webkit-scrollbar { display: none; }
   .stat-chip { flex: 1 0 auto; padding: 9px 16px; border-radius: 9999px; background: none; border: none; font-size: 12.5px; font-weight: 700; color: var(--text-soft); cursor: pointer; font-family: var(--font-display); white-space: nowrap; }
   .stat-chip.active { background: var(--accent); color: var(--accent-contrast); box-shadow: 0 3px 10px rgba(var(--accent-rgb), 0.28); }
-  .pie-chart-svg { width: 100%; max-width: 440px; height: auto; display: block; margin: 4px auto 0; }
+  .pie-chart-svg { width: 100%; max-width: 640px; height: auto; display: block; margin: 4px auto 0; }
 
   main { padding: 16px 16px 40px; }
   .error-banner { margin-bottom: 16px; padding: 10px 12px; border-radius: 8px; font-size: 14px; background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
@@ -256,7 +256,7 @@
   .bottom-nav-add-btn:active { transform: scale(0.94); }
 
   /* Bottom nav */
-  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 25; background: var(--surface); border-top: 1px solid var(--accent-text); display: flex; max-width: 640px; margin: 0 auto; padding: 4px 10px calc(4px + env(safe-area-inset-bottom, 0px)); }
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 25; background: var(--surface); border-top: 1px solid var(--border); display: flex; max-width: 640px; margin: 0 auto; padding: 4px 10px calc(4px + env(safe-area-inset-bottom, 0px)); }
   .bottom-nav-btn { flex: 1 1 0; min-width: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 6px 4px; margin: 0 8px; border: none; background: none; cursor: pointer; font-family: inherit; font-size: 11.5px; font-weight: 600; color: var(--text-faint); border-radius: 12px; }
   .bottom-nav-btn svg { display: block; flex-shrink: 0; width: 20px; height: 20px; }
   .bottom-nav-btn span { display: block; width: 100%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -273,9 +273,9 @@
   .library-view { padding-bottom: 90px; }
   .lib-floating-toolbar { position: fixed; bottom: 106px; left: max(18px, calc(50% - 302px)); right: max(18px, calc(50% - 302px)); display: flex; justify-content: flex-end; align-items: center; z-index: 30; pointer-events: none; }
   .lib-floating-toolbar > * { pointer-events: auto; }
-  .view-toggle { display: flex; flex-direction: column; gap: 4px; background: var(--surface); border: 1px solid var(--accent-text); border-radius: 10px; padding: 4px; box-shadow: 0 10px 24px rgba(0,0,0,0.14); }
-  .view-btn svg { width: 20px; height: 20px; }
-  .view-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 6px; border: none; background: none; cursor: pointer; color: var(--text-faint); }
+  .view-toggle { display: flex; flex-direction: column; gap: 2px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 3px; box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
+  .view-btn svg { width: 16px; height: 16px; }
+  .view-btn { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 4px; border: none; background: none; cursor: pointer; color: var(--text-faint); }
   .view-btn.active { background: var(--accent); color: var(--accent-contrast); }
   .search-row { display: flex; gap: 8px; margin-bottom: 14px; }
   .search-box { flex: 1.3; min-width: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px; border-radius: 8px; background: var(--surface); border: 1px solid var(--accent-text); }
@@ -1846,14 +1846,80 @@ function tintShade(hex, percent) {
   const f = 1 + percent;
   return `#${toHex(r * f)}${toHex(g * f)}${toHex(b * f)}`;
 }
-function getPieShades(n, baseHex) {
-  const darkP = -0.34, lightP = 0.62;
-  const arr = [];
-  for (let i = 0; i < n; i++) {
-    const t = n <= 1 ? 0 : i / (n - 1);
-    arr.push(tintShade(baseHex, darkP + (lightP - darkP) * t));
+// Kecerahan perseptual (CIE L*, 0-100) dari warna hex.
+function pieLStar(hex) {
+  const h = hex.replace('#', '');
+  const lin = v => { v /= 255; return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+  const R = lin(parseInt(h.substring(0, 2), 16)), G = lin(parseInt(h.substring(2, 4), 16)), B = lin(parseInt(h.substring(4, 6), 16));
+  const Y = 0.2126 * R + 0.7152 * G + 0.0722 * B;
+  return Y <= 0.008856 ? 903.3 * Y : 116 * Math.cbrt(Y) - 16;
+}
+// Cari shade dari warna dasar yang kecerahannya (L*) sama dengan target.
+function pieShadeAtLStar(baseHex, target) {
+  let lo = -0.95, hi = 1;
+  for (let i = 0; i < 24; i++) {
+    const mid = (lo + hi) / 2;
+    if (pieLStar(tintShade(baseHex, mid)) < target) lo = mid; else hi = mid;
   }
+  return tintShade(baseHex, (lo + hi) / 2);
+}
+// Range warna pie (berlaku untuk semua accent): mulai kecerahan L* 66, naik 9 poin per slice
+// (66, 75, 84, 93 untuk 4 slice). Kalau slice lebih dari 4, langkahnya dipadatkan supaya slice paling
+// terang tetap di L* 93 dan tidak menyatu dengan background putih.
+function getPieShades(n, baseHex) {
+  const START = 66, CAP = 93;
+  const step = n > 1 ? Math.min(9, (CAP - START) / (n - 1)) : 0;
+  const arr = [];
+  for (let i = 0; i < n; i++) arr.push(pieShadeAtLStar(baseHex, START + step * i));
   return arr;
+}
+
+// Warna batang per bulan mengikuti range warna pie: nilai terbanyak = paling gelap.
+function getBarShades(counts, baseHex) {
+  const uniq = [...new Set(counts.filter(c => c > 0))].sort((a, b) => b - a);
+  const shades = getPieShades(uniq.length, baseHex);
+  return counts.map(c => (c > 0 ? shades[uniq.indexOf(c)] : null));
+}
+
+// Pecah nama label pie berdasarkan LEBAR asli teks (bukan jumlah karakter): selama muat ke samping
+// tetap satu baris; baru turun ke baris ke-2 kalau memang tidak muat, dan "…" hanya kalau masih kepanjangan.
+let _pieMeasureCtx = null;
+function measurePieText(str) {
+  if (!_pieMeasureCtx) _pieMeasureCtx = document.createElement('canvas').getContext('2d');
+  _pieMeasureCtx.font = '700 12px Outfit, sans-serif';
+  return _pieMeasureCtx.measureText(str).width;
+}
+function wrapPieLabel(name, maxW, maxLines) {
+  const fits = t => measurePieText(t) <= maxW;
+  const clip = t => {                              // potong + "…" sampai muat
+    if (fits(t)) return t;
+    while (t.length > 1 && !fits(t + '…')) t = t.slice(0, -1);
+    return t.trimEnd() + '…';
+  };
+  const words = String(name).trim().split(/\s+/).filter(Boolean);
+  const lines = [];
+  let cur = '';
+  const push = () => { if (cur) { lines.push(cur); cur = ''; } };
+  words.forEach(w => {
+    while (!fits(w) && w.length > 1) {             // kata tunggal lebih lebar dari ruang: pecah per karakter
+      let k = w.length - 1;
+      while (k > 1 && !fits(w.slice(0, k))) k--;
+      push();
+      lines.push(w.slice(0, k));
+      w = w.slice(k);
+    }
+    if (!w) return;
+    if (!cur) cur = w;
+    else if (fits(cur + ' ' + w)) cur += ' ' + w;
+    else { push(); cur = w; }
+  });
+  push();
+  if (lines.length > maxLines) {
+    const kept = lines.slice(0, maxLines);
+    kept[maxLines - 1] = clip(kept[maxLines - 1] + ' ' + lines.slice(maxLines).join(' '));
+    return kept;
+  }
+  return lines.length ? lines : [''];
 }
 
 function renderPieChart(entries) {
@@ -1865,8 +1931,13 @@ function renderPieChart(entries) {
   if (restTotal > 0) slices.push(['Others', restTotal]);
 
   const total = slices.reduce((s, [, c]) => s + c, 0);
-  const W = 440, H = 400;
-  const cx = W / 2, cy = H / 2, r = 112;
+  // Ukuran chart menyesuaikan lebar kartu: pie tidak pernah lebih kecil dari 112, dan tambahan lebar
+  // kartu terutama dipakai untuk ruang label (supaya nama tidak mudah turun baris).
+  const availW = Math.min(window.innerWidth || 440, 640) - 62;   // kira-kira lebar dalam kartu
+  const W = availW > 440 ? Math.round(Math.min(availW, 640)) : 440;
+  const r = W > 440 ? Math.round(Math.min(150, 112 + (W - 440) * 0.2)) : 112;
+  const H = Math.max(400, 2 * r + 130);
+  const cx = W / 2, cy = H / 2;
   let angle = 0;
   const arcs = [];
   const leftLabels = [];
@@ -1888,26 +1959,29 @@ function renderPieChart(entries) {
 
   // Label diletakkan sejajar dengan posisi slice-nya (bukan dibagi rata),
   // lalu digeser seperlunya supaya tidak saling tumpang tindih.
-  const MIN_GAP = 40, TOP = 18, BOTTOM = 360;
-  const LEFT_END_X = 92;             // teks sisi kiri rata kanan di x ini
-  const RIGHT_START_X = W - 92;      // teks sisi kanan rata kiri di x ini
+  const MIN_GAP = 40, TOP = 18, BOTTOM = H - 40;
+  const LEFT_END_X = cx - r - 16;    // teks sisi kiri rata kanan di x ini
+  const RIGHT_START_X = cx + r + 16; // teks sisi kanan rata kiri di x ini
+  const LABEL_MAX_W = W - RIGHT_START_X - 4;  // lebar maksimal teks sebelum turun ke baris ke-2
+
+  const need = it => 40 + (it.lines.length - 1) * 14;   // tinggi blok label (lebih tinggi kalau 2 baris)
 
   function layout(list, side) {
     const items = list.map(l => {
       const edgePoint = polarToCartesian(cx, cy, r, l.midAngle);
       const elbow = polarToCartesian(cx, cy, r + 8, l.midAngle);
-      return { ...l, edgePoint, elbow, y: Math.max(TOP, Math.min(BOTTOM, elbow.y)) };
+      return { ...l, lines: wrapPieLabel(l.name, LABEL_MAX_W, 2), edgePoint, elbow, y: Math.max(TOP, Math.min(BOTTOM, elbow.y)) };
     });
     items.sort((a, b) => a.y - b.y);
     for (let i = 1; i < items.length; i++) {
-      items[i].y = Math.max(items[i].y, items[i - 1].y + MIN_GAP);
+      items[i].y = Math.max(items[i].y, items[i - 1].y + need(items[i - 1]));
     }
     for (let i = items.length - 1; i >= 0; i--) {
-      const limit = i === items.length - 1 ? BOTTOM : items[i + 1].y - MIN_GAP;
+      const limit = i === items.length - 1 ? BOTTOM : items[i + 1].y - need(items[i]);
       if (items[i].y > limit) items[i].y = limit;
     }
     for (let i = 0; i < items.length; i++) {
-      const limit = i === 0 ? TOP : items[i - 1].y + MIN_GAP;
+      const limit = i === 0 ? TOP : items[i - 1].y + need(items[i - 1]);
       if (items[i].y < limit) items[i].y = limit;
     }
     return items.map(l => ({
@@ -1925,8 +1999,8 @@ function renderPieChart(entries) {
     const halo = 'stroke="var(--surface)" stroke-width="4" paint-order="stroke fill" stroke-linejoin="round"';
     return `
       <polyline points="${l.edgePoint.x.toFixed(1)},${l.edgePoint.y.toFixed(1)} ${l.elbow.x.toFixed(1)},${l.elbow.y.toFixed(1)} ${l.lineEndX},${l.y.toFixed(1)}" fill="none" stroke="var(--text-faint)" stroke-width="1.5" stroke-linejoin="round" />
-      <text x="${l.textX}" y="${(l.y + 5).toFixed(1)}" text-anchor="${anchor}" font-size="12" font-weight="700" fill="var(--text)" font-family="Outfit, sans-serif" ${halo}>${esc(truncateLabel(l.name, 11))}</text>
-      <text x="${l.textX}" y="${(l.y + 21).toFixed(1)}" text-anchor="${anchor}" font-size="10.5" fill="var(--text-soft)" font-family="Outfit, sans-serif" ${halo}>${l.count} book${l.count === 1 ? '' : 's'} · ${l.pct}%</text>`;
+${l.lines.map((ln, k) => `<text x="${l.textX}" y="${(l.y + 5 + k * 14).toFixed(1)}" text-anchor="${anchor}" font-size="12" font-weight="700" fill="var(--text)" font-family="Outfit, sans-serif" ${halo}>${esc(ln)}</text>`).join('')}
+      <text x="${l.textX}" y="${(l.y + 21 + (l.lines.length - 1) * 14).toFixed(1)}" text-anchor="${anchor}" font-size="10.5" fill="var(--text-soft)" font-family="Outfit, sans-serif" ${halo}>${l.count} book${l.count === 1 ? '' : 's'} · <tspan font-weight="700" fill="var(--accent-text)">${l.pct}%</tspan></text>`;
   }
 
   const labelsSvg = [...leftLaidOut.map(l => labelSvg(l, 'left')), ...rightLaidOut.map(l => labelSvg(l, 'right'))].join('');
@@ -3203,11 +3277,12 @@ function generateYearlyStatsCanvas(year, callback) {
     ctx.strokeStyle = 'rgba(0,0,0,0.12)';
     ctx.lineWidth = 2;
     ctx.beginPath(); ctx.moveTo(chartLeft, baseY); ctx.lineTo(chartLeft + chartW, baseY); ctx.stroke();
+    const barShadesC = getBarShades(counts, state.accentColor || accent);
     counts.forEach((c, i) => {
       const x = chartLeft + slotW * i + slotW / 2;
       if (c > 0) {
         const h = Math.max(14, Math.round((c / maxCount) * maxH));
-        ctx.fillStyle = accent;
+        ctx.fillStyle = barShadesC[i];
         ctx.beginPath(); ctx.roundRect(x - barW / 2, baseY - h, barW, h, [10, 10, 0, 0]); ctx.fill();
         ctx.font = '600 24px Outfit, sans-serif';
         ctx.fillStyle = '#3F3F46';
@@ -3251,7 +3326,7 @@ function generateYearlyStatsCanvas(year, callback) {
       const total = slices.reduce((s, [, c]) => s + c, 0);
       const shades = getPieShades(slices.length, baseHex);
 
-      // pie
+      // pie (garis antar slice sewarna slice, tanpa garis putih, seperti pie di Dashboard)
       let a = -Math.PI / 2;
       slices.forEach(([, count], i) => {
         const ang = (count / total) * Math.PI * 2;
@@ -3266,8 +3341,8 @@ function generateYearlyStatsCanvas(year, callback) {
           ctx.closePath();
           ctx.fillStyle = shades[i];
           ctx.fill();
-          ctx.lineWidth = 2.5;
-          ctx.strokeStyle = '#FFFFFF';
+          ctx.lineWidth = 0.5;
+          ctx.strokeStyle = shades[i];
           ctx.stroke();
         }
         a += ang;
