@@ -3431,13 +3431,13 @@ function saveWrapupImage() {
   const cur = activeWrapup();
   if (!cur.canvas) return;
   cur.canvas.toBlob(blob => {
-    // Save image = langsung unduh ke perangkat (masuk ke Downloads/galeri), tanpa share sheet.
+    // Save image = langsung unduh ke perangkat, tanpa share sheet (sama seperti Save image di finished reading).
     // Share sheet hanya lewat tombol Share.
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url; a.download = `${cur.name}.png`;
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    URL.revokeObjectURL(url);
   }, 'image/png');
 }
 
