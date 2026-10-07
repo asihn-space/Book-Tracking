@@ -2721,7 +2721,7 @@ const YEAR_JOKES = [
   ],
   [
    "The king had his subjects, the businessman had his stars. You had 30+ books, and the Little Prince smiles at you. Finally, a grown-up worth visiting!",
-   "The Little Prince's Baobab Weeder"
+   "The Little Prince's Baobab Tree"
   ]
  ]
 ];
@@ -2741,8 +2741,9 @@ const YEAR_FACT_POOLS = {
   ],
   "fast": [
     "If you and your beloved phone are in a relationship, it has probably filed for separation.",
-    "I suspect your other plans haven't heard from you since.",
-    "Honestly, I fear you'll see pages everywhere now: in the clouds, in your slightly burnt toast, even on your bills."
+    "Your reading pace is allegedly faster than the Shinkansen.",
+    "Honestly, I fear you'll see pages everywhere now: in the clouds, in your slightly burnt toast, even on your bills.",
+    "Rocky would say: Amaze! Amaze! Amaze! You are secretly Eridian. Question?"
   ],
   "longest": [
     "Every page turned was worth a few kcal. Your arms got a workout too!",
@@ -2826,8 +2827,10 @@ function buildYearFacts(data, year) {
       new Date(year, b.month, 1).toLocaleDateString('en-US', { month: 'long' }), unit(b.count, 'book'));
   }
   const timed = bks.filter(b => b.startDate && b.endDate).map(b => ({ b, d: daysBetween(b.startDate, b.endDate) }));
-  const fast = wrapupPickBest(timed.filter(x => x.d <= 2), x => x.d, -1);
-  if (fast) add('fast', 'Fastest Read', ttl(fast.b), fast.d === 1 ? '1 day' : '2 days');
+  const fast = wrapupPickBest(
+    timed.map(x => ({ b: x.b, ppd: (Number(x.b.totalPages) || 0) / x.d })).filter(x => x.ppd > 0),
+    x => x.ppd);
+  if (fast) add('fast', 'Fastest Read', ttl(fast.b), `${num(Math.round(fast.ppd))} pages/day`);
   const lp = wrapupPickBest(bks.map(b => ({ b, p: Number(b.totalPages) || 0 })).filter(x => x.p > 0), x => x.p);
   if (lp) add('longest', 'Longest Book', ttl(lp.b), unit(lp.p, 'page'));
   const slow = wrapupPickBest(timed.filter(x => x.d >= 7), x => x.d);
