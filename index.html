@@ -2773,41 +2773,35 @@ const YEAR_JOKES = [
 ];
 const YEAR_FACT_POOLS = {
   "busiest": [
-    "{Month} was your villain era: {n} books and a lot of cancelled plans.",
-    "{Month}: {n} books. \"Sorry, I can't, I'm reading\" was your whole personality.",
-    "{Month} asked what you'd do with your free time. You said {n} books and hung up.",
-    "{Month}: {n} books. Your unread messages are also at a record high. Coincidence?",
-    "{n} books in {Month}, and the laundry is still waiting patiently. Very patiently.",
-    "{Month} was the plot twist of your year: {n} books and zero chores.",
-    "{Month} was peak reading: {n} books. Your couch now has a dent in the shape of you.",
-    "{Month}: {n} books. Your bookmark is requesting a day off."
+    "It was your villain era and a lot of cancelled plans.",
+    "\"Sorry, I can't, I'm reading\" was your whole personality.",
+    "Your unread messages are also at a record high. Coincidence?",
+    "And the laundry is still waiting patiently. Very patiently.",
+    "This month was the plot twist of your year and eventually zero chores."
   ],
   "busiest1": [
-    "{Month} was your best month: 1 book. Every legend has an origin story.",
-    "Busiest month: {Month}, with 1 book. Pace yourself, champion.",
-    "{Month}: 1 book. Quality control at its finest."
+    "It was your best month: 1 book. Every legend has an origin story.",
+    "Quality control at its finest, they say."
   ],
   "fast": [
-    "You finished {Book} in {dur}. If you and your beloved bed are in a relationship, it has probably filed for separation.",
-    "{Dur}, and {Book} was done. Your other plans haven't heard from you since.",
-    "Your \"I'll just read a little\" turned into all of {Book} in {dur}.",
-    "{Dur} with {Book}, and I fear you'll see pages everywhere now: in the clouds, in your slightly burnt toast, even on your bills!"
+    "If you and your beloved phone are in a relationship, it has probably filed for separation, I guess...",
+    "I suspect your other plans haven't heard from you since.",
+    "Honestly, I fear you'll see pages everywhere now: in the clouds, in your slightly burnt toast, even on your bills!"
   ],
   "longest": [
-    "{Book} weighed in at {p} pages. Every page turned was worth a few kcal. Your arms got a workout too!",
-    "{p} pages of {Book}. Cardio for the eyes, strength training for the wrists.",
-    "You have read {p} pages of {Book}. After this, you didn't use it to kill a cockroach, did you?",
-    "Longest read: {Book} ({p} pages). The only thing longer was your \"I'll finish it tonight\" streak."
+    "Every page turned was worth a few kcal. Your arms got a workout too!",
+    "Your total pages could write the ancestor of the Buendía family tree!",
+    "I know this one is generously heavy, but you won't use it to kill a cockroach, would you?"
   ],
   "slowest": [
-    "{d} days with {Book}. Even a sourdough starter gets more attention.",
-    "{Book} lasted {d} days. Your bookmark has seen things. Mostly the same page.",
-    "Odysseus took ten years to get home. You took {d} days to finish {Book}. Congratulations, you're basically his role model. Believe me!"
+    "Even a sourdough starter gets more attention.",
+    "Your bookmark has seen things. Mostly the same page.",
+    "Odysseus even took ten years to get home. Congrats, you're basically his role model!"
   ],
   "author": [
-    "Your shelf has a favorite child, and its name is {Author}. {n} books this year!",
-    "Looks like you've already started your own {Author} book tour, haven't you? {n} books this year!",
-    "If you had a bookshop, you'd have a dedicated corner for {Author}! {n} books this year!"
+    "Your shelf definitely has favorite child!",
+    "Looks like you've already started your own {Author} book tour, haven't you?",
+    "If you had a bookshop, you'd have a dedicated corner for {Author}!"
   ]
 };
 
@@ -2858,27 +2852,35 @@ function wrapupBulletLines(ctx, segs, maxW, maxLines, fP, fB) {
   return lines;
 }
 
-function buildYearBullets(data, year) {
+// Returns [{ label, name, val, comment }] -> pill label, bold name, "x books/pages/days", serif comment
+function buildYearFacts(data, year) {
   const bks = data.books;
   const ttl = b => (b.title || 'Untitled').trim();
+  const num = v => Number(v).toLocaleString('en-US');
+  const unit = (v, w) => `${num(v)} ${w}${v === 1 ? '' : 's'}`;
   const out = [];
-  const add = (key, vals) => out.push(wrapupBulletParse(pickWrapupJoke(YEAR_FACT_POOLS[key], 'fact-' + key), vals));
+  const add = (key, label, name, val, vars) => {
+    let comment = pickWrapupJoke(YEAR_FACT_POOLS[key], 'fact-' + key);
+    if (vars) Object.keys(vars).forEach(k => { comment = comment.split('{' + k + '}').join(vars[k]); });
+    out.push({ label, name, val, comment });
+  };
   if (data.busiest) {
     const b = data.busiest;
-    add(b.count === 1 ? 'busiest1' : 'busiest', { Month: new Date(year, b.month, 1).toLocaleDateString('en-US', { month: 'long' }), n: b.count });
+    add(b.count === 1 ? 'busiest1' : 'busiest', 'Busiest Month',
+      new Date(year, b.month, 1).toLocaleDateString('en-US', { month: 'long' }), unit(b.count, 'book'));
   }
   const timed = bks.filter(b => b.startDate && b.endDate).map(b => ({ b, d: daysBetween(b.startDate, b.endDate) }));
   const fast = timed.filter(x => x.d <= 2).sort((a, c) => a.d - c.d)[0];
-  if (fast) add('fast', { Book: ttl(fast.b), dur: fast.d === 1 ? 'a single day' : '2 days', Dur: fast.d === 1 ? 'A single day' : '2 days' });
+  if (fast) add('fast', 'Fastest Read', ttl(fast.b), fast.d === 1 ? '1 day' : '2 days');
   let lp = null;
   bks.forEach(b => { const pg = Number(b.totalPages) || 0; if (pg > 0 && (!lp || pg > lp.p)) lp = { b, p: pg }; });
-  if (lp) add('longest', { Book: ttl(lp.b), p: lp.p.toLocaleString('en-US') });
+  if (lp) add('longest', 'Longest Book', ttl(lp.b), unit(lp.p, 'page'));
   const slow = timed.filter(x => x.d >= 7).sort((a, c) => c.d - a.d)[0];
-  if (slow) add('slowest', { Book: ttl(slow.b), d: slow.d });
+  if (slow) add('slowest', 'Slowest Read', ttl(slow.b), unit(slow.d, 'day'));
   const cnt = {};
   bks.forEach(b => { const a = (b.author || '').trim(); if (!a) return; const k = a.toLowerCase(); (cnt[k] = cnt[k] || { a, n: 0 }).n++; });
   const fav = Object.values(cnt).sort((x, y) => y.n - x.n)[0];
-  if (fav && fav.n >= 2) add('author', { Author: fav.a, n: fav.n });
+  if (fav && fav.n >= 2) add('author', 'Top Author', fav.a, unit(fav.n, 'book'), { Author: fav.a });
   return out.slice(0, YEAR_FACTS_MAX);
 }
 
@@ -3200,47 +3202,73 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
         return { tl, au, rv, h: tl.length * 26 + 8 + 22 + (rv > 0 ? 28 : 0) };
       });
       const rh = Math.max(ch, ...lay.map(l => l.h));
-      const bl = buildYearBullets(data, year);
+      const bl = buildYearFacts(data, year);
+      // fun-facts panel: equal-width pill (Outfit) | bold name + count (Outfit) / comment (Noto Serif)
+      const PX = 60, PW = 960, padH = 32, padV = 24, pillGap = 24, itemGap = 18;
       const mk = sz => {
-        const fP = `400 ${sz}px "Noto Serif", serif`, fB = `700 ${sz}px "Noto Serif", serif`, lh = Math.round(sz * 1.5);
-        const res = bl.map(sg => wrapupBulletLines(ctx, sg, 832, 99, fP, fB));
-        return { sz, fP, fB, lh, res, h: res.reduce((a2, l) => a2 + l.length * lh + 16, 0) };
+        const vF = sz + 4, pF = sz;
+        const fVB = `600 ${vF}px Outfit, sans-serif`, fVP = `400 ${vF}px Outfit, sans-serif`;
+        const fPill = `500 ${pF}px Outfit, sans-serif`, fC = `400 ${sz}px "Noto Serif", serif`;
+        ctx.font = fPill;
+        const pw = Math.ceil(Math.max(0, ...bl.map(f => ctx.measureText(f.label).width))) + 44;
+        const ph = Math.round(pF * 1.9), vh = Math.round(vF * 1.3), rowH = Math.max(ph, vh);
+        const lh = Math.round(sz * 1.45);
+        const rx = PX + padH + pw + pillGap, rw = PX + PW - padH - rx;
+        ctx.font = fC;
+        const items = bl.map(f => { const cl = wrapupFitLines(ctx, f.comment, rw, 3); return { f, cl, h: rowH + 4 + cl.length * lh }; });
+        const h = padV * 2 + items.reduce((a2, it) => a2 + it.h, 0) + itemGap * Math.max(0, items.length - 1);
+        return { sz, fVB, fVP, fPill, fC, pw, ph, rowH, lh, rx, rw, items, h };
       };
-      const fixedTail = 52 + 56 + 36 + rh + (more > 0 ? 50 : 0);
+      const fixedTail = 44 + 56 + 36 + rh + (more > 0 ? 50 : 0);
       let L = null;
-      for (const sz of [30, 28, 26, 24, 22, 20]) { L = mk(sz); if (y + 174 + L.h - L.lh - 16 + fixedTail <= jokeTop - 44) break; }
-      const nb0 = y + 174 + L.h - L.lh - 16 + fixedTail;
+      for (const sz of [26, 24, 22, 20]) { L = mk(sz); if (y + 140 + L.h + fixedTail <= jokeTop - 44) break; }
+      const nb0 = y + 140 + L.h + fixedTail;
       const sp = Math.max(0, Math.min(44, (jokeTop - 44 - nb0) / 5));
 
       const o1 = y + 50 + sp;
       drawOrnament(o1, 90, 14, 5);
       const fhY = o1 + 62 + sp;
       ctx.textAlign = 'center';
-      ctx.font = '400 30px Outfit, sans-serif';
+      ctx.font = '500 30px Outfit, sans-serif';
       ctx.fillStyle = '#3F3F46';
       ctx.fillText('Fun Facts:', cx, fhY);
-      let by = fhY + 62;
-      ctx.textAlign = 'left';
-      L.res.forEach(lines => {
-        ctx.fillStyle = accentTxt;
-        ctx.beginPath(); ctx.arc(116, by - Math.round(L.sz * 0.35), 6, 0, Math.PI * 2); ctx.fill();
-        lines.forEach((ln, li) => {
-          let lx = 138;
-          ln.forEach(w => {
-            ctx.font = w.hl ? L.fB : L.fP;
-            ctx.fillStyle = '#3F3F46';
-            ctx.fillText(w.t, lx, by + li * L.lh);
-            lx += w.w;
-          });
-        });
-        by += lines.length * L.lh + 16;
+      const pTop = fhY + 28;
+      ctx.fillStyle = 'rgba(70,60,50,0.07)';
+      ctx.beginPath(); ctx.roundRect(PX, pTop, PW, L.h, 28); ctx.fill();
+      let iy = pTop + padV;
+      L.items.forEach(it => {
+        const vc = iy + L.rowH / 2;
+        // pill
+        ctx.fillStyle = accent;
+        ctx.beginPath(); ctx.roundRect(PX + padH, vc - L.ph / 2, L.pw, L.ph, L.ph / 2); ctx.fill();
+        ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
+        ctx.font = L.fPill; ctx.fillStyle = getContrastTextColor(accent);
+        ctx.fillText(it.f.label, PX + padH + L.pw / 2, vc + 1);
+        // bold name + " · count"
+        ctx.textAlign = 'left';
+        const suf = ` \u00B7 ${it.f.val}`;
+        ctx.font = L.fVP; const sw = ctx.measureText(suf).width;
+        ctx.font = L.fVB;
+        let nm = it.f.name;
+        if (ctx.measureText(nm).width > L.rw - sw) {
+          while (nm.length > 1 && ctx.measureText(nm + '\u2026').width > L.rw - sw) nm = nm.slice(0, -1).trimEnd();
+          nm += '\u2026';
+        }
+        ctx.fillStyle = '#2c2c2a'; ctx.fillText(nm, L.rx, vc + 1);
+        const nw = ctx.measureText(nm).width;
+        ctx.font = L.fVP; ctx.fillStyle = '#3F3F46'; ctx.fillText(suf, L.rx + nw, vc + 1);
+        // serif comment
+        ctx.textBaseline = 'alphabetic';
+        ctx.font = L.fC; ctx.fillStyle = '#3F3F46';
+        it.cl.forEach((ln, i) => ctx.fillText(ln, L.rx, iy + L.rowH + 4 + Math.round(L.lh * 0.77) + i * L.lh));
+        iy += it.h + itemGap;
       });
-      const yb = by - L.lh - 16;
-      const o2 = yb + 52 + sp;
+      const pb = pTop + L.h;
+      const o2 = pb + 44 + sp;
       drawOrnament(o2, 90, 14, 5);
       const trY = o2 + 56 + sp;
       ctx.textAlign = 'center';
-      ctx.font = '400 30px Outfit, sans-serif';
+      ctx.font = '500 30px Outfit, sans-serif';
       ctx.fillStyle = '#3F3F46';
       ctx.fillText('Top Reads:', cx, trY);
       const y0 = trY + 36;
@@ -3315,7 +3343,7 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
     drawOrnament(y + (isYear ? 48 : 56), 90, 14, 5);
 
     // ----- "Books Finished:" heading (same face as "You really got into") -----
-    ctx.font = isYear ? '400 30px Outfit, sans-serif' : '500 36px Outfit, sans-serif';
+    ctx.font = isYear ? '500 30px Outfit, sans-serif' : '500 36px Outfit, sans-serif';
     ctx.fillStyle = '#3F3F46';
     ctx.fillText(isYear ? 'Top Reads:' : 'Books Finished:', cx, y + (isYear ? 100 : 130));
     const listTop = y + (isYear ? 130 : 165);
