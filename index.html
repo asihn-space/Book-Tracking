@@ -105,6 +105,12 @@
   .cal-nav-btn { background: none; border: none; cursor: pointer; color: var(--text-soft); padding: 4px; display: flex; border-radius: 8px; }
   .cal-nav-btn:hover { background: var(--bg); }
   .cal-month-label { font-family: var(--font-display); font-weight: 800; font-size: 15px; margin: 0; color: var(--accent-text); text-transform: uppercase; letter-spacing: 0.03em; }
+  .cal-label-btn { background: none; border: none; cursor: pointer; font: inherit; color: inherit; text-transform: inherit; letter-spacing: inherit; padding: 4px 7px; border-radius: 8px; display: inline-flex; align-items: center; gap: 3px; }
+  .cal-label-btn:hover, .cal-label-btn:active { background: rgba(var(--accent-rgb), 0.12); }
+  .cal-sheet-backdrop { position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,0.42); display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .cal-sheet { width: 100%; max-width: 320px; max-height: 70vh; overflow-y: auto; background: var(--surface); border-radius: 18px; padding: 16px; box-shadow: 0 20px 48px rgba(0,0,0,0.28); animation: picker-sheet-pop 0.15s ease-out; }
+  .cal-sheet-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .cal-sheet-grid .sheet-option-btn { justify-content: center; }
   .cal-weekdays { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); column-gap: 1px; padding: 0 1px; margin-bottom: 6px; }
   .cal-weekday { text-align: center; font-size: 10px; font-weight: 700; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.02em; }
   .cal-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 0; overflow: hidden; }
@@ -491,6 +497,7 @@ const ICONS = {
   globe: '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
   pencil: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>',
   repeat: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>',
+  refresh: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>',
   share: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>',
   download: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
   quote: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9.983 3v7.391c0 5.704-3.731 9.57-8.983 10.609l-.995-2.151c2.432-.917 3.995-3.638 3.995-5.849h-4v-10h9.983zm14.017 0v7.391c0 5.704-3.748 9.571-9 10.609l-.996-2.151c2.433-.917 3.996-3.638 3.996-5.849h-4v-10h10z"/></svg>',
@@ -607,6 +614,8 @@ let state = {
   quotesOrder: null,
   dashboardCategory: 'calendar',
   showYearSheet: false,
+  showCalMonthSheet: false,
+  showCalYearSheet: false,
   showAllYearBooks: false,
   showStatSheet: false,
   dashboardYearFilter: '',
@@ -631,6 +640,7 @@ let state = {
   wrapupImg2: '',
   wrapupImg3: '',
   wrapupYear: null,
+  wrapupMonth: null,
   yearStatPies: null,
   yearStatDraft: [],
   showYearStatPicker: false,
@@ -2030,7 +2040,7 @@ function renderCalendarSection() {
   const month = state.calendarMonth;
   const byDate = getCalendarDoneBooksByDate();
   const numDays = calDaysInMonth(year, month);
-  const monthLabel = new Date(year, month, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const monthName = new Date(year, month, 1).toLocaleDateString('en-US', { month: 'long' });
 
   const startOffset = (calFirstWeekday(year, month) + 6) % 7; // week starts on Monday
   const weekdayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -2054,7 +2064,10 @@ function renderCalendarSection() {
     <div class="year-group">
       <div class="cal-nav-row">
         <button type="button" class="cal-nav-btn" data-action="calendar-prev-month">${ICONS.calChevronLeft}</button>
-        <p class="cal-month-label">${monthLabel}</p>
+        <p class="cal-month-label" style="display:flex;align-items:center;gap:2px;">
+          <button type="button" class="cal-label-btn" data-action="open-cal-month-sheet" aria-label="Pilih bulan">${monthName}</button>
+          <button type="button" class="cal-label-btn" data-action="open-cal-year-sheet" aria-label="Pilih tahun">${year}</button>
+        </p>
         <button type="button" class="cal-nav-btn" data-action="calendar-next-month">${ICONS.calChevronRight}</button>
       </div>
       <div class="cal-weekdays">${weekdayLabels.map(w => `<div class="cal-weekday">${w}</div>`).join('')}</div>
@@ -2063,6 +2076,44 @@ function renderCalendarSection() {
     <div style="display:flex;gap:10px;margin-top:10px;">
     <button type="button" class="btn-secondary-sm" data-action="open-wrapup" style="flex:1;min-width:0;font-family:Outfit, sans-serif;font-weight:500;font-size:14px;color:var(--text);border:1px solid var(--accent-text);border-radius:14px;padding:12px;box-shadow:0 10px 22px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.06);">${ICONS.mailSm} Month in Pages</button>
     <button type="button" class="btn-secondary-sm" data-action="open-yearly-wrapup" style="flex:1;min-width:0;font-family:Outfit, sans-serif;font-weight:500;font-size:14px;color:var(--text);border:1px solid var(--accent-text);border-radius:14px;padding:12px;box-shadow:0 10px 22px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.06);">${ICONS.mailSm} Year in Pages</button>
+    </div>`;
+}
+
+function getCalendarYearOptions() {
+  const years = new Set(getAvailableYears().map(Number));
+  const nowY = new Date().getFullYear();
+  years.add(nowY);
+  years.add(state.calendarYear);
+  const lo = Math.min(...years), hi = Math.max(...years);
+  const out = [];
+  for (let y = hi; y >= lo; y--) out.push(y);
+  return out;
+}
+
+function renderCalMonthSheet() {
+  const names = Array.from({ length: 12 }, (_, i) => new Date(2000, i, 1).toLocaleDateString('en-US', { month: 'short' }));
+  const opts = names.map((n, i) => `
+    <button type="button" class="sheet-option-btn ${i === state.calendarMonth ? 'active' : ''}" data-action="pick-cal-month" data-month="${i}">${n}</button>`).join('');
+  return `
+    <div class="cal-sheet-backdrop" data-action="close-cal-sheets">
+      <div class="cal-sheet" data-action="stop">
+        <p class="picker-sheet-title">Select Month</p>
+        <div class="cal-sheet-grid">${opts}</div>
+      </div>
+    </div>`;
+}
+
+function renderCalYearSheet() {
+  const opts = getCalendarYearOptions().map(y => `
+    <button type="button" class="sheet-option-btn ${y === state.calendarYear ? 'active' : ''}" data-action="pick-cal-year" data-year="${y}">
+      ${y} ${y === state.calendarYear ? ICONS.check : ''}
+    </button>`).join('');
+  return `
+    <div class="cal-sheet-backdrop" data-action="close-cal-sheets">
+      <div class="cal-sheet" data-action="stop">
+        <p class="picker-sheet-title">Select Year</p>
+        <div class="sheet-option-list">${opts}</div>
+      </div>
     </div>`;
 }
 
@@ -2106,6 +2157,8 @@ function renderDashboardTab() {
       <div class="dash-content${anim}">${content}</div>
     </div>
     ${cat === 'calendar' ? renderCalendarPopup() : ''}
+    ${cat === 'calendar' && state.showCalMonthSheet ? renderCalMonthSheet() : ''}
+    ${cat === 'calendar' && state.showCalYearSheet ? renderCalYearSheet() : ''}
     ${state.showYearSheet ? renderYearSheet() : ''}
     ${state.showStatSheet ? renderStatSheet() : ''}`;
 }
@@ -2500,9 +2553,29 @@ function getMonthlyWrapupData(year, month) {
     if (finishDays.has(d)) gap = 0;
     else { gap++; if (gap > longestGap) longestGap = gap; }
   }
-  let top = null;
-  books.forEach(b => { if (!top || (Number(b.rating) || 0) > (Number(top.rating) || 0)) top = b; });
-  return { prefix, books, top, longestGap, quote: pickWrapupQuote(books) };
+  // Kalau ada beberapa buku dengan rating tertinggi yang sama, pemenangnya diacak tiap recap di-generate.
+  const top = wrapupPickBest(books, b => Number(b.rating) || 0);
+  // Urut rating tertinggi; yang rating-nya sama diacak (sama seperti Year in Pages).
+  const byRating = wrapupShuffle(books).sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0));
+  return { prefix, books, byRating, top, longestGap, quote: pickWrapupQuote(books) };
+}
+
+// Year in Pages: kalau ada beberapa kandidat yang nilainya sama (rating, jumlah buku, halaman, dst),
+// pemenangnya diacak setiap kali recap di-generate supaya semua kandidat punya kesempatan.
+function wrapupShuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function wrapupPickBest(items, score, dir = 1) {
+  if (!items.length) return null;
+  let best = -Infinity;
+  items.forEach(it => { const v = score(it) * dir; if (v > best) best = v; });
+  const tied = items.filter(it => score(it) * dir === best);
+  return tied[Math.floor(Math.random() * tied.length)];
 }
 
 function getYearlyWrapupData(year) {
@@ -2510,14 +2583,17 @@ function getYearlyWrapupData(year) {
   const books = state.books
     .filter(b => getBookStatus(b) === 'done' && b.endDate && b.endDate.startsWith(prefix + '-'))
     .sort((a, b) => a.endDate.localeCompare(b.endDate));
-  let top = null;
-  books.forEach(b => { if (!top || (Number(b.rating) || 0) > (Number(top.rating) || 0)) top = b; });
-  const byRating = books.slice().sort((a, b) =>
-    (Number(b.rating) || 0) - (Number(a.rating) || 0) || a.endDate.localeCompare(b.endDate));
+  // Urut rating tertinggi; yang rating-nya sama diacak (jadi Top Reads & Best Book tidak terkunci ke buku paling awal).
+  const byRating = wrapupShuffle(books).sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0));
+  const top = byRating[0] || null;
   const perMonth = Array(12).fill(0);
   books.forEach(b => { const m = parseInt(b.endDate.slice(5, 7), 10) - 1; if (m >= 0 && m < 12) perMonth[m]++; });
   const maxCount = Math.max(...perMonth);
-  const busiest = maxCount > 0 ? { month: perMonth.indexOf(maxCount), count: maxCount } : null;
+  let busiest = null;
+  if (maxCount > 0) {
+    const tiedMonths = perMonth.map((c, m) => c === maxCount ? m : -1).filter(m => m >= 0);
+    busiest = { month: tiedMonths[Math.floor(Math.random() * tiedMonths.length)], count: maxCount };
+  }
   return { prefix, books, byRating, top, busiest, longestGap: 0, quote: pickWrapupQuote(books) };
 }
 
@@ -2684,7 +2760,7 @@ const YEAR_JOKES = [
    ]
   ],
   [
-   "You crossed the year like the turtle crosses the highway. Slowly, stubbornly—maybe with a few Grapes of Wrath, and you got there.",
+   "You crossed the year like the turtle crosses the highway. Slowly, stubbornly—maybe with a little Grapes of Wrath, and nah! You got there.",
    [
     1,
     4
@@ -2722,7 +2798,7 @@ const YEAR_JOKES = [
    ]
   ],
   [
-   "Perhaps you met someone, and longed for them along the banks of the Neva, through the White Nights of summer—turns out it was your books.",
+   "Looks like you met someone and longed for them along the banks of the Neva River and through the White Nights—but turns out, it was your books.",
    [
     2
    ]
@@ -2870,16 +2946,15 @@ function buildYearFacts(data, year) {
       new Date(year, b.month, 1).toLocaleDateString('en-US', { month: 'long' }), unit(b.count, 'book'));
   }
   const timed = bks.filter(b => b.startDate && b.endDate).map(b => ({ b, d: daysBetween(b.startDate, b.endDate) }));
-  const fast = timed.filter(x => x.d <= 2).sort((a, c) => a.d - c.d)[0];
+  const fast = wrapupPickBest(timed.filter(x => x.d <= 2), x => x.d, -1);
   if (fast) add('fast', 'Fastest Read', ttl(fast.b), fast.d === 1 ? '1 day' : '2 days');
-  let lp = null;
-  bks.forEach(b => { const pg = Number(b.totalPages) || 0; if (pg > 0 && (!lp || pg > lp.p)) lp = { b, p: pg }; });
+  const lp = wrapupPickBest(bks.map(b => ({ b, p: Number(b.totalPages) || 0 })).filter(x => x.p > 0), x => x.p);
   if (lp) add('longest', 'Longest Book', ttl(lp.b), unit(lp.p, 'page'));
-  const slow = timed.filter(x => x.d >= 7).sort((a, c) => c.d - a.d)[0];
+  const slow = wrapupPickBest(timed.filter(x => x.d >= 7), x => x.d);
   if (slow) add('slowest', 'Slowest Read', ttl(slow.b), unit(slow.d, 'day'));
   const cnt = {};
   bks.forEach(b => { const a = (b.author || '').trim(); if (!a) return; const k = a.toLowerCase(); (cnt[k] = cnt[k] || { a, n: 0 }).n++; });
-  const fav = Object.values(cnt).sort((x, y) => y.n - x.n)[0];
+  const fav = wrapupPickBest(Object.values(cnt), x => x.n);
   if (fav && fav.n >= 2) add('author', 'Top Author', fav.a, unit(fav.n, 'book'), { Author: fav.a });
   return out.slice(0, YEAR_FACTS_MAX);
 }
@@ -2902,7 +2977,7 @@ function pickWrapupMessage(data, isYear) {
     pool = [
       "Zero books finished. Your TBR pile is staring at you. Judging. Silently.",
       "Not a single book finished. Your bookmark has been in the same spot since forever.",
-      "0 books. Bold strategy: buy them, admire them, never open them.",
+      "Bold strategy: buy them, admire them, never open them.",
       "Zero books this month. Your reading lamp is feeling a little ghosted.",
       "No finished books. The sofa won this round.",
       "Not a single book. Your bookmark is on an unplanned vacation.",
@@ -3187,7 +3262,7 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
     // ----- year layout: divider, Fun Facts, Top Reads (one row, text beside cover), funny line + nickname -----
     if (isYear) {
       const yj = pickYearJoke(n);
-      ctx.font = '28px "Noto Serif", serif';
+      ctx.font = '26px "Noto Serif", serif';
       const jl = getWrappedLines(ctx, yj.text, 960).slice(0, 4);
       const jokeTop = 1820 - (46 + jl.length * 44 + 40);
       const items = data.byRating.slice(0, 3);
@@ -3318,7 +3393,7 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
         ctx.fillText(`+ ${more} book${more === 1 ? '' : 's'}`, cx, y0 + rh + 44);
       }
       drawOrnament(jokeTop + 10, 90, 14, 5);
-      ctx.font = '28px "Noto Serif", serif';
+      ctx.font = '26px "Noto Serif", serif';
       ctx.fillStyle = '#3F3F46';
       jl.forEach((l, i) => ctx.fillText(l, cx, jokeTop + 46 + 44 * (i + 1) - 13));
       ctx.font = '600 20px Outfit, sans-serif';
@@ -3384,7 +3459,7 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
     const rows = Math.ceil(shown / 2);
     const rowH = Math.min(230, avail / rows);
     const offY = Math.min((avail - rows * rowH) / 2, 24);
-    const shownBooks = (isYear ? data.byRating : data.books).slice(0, shown);
+    const shownBooks = data.byRating.slice(0, shown);
     const covers = await Promise.all(shownBooks.map(b => wrapupLoadImage(b.coverUrl)));
 
     const marginX = 70, colGap = 40;
@@ -3947,11 +4022,28 @@ function openYearlyWrapup() {
         state.wrapupName3 = `year-statistics-${y}`;
         state.wrapupTitle = 'Year in Pages';
         state.wrapupYear = y;
+        state.wrapupMonth = null;
         state.wrapupPage = 0;
         state.showWrapup = true;
         render();
       });
     });
+  });
+}
+
+// Acak ulang halaman Recap (Year in Pages: Book List & Statistics tidak berubah; Month in Pages: satu halaman).
+let wrapupRerolling = false;
+function rerollYearlyWrapup() {
+  if (wrapupRerolling) return;
+  wrapupRerolling = true;
+  const y = state.wrapupYear || state.calendarYear;
+  const m = state.wrapupMonth == null ? null : state.wrapupMonth;
+  generateMonthlyWrapupCanvas(y, m, canvas => {
+    wrapupRerolling = false;
+    wrapupCanvasCache = canvas;
+    state.wrapupImg = canvas.toDataURL('image/png');
+    state.wrapupPage = 0;
+    render();
   });
 }
 
@@ -3962,6 +4054,8 @@ function openMonthlyWrapup() {
     state.wrapupImg = canvas.toDataURL('image/png');
     state.wrapupName = `month-in-pages-${y}-${String(m + 1).padStart(2, '0')}`;
     state.wrapupTitle = 'Month in Pages';
+    state.wrapupYear = y;
+    state.wrapupMonth = m;
     state.wrapupImg2 = '';
     state.wrapupImg3 = '';
     state.wrapupPage = 0;
@@ -4067,7 +4161,10 @@ function renderWrapupModal() {
           <button id="close-wrapup" aria-label="Close">${ICONS.x}</button>
         </div>
         <div class="modal-body" style="display:flex;flex-direction:column;align-items:center;">
-          <img src="${(state.wrapupPage === 2 && state.wrapupImg3) ? state.wrapupImg3 : (state.wrapupPage === 1 && state.wrapupImg2) ? state.wrapupImg2 : state.wrapupImg}" alt="${esc(state.wrapupTitle || 'Month in Pages')}" style="width:100%;max-width:340px;border-radius:16px;box-shadow:0 14px 32px rgba(0,0,0,0.18);display:block;" />
+          <div style="position:relative;width:100%;max-width:340px;">
+            <img src="${(state.wrapupPage === 2 && state.wrapupImg3) ? state.wrapupImg3 : (state.wrapupPage === 1 && state.wrapupImg2) ? state.wrapupImg2 : state.wrapupImg}" alt="${esc(state.wrapupTitle || 'Month in Pages')}" style="width:100%;border-radius:16px;box-shadow:0 14px 32px rgba(0,0,0,0.18);display:block;" />
+            ${((state.wrapupImg2 || state.wrapupMonth != null) && state.wrapupPage === 0) ? `<button type="button" id="reroll-wrapup-btn" aria-label="Acak ulang" title="Acak ulang" style="position:absolute;bottom:10px;right:10px;width:28px;height:28px;border-radius:50%;border:none;background:rgba(255,255,255,0.82);color:#3F3F46;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.18);cursor:pointer;padding:0;opacity:0.75;">${ICONS.refresh}</button>` : ''}
+          </div>
           ${state.wrapupImg2 ? `<div class="dash-cat-row" style="width:100%;max-width:340px;margin:14px 0 0;">
             ${[['Recap', 0], ['Book List', 1], ['Statistics', 2]].map(([label, pg]) => `<button type="button" class="dash-cat-chip ${state.wrapupPage === pg ? 'active' : ''}" data-wrapup-page="${pg}" style="font-family:Outfit, sans-serif;font-weight:500;font-size:14px;">${label}</button>`).join('')}
           </div>` : ''}
@@ -4618,6 +4715,8 @@ function attachHandlers() {
   });
   const closeWrapupBtn = document.getElementById('close-wrapup');
   if (closeWrapupBtn) closeWrapupBtn.addEventListener('click', () => { state.showWrapup = false; render(); });
+  const rerollWrapupBtn = document.getElementById('reroll-wrapup-btn');
+  if (rerollWrapupBtn) rerollWrapupBtn.addEventListener('click', rerollYearlyWrapup);
   const saveWrapupBtn = document.getElementById('save-wrapup-btn');
   if (saveWrapupBtn) saveWrapupBtn.addEventListener('click', saveWrapupImage);
   const shareWrapupBtn = document.getElementById('share-wrapup-btn');
@@ -4834,6 +4933,28 @@ function attachHandlers() {
         state.calendarSelectedDate = null;
         render();
       });
+    } else if (action === 'open-cal-month-sheet') {
+      el.addEventListener('click', () => { state.showCalMonthSheet = true; render(); });
+    } else if (action === 'open-cal-year-sheet') {
+      el.addEventListener('click', () => { state.showCalYearSheet = true; render(); });
+    } else if (action === 'close-cal-sheets') {
+      el.addEventListener('click', e => { e.stopPropagation(); state.showCalMonthSheet = false; state.showCalYearSheet = false; render(); });
+    } else if (action === 'pick-cal-month') {
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        state.calendarMonth = parseInt(el.getAttribute('data-month'), 10);
+        state.calendarSelectedDate = null;
+        state.showCalMonthSheet = false;
+        render();
+      });
+    } else if (action === 'pick-cal-year') {
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        state.calendarYear = parseInt(el.getAttribute('data-year'), 10);
+        state.calendarSelectedDate = null;
+        state.showCalYearSheet = false;
+        render();
+      });
     } else if (action === 'calendar-pick-day') {
       el.addEventListener('click', () => {
         const dateKey = el.getAttribute('data-date');
@@ -4992,7 +5113,7 @@ function attachHandlers() {
   }
   function overlayOpen() {
     return !!(state.showSettings || state.showAchievement || state.showWrapup ||
-      state.showForm || state.expandedId || state.showYearSheet || state.showStatSheet ||
+      state.showForm || state.expandedId || state.showYearSheet || state.showStatSheet || state.showCalMonthSheet || state.showCalYearSheet ||
       state.calendarSelectedDate || document.querySelector('.modal, .detail-sheet, .timeline-popup-backdrop'));
   }
 
