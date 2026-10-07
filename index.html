@@ -2563,7 +2563,7 @@ const YEAR_NICKS = [
   "c": 3
  },
  {
-  "n": "Passerby on the Neva Embankment",
+  "n": "Passerby on the Banks of the Neva River",
   "c": 2
  },
  {
@@ -2722,7 +2722,7 @@ const YEAR_JOKES = [
    ]
   ],
   [
-   "Perhaps you met someone, and longed for them along the banks of the Neva, through the White Nights of summer... Turns out it was your books.",
+   "Perhaps you met someone, and longed for them along the banks of the Neva, through the White Nights of summer—turns out it was your books.",
    [
     2
    ]
@@ -3071,41 +3071,41 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
     const top = data.top;
     let y = isYear ? 300 : 385;
     if (isYear) {
-      const gi = 'You really got into', tU = top.title.toUpperCase();
+      const tU = top.title.toUpperCase();
       const byA = top.author && top.author.trim() ? `by ${top.author.trim()}` : '';
-      const fG = '500 24px Outfit, sans-serif', fA = '500 20px Outfit, sans-serif';
-      const gp = 16, px = 26;
-      let tf = 26, rowW = 0, ok = false, w1 = 0, w2 = 0;
-      for (; tf >= 18; tf -= 2) {
-        ctx.font = fG; w1 = ctx.measureText(gi).width;
+      const fA = '500 22px Outfit, sans-serif';
+      const gp = 18, px = 40;
+      ctx.textAlign = 'center';
+      ctx.font = '500 30px Outfit, sans-serif';
+      ctx.fillStyle = '#3F3F46';
+      ctx.fillText('You really got into', cx, y);
+      let tf = 38, rowW = 0, ok = false, w2 = 0;
+      for (; tf >= 26; tf -= 2) {
         ctx.font = `800 ${tf}px "Plus Jakarta Sans", sans-serif`; w2 = ctx.measureText(tU).width + px * 2;
         ctx.font = fA; const w3 = byA ? ctx.measureText(byA).width + gp : 0;
-        rowW = w1 + gp + w2 + w3;
+        rowW = w2 + w3;
         if (rowW <= 980) { ok = true; break; }
       }
-      ctx.textAlign = 'left';
       if (ok) {
-        const cy = 320; let sx = cx - rowW / 2;
-        ctx.textBaseline = 'middle';
-        ctx.font = fG; ctx.fillStyle = '#3F3F46'; ctx.fillText(gi, sx, cy); sx += w1 + gp;
-        ctx.fillStyle = accent; ctx.beginPath(); ctx.roundRect(sx, cy - 27, w2, 54, 27); ctx.fill();
+        const ph = Math.round(tf * 1.7), cy = y + 30 + ph / 2;
+        let sx = cx - rowW / 2;
+        ctx.fillStyle = accent; ctx.beginPath(); ctx.roundRect(sx, cy - ph / 2, w2, ph, ph / 2); ctx.fill();
+        ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
         ctx.font = `800 ${tf}px "Plus Jakarta Sans", sans-serif`; ctx.fillStyle = getContrastTextColor(accent);
-        ctx.fillText(tU, sx + px, cy + 1); sx += w2 + gp;
+        ctx.fillText(tU, sx + px, cy + 2); sx += w2 + gp;
         if (byA) { ctx.font = fA; ctx.fillStyle = '#71717A'; ctx.fillText(byA, sx, cy); }
         ctx.textBaseline = 'alphabetic';
-        y = cy + 27;
+        y = cy + ph / 2;
       } else {
-        ctx.textAlign = 'center';
-        ctx.font = fG; ctx.fillStyle = '#3F3F46'; ctx.fillText(gi, cx, y);
-        ctx.font = '800 24px "Plus Jakarta Sans", sans-serif';
+        ctx.font = '800 30px "Plus Jakarta Sans", sans-serif';
         const tl2 = wrapupFitLines(ctx, tU, 800, 2);
         const pw = Math.min(980, Math.max(...tl2.map(l => ctx.measureText(l).width)) + px * 2);
-        const ph = 54 + (tl2.length - 1) * 32, pt = y + 22;
-        ctx.fillStyle = accent; ctx.beginPath(); ctx.roundRect(cx - pw / 2, pt, pw, ph, Math.min(ph / 2, 27)); ctx.fill();
+        const ph = 62 + (tl2.length - 1) * 38, pt = y + 28;
+        ctx.fillStyle = accent; ctx.beginPath(); ctx.roundRect(cx - pw / 2, pt, pw, ph, Math.min(ph / 2, 31)); ctx.fill();
         ctx.fillStyle = getContrastTextColor(accent);
-        tl2.forEach((l, i) => ctx.fillText(l, cx, pt + ph / 2 + (i - (tl2.length - 1) / 2) * 32 + 9));
+        tl2.forEach((l, i) => ctx.fillText(l, cx, pt + ph / 2 + (i - (tl2.length - 1) / 2) * 38 + 11));
         y = pt + ph;
-        if (byA) { ctx.font = fA; ctx.fillStyle = '#71717A'; ctx.fillText(byA, cx, y + 34); y += 34; }
+        if (byA) { ctx.font = fA; ctx.fillStyle = '#71717A'; ctx.fillText(byA, cx, y + 36); y += 36; }
       }
       ctx.textAlign = 'center';
     } else {
@@ -3182,7 +3182,7 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
     });
     ctx.textAlign = 'center';
 
-    // ----- year layout: Fun Facts, Top Reads (one row), funny line + nickname -----
+    // ----- year layout: divider, Fun Facts, Top Reads (one row, text beside cover), funny line + nickname -----
     if (isYear) {
       const yj = pickYearJoke(n);
       ctx.font = '28px "Noto Serif", serif';
@@ -3190,27 +3190,40 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
       const jokeTop = 1820 - (46 + jl.length * 44 + 40);
       const items = data.byRating.slice(0, 3);
       const more = n - items.length;
-      const trH = more > 0 ? 400 : 360;
-      ctx.textAlign = 'center';
-      ctx.font = '400 30px Outfit, sans-serif';
-      ctx.fillStyle = '#3F3F46';
-      const fhY = y + 84;
-      ctx.fillText('Fun Facts:', cx, fhY);
-      const fb = fhY + 62;
+      const colW = 316, gx = 14, cw = 108, ch = 162, tw = colW - cw - 16;
+      const lay = items.map(b => {
+        ctx.font = '700 21px "Plus Jakarta Sans", sans-serif';
+        const tl = wrapupFitLines(ctx, b.title || 'Untitled', tw, 4);
+        ctx.font = '500 18px Outfit, sans-serif';
+        const au = wrapupFitLines(ctx, b.author || 'Unknown author', tw, 1)[0];
+        const rv = Number(b.rating) || 0;
+        return { tl, au, rv, h: tl.length * 26 + 8 + 22 + (rv > 0 ? 28 : 0) };
+      });
+      const rh = Math.max(ch, ...lay.map(l => l.h));
       const bl = buildYearBullets(data, year);
       const mk = sz => {
         const fP = `400 ${sz}px "Noto Serif", serif`, fB = `700 ${sz}px "Noto Serif", serif`, lh = Math.round(sz * 1.5);
         const res = bl.map(sg => wrapupBulletLines(ctx, sg, 832, 99, fP, fB));
-        return { fP, fB, lh, res, h: res.reduce((a2, l) => a2 + l.length * lh + 16, 0) };
+        return { sz, fP, fB, lh, res, h: res.reduce((a2, l) => a2 + l.length * lh + 16, 0) };
       };
-      const availH = jokeTop - 20 - trH - 100 - (fb - 30);
+      const fixedTail = 52 + 56 + 36 + rh + (more > 0 ? 50 : 0);
       let L = null;
-      for (const sz of [26, 24, 22, 20]) { L = mk(sz); if (L.h <= availH) break; }
-      let by = fb;
+      for (const sz of [30, 28, 26, 24, 22, 20]) { L = mk(sz); if (y + 174 + L.h - L.lh - 16 + fixedTail <= jokeTop - 44) break; }
+      const nb0 = y + 174 + L.h - L.lh - 16 + fixedTail;
+      const sp = Math.max(0, Math.min(44, (jokeTop - 44 - nb0) / 5));
+
+      const o1 = y + 50 + sp;
+      drawOrnament(o1, 90, 14, 5);
+      const fhY = o1 + 62 + sp;
+      ctx.textAlign = 'center';
+      ctx.font = '400 30px Outfit, sans-serif';
+      ctx.fillStyle = '#3F3F46';
+      ctx.fillText('Fun Facts:', cx, fhY);
+      let by = fhY + 62;
       ctx.textAlign = 'left';
       L.res.forEach(lines => {
         ctx.fillStyle = accentTxt;
-        ctx.beginPath(); ctx.arc(116, by - 9, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(116, by - Math.round(L.sz * 0.35), 6, 0, Math.PI * 2); ctx.fill();
         lines.forEach((ln, li) => {
           let lx = 138;
           ln.forEach(w => {
@@ -3222,56 +3235,59 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
         });
         by += lines.length * L.lh + 16;
       });
-      ctx.textAlign = 'center';
       const yb = by - L.lh - 16;
-      drawOrnament(yb + 52, 90, 14, 5);
+      const o2 = yb + 52 + sp;
+      drawOrnament(o2, 90, 14, 5);
+      const trY = o2 + 56 + sp;
+      ctx.textAlign = 'center';
       ctx.font = '400 30px Outfit, sans-serif';
       ctx.fillStyle = '#3F3F46';
-      ctx.fillText('Top Reads:', cx, yb + 108);
+      ctx.fillText('Top Reads:', cx, trY);
+      const y0 = trY + 36;
       const covers = await Promise.all(items.map(b => wrapupLoadImage(b.coverUrl)));
-      const colW = 300, gx = 30, cw = 120, ch = 180;
       const x00 = cx - (items.length * colW + (items.length - 1) * gx) / 2;
-      const y0 = yb + 142;
       items.forEach((b, i) => {
-        const mx = x00 + i * (colW + gx) + colW / 2, x0 = mx - cw / 2;
+        const x0 = x00 + i * (colW + gx), cy0 = y0 + (rh - ch) / 2;
         ctx.save();
         ctx.shadowColor = 'rgba(0,0,0,0.22)'; ctx.shadowBlur = 14; ctx.shadowOffsetY = 6;
         ctx.fillStyle = '#FFFFFF';
-        ctx.beginPath(); ctx.roundRect(x0, y0, cw, ch, 8); ctx.fill();
+        ctx.beginPath(); ctx.roundRect(x0, cy0, cw, ch, 8); ctx.fill();
         ctx.restore();
         ctx.save();
-        ctx.beginPath(); ctx.roundRect(x0, y0, cw, ch, 8); ctx.clip();
+        ctx.beginPath(); ctx.roundRect(x0, cy0, cw, ch, 8); ctx.clip();
         const img = covers[i];
         if (img) {
           const ir = img.width / img.height, cr = cw / ch;
           let dw, dh;
           if (ir > cr) { dh = ch; dw = ch * ir; } else { dw = cw; dh = cw / ir; }
-          ctx.drawImage(img, x0 - (dw - cw) / 2, y0 - (dh - ch) / 2, dw, dh);
+          ctx.drawImage(img, x0 - (dw - cw) / 2, cy0 - (dh - ch) / 2, dw, dh);
         } else {
           ctx.fillStyle = `hsl(${hashStr(b.title || '?') % 360} 62% 86%)`;
-          ctx.fillRect(x0, y0, cw, ch);
+          ctx.fillRect(x0, cy0, cw, ch);
           ctx.fillStyle = 'rgba(0,0,0,0.35)';
           ctx.font = `800 ${Math.round(cw * 0.5)}px "Plus Jakarta Sans", sans-serif`;
           ctx.textAlign = 'center';
-          ctx.fillText(getCoverInitial(b.title), mx, y0 + ch / 2 + cw * 0.18);
+          ctx.fillText(getCoverInitial(b.title), x0 + cw / 2, cy0 + ch / 2 + cw * 0.18);
         }
         ctx.restore();
-        ctx.textAlign = 'center';
-        ctx.font = '700 22px "Plus Jakarta Sans", sans-serif';
+        const Lt = lay[i], tx = x0 + cw + 16;
+        let ty = y0 + (rh - Lt.h) / 2;
+        ctx.textAlign = 'left';
+        ctx.font = '700 21px "Plus Jakarta Sans", sans-serif';
         ctx.fillStyle = '#2c2c2a';
-        const tl = wrapupFitLines(ctx, b.title || 'Untitled', colW, 2);
-        tl.forEach((l, li) => ctx.fillText(l, mx, y0 + ch + 34 + li * 28));
-        const ty = y0 + ch + 34 + tl.length * 28 + 4;
-        ctx.font = '500 19px Outfit, sans-serif';
+        Lt.tl.forEach((l, li) => ctx.fillText(l, tx, ty + 21 + li * 26));
+        ty += Lt.tl.length * 26 + 8;
+        ctx.font = '500 18px Outfit, sans-serif';
         ctx.fillStyle = '#71717A';
-        ctx.fillText(wrapupFitLines(ctx, b.author || 'Unknown author', colW, 1)[0], mx, ty);
-        const rv = Number(b.rating) || 0;
-        if (rv > 0) { ctx.font = '600 18px Outfit, sans-serif'; ctx.fillStyle = '#CA8A04'; ctx.fillText(`${rv.toFixed(1)}/10`, mx, ty + 26); }
+        ctx.fillText(Lt.au, tx, ty + 16);
+        ty += 22;
+        if (Lt.rv > 0) { ctx.font = '600 18px Outfit, sans-serif'; ctx.fillStyle = '#CA8A04'; ctx.fillText(`${Lt.rv.toFixed(1)}/10`, tx, ty + 22); }
       });
+      ctx.textAlign = 'center';
       if (more > 0) {
         ctx.font = '600 26px Outfit, sans-serif';
         ctx.fillStyle = accentTxt;
-        ctx.fillText(`+ ${more} book${more === 1 ? '' : 's'}`, cx, y0 + 352);
+        ctx.fillText(`+ ${more} book${more === 1 ? '' : 's'}`, cx, y0 + rh + 44);
       }
       drawOrnament(jokeTop + 10, 90, 14, 5);
       ctx.font = '28px "Noto Serif", serif';
