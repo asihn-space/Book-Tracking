@@ -2536,70 +2536,238 @@ function pickWrapupQuote(books) {
   return pick;
 }
 
+const YEAR_FACTS_MAX = 5;
+const YEAR_NICKS = [
+  "Shakespeare's Unpaid Intern",
+  "Dostoevsky's Emotional Support Reader",
+  "Pemberley's Frequent Visitor",
+  "Chief Bookmark Officer",
+  "Keeper of the Unread Pile",
+  "Jane Austen's Unpaid Pen",
+  "Resident of the Bath Cottage Corner",
+  "Mr. Darcy's Finer Carriage",
+  "Lizzy Bennet's Self-Declared Sister",
+  "Passerby on the Neva Embankment",
+  "The Little Prince's Baobab Weeder"
+];
+const YEAR_JOKES = [
+  [
+    "0 books this year. Your TBR pile isn't a list anymore, it's a fossil.",
+    "A full year, zero books finished. Your bookmark has been on the same page long enough to claim squatter's rights.",
+    "0 books. Technically you did read: the backs of a lot of covers in bookstores.",
+    "Zero books this year. Your books are just on the shelf to support the aesthetic of your room.",
+    "Not a single book finished. Your library card has started leaving passive-aggressive voicemails.",
+    "0 books. Next year's reading resolution is already written. Just like last year's.",
+    "A year without a finished book. Your reading goal was less a plan and more A Midsummer Night's Dream."
+  ],
+  [
+    "A few books, zero rush. You read like someone who has never been chased by a deadline.",
+    "Quality over quantity, or so you tell your TBR pile every night.",
+    "Each finished book got your full attention. The rest got your full intentions.",
+    "You read at the speed of someone who values their sleep. Respect.",
+    "Few books, but each one got the full relationship arc: the honeymoon, the slump, the tearful goodbye.",
+    "Your reading pace: slow-cooked, never microwaved.",
+    "Not many books, but each was handpicked with care. Okay, one was just the prettiest cover."
+  ],
+  [
+    "A respectable year. Your TBR pile glances over, takes notes, and sweats a little.",
+    "Consistent, not obsessed. The healthiest toxic relationship with books.",
+    "You read just enough to feel smug and just little enough to keep buying more.",
+    "A solid year of pages. Your bookmark got promoted from intern to associate.",
+    "Plot twist: the person who said \"I'll read more this year\" actually did.",
+    "Too many books to be a casual, too few to be a menace. The perfect middle ground.",
+    "Your bookshelf is thriving. Your bank account wants to know who approved this."
+  ],
+  [
+    "A book every other week. Your TBR pile has started sleeping with one eye open.",
+    "This is not a hobby anymore. This is a lifestyle, bro!",
+    "Your bookmark has been working overtime and still hasn't been paid. Treat it to pizza... and some coffee. Double-shot Americano!",
+    "Your relationship with your books is complicated: a little love, a little hate, a lot of pride and prejudice. You've earned a trip to Pemberley.",
+    "Perhaps you met someone, and longed for them along the banks of the Neva, through the White Nights of summer... with your books.",
+    "\"Just one more chapter\" was the most committed lie you told this year.",
+    "Bookstore clerks greet you like a regular at a bar. Your usual: one hardcover, no questions asked."
+  ],
+  [
+    "You haven't simply read books this year. You've assembled a fairly exhaustive encyclopedia of the literary arts, footnotes and all.",
+    "The library has stopped asking for your card and started asking for your résumé.",
+    "Your TBR pile has surrendered, your bookmark has resigned, and your eyes would like to speak to a manager.",
+    "Step count: unremarkable. Page count: legendary.",
+    "Reading this much is basically a second job, and you're not even getting paid.",
+    "Don Quixote lost his mind after reading too many books. You read 30+ and you might have to double-check the ceiling fan. Spoiler: It's not windmills.",
+    "The king had his subjects, the businessman had his stars. You had 30+ books, and the Little Prince smiles at you. Finally, a grown-up worth visiting!"
+  ]
+];
+const YEAR_FACT_POOLS = {
+  "busiest": [
+    "{Month} was your villain era: {n} books and a lot of cancelled plans.",
+    "{Month}: {n} books. \"Sorry, I can't, I'm reading\" was your whole personality.",
+    "{Month} asked what you'd do with your free time. You said {n} books and hung up.",
+    "{Month}: {n} books. Your unread messages are also at a record high. Coincidence?",
+    "{n} books in {Month}, and the laundry is still waiting patiently. Very patiently.",
+    "{Month} was the plot twist of your year: {n} books and zero chores.",
+    "{Month} was peak reading: {n} books. Your couch now has a dent in the shape of you.",
+    "{Month}: {n} books. Your bookmark is requesting a day off."
+  ],
+  "busiest1": [
+    "{Month} was your best month: 1 book. Every legend has an origin story.",
+    "Busiest month: {Month}, with 1 book. Pace yourself, champion.",
+    "{Month}: 1 book. Quality control at its finest."
+  ],
+  "fast": [
+    "You finished {Book} in {dur}. If you and your beloved bed are in a relationship, it has probably filed for separation.",
+    "{Dur}, and {Book} was done. Your other plans haven't heard from you since.",
+    "Your \"I'll just read a little\" turned into all of {Book} in {dur}.",
+    "{Dur} with {Book}, and I fear you'll see pages everywhere now: in the clouds, in your slightly burnt toast, even on your bills!"
+  ],
+  "longest": [
+    "{Book} weighed in at {p} pages. Every page turned was worth a few kcal. Your arms got a workout too!",
+    "{p} pages of {Book}. Cardio for the eyes, strength training for the wrists.",
+    "You have read {p} pages of {Book}. After this, you didn't use it to kill a cockroach, did you?",
+    "Longest read: {Book} ({p} pages). The only thing longer was your \"I'll finish it tonight\" streak."
+  ],
+  "slowest": [
+    "{d} days with {Book}. Even a sourdough starter gets more attention.",
+    "{Book} lasted {d} days. Your bookmark has seen things. Mostly the same page.",
+    "Odysseus took ten years to get home. You took {d} days to finish {Book}. Congratulations, you're basically his role model. Believe me!"
+  ],
+  "author": [
+    "Are you and {Author} dating? {n} books this year!",
+    "Looks like you've already started your own {Author} book tour, haven't you? {n} books this year!",
+    "If you had a bookshop, you'd have a dedicated corner for {Author}! {n} books this year!"
+  ]
+};
+
+const lastWrapupJokes = {};
+function pickWrapupJoke(pool, key = 'msg') {
+  const last = lastWrapupJokes[key];
+  const fresh = pool.length > 1 ? pool.filter(m => m !== last) : pool;
+  const pick = fresh[Math.floor(Math.random() * fresh.length)];
+  lastWrapupJokes[key] = pick;
+  return pick;
+}
+
+function wrapupBulletParse(tpl, vals) {
+  const out = [];
+  tpl.split(/(\{[A-Za-z]+\})/).forEach(part => {
+    const m = part.match(/^\{([A-Za-z]+)\}$/);
+    if (m && vals[m[1]] != null) out.push({ t: String(vals[m[1]]), hl: true });
+    else if (part) out.push({ t: part, hl: false });
+  });
+  return out;
+}
+
+function wrapupBulletLines(ctx, segs, maxW, maxLines, fP, fB) {
+  const isWs = t => /^\s+$/.test(t);
+  const toks = [];
+  segs.forEach(sg => sg.t.split(/(\s+)/).forEach(w => { if (w) toks.push({ t: w, hl: sg.hl }); }));
+  const meas = tk => { ctx.font = tk.hl ? fB : fP; tk.w = ctx.measureText(tk.t).width; };
+  const trim = ln => { while (ln.length && isWs(ln[ln.length - 1].t)) ln.pop(); };
+  const lines = [];
+  let cur = [], cw = 0;
+  toks.forEach(tk => {
+    meas(tk);
+    if (!isWs(tk.t) && cw + tk.w > maxW && cur.length) { trim(cur); lines.push(cur); cur = []; cw = 0; }
+    if (isWs(tk.t) && !cur.length) return;
+    cur.push(tk); cw += tk.w;
+  });
+  trim(cur);
+  if (cur.length) lines.push(cur);
+  if (lines.length > maxLines) {
+    const last = lines[maxLines - 1];
+    lines.length = maxLines;
+    const ell = { t: '\u2026', hl: last[last.length - 1].hl };
+    meas(ell);
+    let lw = last.reduce((a, tk) => a + tk.w, 0);
+    while (last.length > 1 && lw + ell.w > maxW) lw -= last.pop().w;
+    last.push(ell);
+  }
+  return lines;
+}
+
+function buildYearBullets(data, year) {
+  const bks = data.books;
+  const ttl = b => (b.title || 'Untitled').trim();
+  const out = [];
+  const add = (key, vals) => out.push(wrapupBulletParse(pickWrapupJoke(YEAR_FACT_POOLS[key], 'fact-' + key), vals));
+  if (data.busiest) {
+    const b = data.busiest;
+    add(b.count === 1 ? 'busiest1' : 'busiest', { Month: new Date(year, b.month, 1).toLocaleDateString('en-US', { month: 'long' }), n: b.count });
+  }
+  const timed = bks.filter(b => b.startDate && b.endDate).map(b => ({ b, d: daysBetween(b.startDate, b.endDate) }));
+  const fast = timed.filter(x => x.d <= 2).sort((a, c) => a.d - c.d)[0];
+  if (fast) add('fast', { Book: ttl(fast.b), dur: fast.d === 1 ? 'a single day' : '2 days', Dur: fast.d === 1 ? 'A single day' : '2 days' });
+  let lp = null;
+  bks.forEach(b => { const pg = Number(b.totalPages) || 0; if (pg > 0 && (!lp || pg > lp.p)) lp = { b, p: pg }; });
+  if (lp) add('longest', { Book: ttl(lp.b), p: lp.p.toLocaleString('en-US') });
+  const slow = timed.filter(x => x.d >= 7).sort((a, c) => c.d - a.d)[0];
+  if (slow) add('slowest', { Book: ttl(slow.b), d: slow.d });
+  const cnt = {};
+  bks.forEach(b => { const a = (b.author || '').trim(); if (!a) return; const k = a.toLowerCase(); (cnt[k] = cnt[k] || { a, n: 0 }).n++; });
+  const fav = Object.values(cnt).sort((x, y) => y.n - x.n)[0];
+  if (fav && fav.n >= 2) add('author', { Author: fav.a, n: fav.n });
+  return out.slice(0, YEAR_FACTS_MAX);
+}
+
 function pickWrapupMessage(data, isYear) {
   const n = data.books.length;
   if (isYear) {
-    let ypool;
-    if (n === 0) {
-      ypool = [
-        'Zero books this year. Your TBR pile has officially become furniture.',
-        'A whole year and not one book finished. Your bookmark is basically a fossil now.',
-        '0 books. Bold strategy: collect them, admire them, never open them.'
-      ];
-    } else if (n <= 6) {
-      ypool = [
-        "Quality over quantity. That's what we tell ourselves, right?",
-        'Slow and steady wins the race. Emphasis on slow.'
-      ];
-    } else if (n <= 15) {
-      ypool = [
-        'A solid year of reading. Your bookshelf approves.',
-        'Not bad at all. Your library card is blushing.'
-      ];
-    } else if (n <= 30) {
-      ypool = [
-        'Almost a book every other week. Your TBR pile is getting nervous.',
-        'That is some serious page-turning. Your bookmark deserves a raise.'
-      ];
-    } else {
-      ypool = [
-        'Okay, show-off. Do you even sleep?',
-        'Your TBR pile has filed for protection.'
-      ];
-    }
-    return ypool[hashStr(data.prefix) % ypool.length];
+    const tier = n === 0 ? 0 : n <= 6 ? 1 : n <= 15 ? 2 : n <= 30 ? 3 : 4;
+    return pickWrapupJoke(YEAR_JOKES[tier], 'year');
   }
   const gap = data.longestGap;
   let pool;
   if (n === 0) {
     pool = [
-      'Zero books finished. Your TBR pile is staring at you. Judging. Silently.',
-      'Not a single book finished. Your bookmark has been in the same spot since forever.',
-      '0 books. Bold strategy: buy them, admire them, never open them.'
+      "Zero books finished. Your TBR pile is staring at you. Judging. Silently.",
+      "Not a single book finished. Your bookmark has been in the same spot since forever.",
+      "0 books. Bold strategy: buy them, admire them, never open them.",
+      "Zero books this month. Your reading lamp is feeling a little ghosted.",
+      "No finished books. The sofa won this round.",
+      "Not a single book. Your bookmark is on an unplanned vacation.",
+      "This month the only thing you finished was the snacks."
     ];
   } else if (gap > 10) {
     pool = [
       `${gap} days without finishing a single book. Your bookmark filed a missing person report.`,
       `A ${gap}-day reading slump? Your book was just resting its eyes... and so were you.`,
-      `You almost quit reading for ${gap} days. Luckily the plot (and the guilt) pulled you back.`
+      `You almost quit reading for ${gap} days. Luckily the plot (and the guilt) pulled you back.`,
+      `${gap} days without a finish line. Your TBR pile started a rumor that you moved on.`,
+      `${gap} days of no finished books. Your bookmark keeps checking its phone. No replies.`,
+      `A ${gap}-day pause. The book isn't mad, just disappointed.`,
+      `${gap} days of silence. Even your reading lamp started wondering where you went.`
     ];
   } else if (n <= 2) {
     pool = [
       "Quality over quantity. That's what we tell ourselves, right?",
-      'Slow and steady wins the race. Emphasis on slow.'
+      "Slow and steady wins the race. Emphasis on slow.",
+      "Short list, big feelings. We respect it.",
+      "A slow month, but your bookmark enjoyed the vacation.",
+      "Not a marathon, just a very relaxed stroll with snack breaks.",
+      "Two books or fewer, but every page was intentional. Probably.",
+      "Your reading pace: unbothered, moisturized, in its lane."
     ];
   } else if (n <= 5) {
     pool = [
-      'A very respectable pace. Your library card is blushing.',
-      'Not bad at all. Your bookshelf approves.'
+      "A very respectable pace. Your library card is blushing.",
+      "Not bad at all. Your bookshelf approves.",
+      "Steady pages, steady vibes. Your bookmark is getting real mileage.",
+      "Look at you being consistent. Your bookshelf is taking notes.",
+      "A solid month. Your TBR pile is only mildly concerned.",
+      "Plot twist: you actually kept the reading habit going.",
+      "Your bookshelf says thank you. Your wallet says please stop buying more."
     ];
   } else {
     pool = [
-      'Okay, show-off. Do you even sleep?',
-      'Your TBR pile is shaking in fear.'
+      "Okay, show-off. Do you even sleep?",
+      "Your TBR pile is shaking in fear.",
+      "This is not a hobby anymore. This is a lifestyle, bro!",
+      "Your bookmark has requested hazard pay.",
+      "Are you a person or a reading machine? Asking for the TBR pile.",
+      "Bookstore clerks are probably learning your name by now.",
+      "Reading this much should come with a cape."
     ];
   }
-  return pool[hashStr(data.prefix) % pool.length];
+  return pickWrapupJoke(pool, 'month');
 }
 
 function wrapupFitLines(ctx, text, maxW, maxLines) {
@@ -2637,6 +2805,7 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
       await Promise.all([
         document.fonts.load('96px "Alex Brush"'),
         document.fonts.load('28px "Noto Serif"'),
+        document.fonts.load('700 26px "Noto Serif"'),
         document.fonts.load('800 52px "Plus Jakarta Sans"'),
         document.fonts.load('700 26px "Plus Jakarta Sans"'),
         document.fonts.load('400 24px Outfit'),
@@ -2792,22 +2961,40 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
     });
     ctx.textAlign = 'center';
 
-    // ----- busiest month (year only) -----
-    if (isYear && data.busiest) {
-      const bm = new Date(year, data.busiest.month, 1).toLocaleDateString('en-US', { month: 'long' });
-      ctx.font = '400 28px Outfit, sans-serif';
-      ctx.fillStyle = '#3F3F46';
-      ctx.fillText(`Busiest month: ${bm} (${data.busiest.count} book${data.busiest.count === 1 ? '' : 's'})`, cx, y + 54);
-      y += 48;
+    // ----- fun fact bullets (year only) -----
+    if (isYear) {
+      const fP = '400 26px "Noto Serif", serif', fB = '700 26px "Noto Serif", serif';
+      const bx = 110, tx0 = 138, tMax = 832, lh = 38;
+      let by = y + 72;
+      ctx.textAlign = 'left';
+      buildYearBullets(data, year).forEach(segs => {
+        const lines = wrapupBulletLines(ctx, segs, tMax, 2, fP, fB);
+        ctx.fillStyle = accentTxt;
+        ctx.beginPath(); ctx.arc(bx + 6, by - 9, 6, 0, Math.PI * 2); ctx.fill();
+        lines.forEach((ln, li) => {
+          let lx = tx0;
+          ln.forEach(w => {
+            ctx.font = w.hl ? fB : fP;
+            ctx.fillStyle = w.hl ? accentTxt : '#3F3F46';
+            ctx.fillText(w.t, lx, by + li * lh);
+            lx += w.w;
+          });
+        });
+        y = by + (lines.length - 1) * lh;
+        by = y + lh + 18;
+      });
+      ctx.textAlign = 'center';
     }
 
-    // ----- funny line (serif) -----
-    ctx.font = '28px "Noto Serif", serif';
-    ctx.fillStyle = isYear ? '#3F3F46' : '#71717A';
-    const jokeLines = getWrappedLines(ctx, message, isYear ? 960 : 820).slice(0, 3);
-    const jOff = isYear ? 78 : 68;
-    jokeLines.forEach((l, i) => ctx.fillText(l, cx, y + jOff + i * 42));
-    y += jOff + (jokeLines.length - 1) * 42;
+    // ----- funny line (serif, month only; year shows it at the bottom) -----
+    if (!isYear) {
+      ctx.font = '28px "Noto Serif", serif';
+      ctx.fillStyle = '#71717A';
+      const jokeLines = getWrappedLines(ctx, message, 820).slice(0, 3);
+      const jOff = 68;
+      jokeLines.forEach((l, i) => ctx.fillText(l, cx, y + jOff + i * 42));
+      y += jOff + (jokeLines.length - 1) * 42;
+    }
 
     drawOrnament(y + (isYear ? 48 : 56), 90, 14, 5);
 
@@ -2819,7 +3006,7 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
 
     // ----- quote block geometry (reserved at the bottom) -----
     let quoteBlock = null;
-    if (data.quote) {
+    if (data.quote && !isYear) {
       const qFont = isYear ? '24px "Noto Serif", serif' : '28px "Noto Serif", serif';
       ctx.font = qFont;
       const ql = wrapupFitLines(ctx, `\u201C${data.quote.text}\u201D`, 940, 6);
@@ -2829,9 +3016,18 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
       quoteBlock = { ql, qlh, hasAuthor, h, top: 1820 - h, font: qFont };
     }
 
+    let jokeBlock = null;
+    if (isYear) {
+      ctx.font = '28px "Noto Serif", serif';
+      const jl = getWrappedLines(ctx, message, 960).slice(0, 3);
+      const jh = 46 + jl.length * 44 + 40;
+      jokeBlock = { jl, top: 1820 - jh, nick: pickWrapupJoke(YEAR_NICKS, 'nick') };
+    }
+
     // ----- book list (2 columns) -----
     const MIN_ROW = isYear ? 165 : 120;
-    const bottomLimit = quoteBlock ? quoteBlock.top - 40 : 1810;
+    const bottomBlock = quoteBlock || jokeBlock;
+    const bottomLimit = bottomBlock ? bottomBlock.top - 40 : 1810;
     let listBottom = bottomLimit;
     let avail = listBottom - listTop;
     let shown = Math.min(n, Math.max(1, Math.floor(avail / MIN_ROW)) * 2);
@@ -2956,6 +3152,16 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
         ctx.fillStyle = '#8A8580';
         drawTracked(data.quote.book.author.trim().toUpperCase(), cx, qy + 18 * 0.78, 2);
       }
+    }
+    if (jokeBlock) {
+      drawOrnament(jokeBlock.top + 10, 90, 14, 5);
+      ctx.textAlign = 'center';
+      ctx.font = '28px "Noto Serif", serif';
+      ctx.fillStyle = '#3F3F46';
+      jokeBlock.jl.forEach((l, i) => ctx.fillText(l, cx, jokeBlock.top + 46 + 44 * (i + 1) - 13));
+      ctx.font = '600 20px Outfit, sans-serif';
+      ctx.fillStyle = accentTxt;
+      drawTracked(('\u2014 ' + jokeBlock.nick).toUpperCase(), cx, 1800, 2);
     }
     ctx.font = '500 22px Outfit, sans-serif';
     ctx.fillStyle = '#A1A1AA';
