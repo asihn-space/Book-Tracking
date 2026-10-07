@@ -2613,240 +2613,120 @@ function pickWrapupQuote(books) {
 }
 
 const YEAR_FACTS_MAX = 5;
-const YEAR_NICKS = [
- {
-  "n": "Shakespeare's Unpaid Intern",
-  "c": 1
- },
- {
-  "n": "Dostoevsky's Emotional Support Reader",
-  "c": 2
- },
- {
-  "n": "Pemberley's Frequent Visitor",
-  "c": 3
- },
- {
-  "n": "Chief Bookmark Officer",
-  "c": 4
- },
- {
-  "n": "Keeper of the Unread Pile",
-  "c": 4
- },
- {
-  "n": "Ginger Cat of the Bath Cottage",
-  "c": 3
- },
- {
-  "n": "Passerby on the Banks of the Neva River",
-  "c": 2
- },
- {
-  "n": "The Little Prince's Baobab Weeder",
-  "c": 4
- },
- {
-  "n": "Founder of a One-Person Book Club",
-  "c": 4
- },
- {
-  "n": "Honorary Citizen of Imaginary Towns",
-  "c": 4
- },
- {
-  "n": "19th Century Hostage",
-  "c": 4
- }
-];
 const YEAR_JOKES = [
  [
   [
    "A full year, zero books finished. Your bookmark has been on the same page long enough to claim squatter's rights.",
-   [
-    1,
-    4
-   ]
+   "Chief Bookmark Officer"
   ],
   [
    "Technically you did read: the backs of a lot of covers in bookstores.",
-   [
-    1,
-    4
-   ]
+   "The Back Cover Blurb"
   ],
   [
-   "Zero books this year. Your books are just on the shelf to support the aesthetic of your room.",
-   [
-    1,
-    4
-   ]
+   "Zero books this year. Your books have officially been demoted to part of the interior aesthetic.",
+   "The Vanilla Diffuser"
   ],
   [
    "Next year's reading resolution is already written. Just like last year's.",
-   [
-    1,
-    4
-   ]
+   "Unlicensed Time Traveler"
   ],
   [
    "A year without a finished book. Your reading goal was less a plan and more A Midsummer Night's Dream.",
-   [
-    1,
-    4
-   ]
+   "Shakespeare's Unpaid Intern"
   ]
  ],
  [
   [
-   "Each finished book got your full attention. The rest got your full intentions.",
-   [
-    1,
-    4
-   ]
+   "Every book you finished had your undivided attention. The rest had your very best intentions.",
+   "Ginger Cat of the Bath Cottage"
   ],
   [
-   "Little Women would've read [X] before breakfast. But hey, you did it with a phone in reach, so respect.",
-   [
-    1,
-    4
-   ]
+   "The March sisters would've read [X] books before breakfast. But hey, you did it with a phone in reach, so respect.",
+   "19th Century Hostage"
   ],
   [
    "Your TBR may have outgrown the Buendía family tree. Time to found a Macondo of your own, but with a less tragic ending!",
-   [
-    1,
-    2,
-    3,
-    4
-   ]
+   "A Chestnut Tree"
   ],
   [
-   "I know you'll fight against zero books this year! You almost made books just there to support the aesthetic of your room.",
-   [
-    1,
-    4
-   ]
+   "Consider this your confession: yes, you bought another book. No, you haven't finished the last one.",
+   "Working Class in Hay Market"
   ],
   [
-   "Not many books, but each was handpicked with care. Okay, one was just the prettiest cover.",
-   [
-    1,
-    4
-   ]
+   "Not many books, but I heard each was handpicked with care. Okay, except that one with the prettiest cover.",
+   "Professional Eavesdropper"
   ]
  ],
  [
   [
    "A solid year of pages. Your bookmark got promoted from intern to associate.",
-   [
-    1,
-    4
-   ]
+   "5:00 a.m. Specialist"
   ],
   [
    "Not a bookworm yet, but definitely a cocoon clinging to a book spine.",
-   [
-    1,
-    3,
-    4
-   ]
+   "A Library Rat"
   ],
   [
    "A good milestone! Maybe the Story Girl will let you into King Orchard for a bunch of stories and a basket of apples!",
-   [
-    1,
-    4
-   ]
+   "Cecily's Precious Cherry Vase"
   ],
   [
-   "You crossed the year like the turtle crosses the highway. Slowly, stubbornly—maybe with a little Grapes of Wrath, and nah! You got there.",
-   [
-    1,
-    4
-   ]
+   "You crossed the year like the turtle crosses the highway. Slowly, stubbornly, maybe with a little Grapes of Wrath, and, against all odds, you got there.",
+   "The Dust of Route 66"
   ],
   [
    "Plot twist: the person who said \"I'll read more this year\" actually did.",
-   [
-    1,
-    2,
-    3,
-    4
-   ]
+   "Never Saw It Coming"
   ]
  ],
  [
   [
    "Your bookmark has been working overtime and still hasn't been paid. Treat it to pizza... and maybe some coffee. Double-shot Americano!",
-   [
-    1,
-    4
-   ]
+   "Manager of a One-Person Book Club"
   ],
   [
    "Your relationship with your books is complicated: a little love, a little hate, a lot of Pride and Prejudice. You've earned a trip to Pemberley!",
-   [
-    3
-   ]
+   "Mr Darcy's Fine Carriage"
   ],
   [
    "Phileas Fogg went around the world in eighty days. You did it in a year, with [X] books, in your room. Of course, no sled!",
-   [
-    1,
-    4
-   ]
+   "Honorary Citizen of Imaginary Towns"
   ],
   [
-   "Looks like you met the love of your life during the White Nights and longed for them along the banks of the Neva River. But turns out, it was your books.",
-   [
-    2
-   ]
+   "Looks like you met the love of your life during the White Nights and longed for them along the banks of the Neva River. But it turns out, it was your books.",
+   "Passerby on the Neva Embankment"
   ],
   [
    "\"Just one more chapter\" was the most committed lie you told this year.",
-   [
-    1,
-    4
-   ]
+   "Keeper of the Unread Pile"
   ]
  ],
  [
   [
    "You haven't simply read books this year. You've assembled a fairly exhaustive encyclopedia of the literary arts, footnotes and all.",
-   [
-    1,
-    3,
-    4
-   ]
+   "Pemberley's Frequent Visitor"
   ],
   [
-   "Your TBR pile has surrendered, your bookmark has resigned, and your eyes would like to speak to a manager.",
-   [
-    4
-   ]
+   "[Reader], handsome, clever, and rich, with comforting books and a glass of matcha latte, seemed to unite some of the best blessings of existence; and had lived a whole year with [X] books.",
+   "That Blue Ribbon from Highbury's Haberdasher"
   ],
   [
-   "Reading this much is basically a second job, and you're not even getting paid.",
-   [
-    4
-   ]
+   "Reading this much is basically a second job, except there’s no salary, no Sundays, and plenty of existential suffering.",
+   "Dostoevsky's Emotional Support Reader"
   ],
   [
-   "Don Quixote lost his mind after reading too many books. You read 30+ and you might have to double-check the ceiling fan. Spoiler: it's not windmills.",
-   [
-    4
-   ]
+   "Don Quixote lost his mind after reading too many books. You read [X] books and you might have to double-check the ceiling fan.",
+   "The Windmills of La Mancha"
   ],
   [
    "The king had his subjects, the businessman had his stars. You had 30+ books, and the Little Prince smiles at you. Finally, a grown-up worth visiting!",
-   [
-    1,
-    4
-   ]
+   "The Little Prince's Baobab Weeder"
   ]
  ]
 ];
+// tiap kalimat punya nickname sendiri: [kalimat, nickname]; [X] = jumlah buku, [Reader] = nama pembaca
+
 const YEAR_FACT_POOLS = {
   "busiest": [
     "It was your villain era and a lot of cancelled plans.",
@@ -2962,8 +2842,8 @@ function buildYearFacts(data, year) {
 function pickYearJoke(n) {
   const tier = n === 0 ? 0 : n <= 6 ? 1 : n <= 15 ? 2 : n <= 30 ? 3 : 4;
   const j = pickWrapupJoke(YEAR_JOKES[tier], 'year');
-  const nk = pickWrapupJoke(YEAR_NICKS.filter(k => j[1].includes(k.c)), 'nick');
-  return { text: j[0].replace(/\[X\]/g, n), nick: nk.n };
+  const fill = s => s.replace(/\[X\] books/g, n + (n === 1 ? ' book' : ' books')).replace(/\[X\]/g, n).replace(/\[Reader\]/g, (state.userName || 'Reader'));
+  return { text: fill(j[0]), nick: j[1] };
 }
 
 function pickWrapupMessage(data, isYear) {
@@ -3440,7 +3320,7 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
       ctx.font = '28px "Noto Serif", serif';
       const jl = getWrappedLines(ctx, message, 960).slice(0, 3);
       const jh = 46 + jl.length * 44 + 40;
-      jokeBlock = { jl, top: 1820 - jh, nick: pickWrapupJoke(YEAR_NICKS, 'nick') };
+      jokeBlock = { jl, top: 1820 - jh, nick: pickYearJoke(n).nick };
     }
 
     // ----- book list (2 columns) -----
