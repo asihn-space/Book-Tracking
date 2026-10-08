@@ -1874,12 +1874,14 @@ function pieShadeAtLStar(baseHex, target) {
   }
   return tintShade(baseHex, (lo + hi) / 2);
 }
-// Range warna pie (berlaku untuk semua accent): mulai kecerahan L* 66, naik 9 poin per slice
+// Range warna pie: mulai kecerahan L* 66 (atau L* accent kalau accent lebih gelap dari itu), naik 9 poin per slice
 // (66, 75, 84, 93 untuk 4 slice). Kalau slice lebih dari 4, langkahnya dipadatkan supaya slice paling
 // terang tetap di L* 93 dan tidak menyatu dengan background putih.
 function getPieShades(n, baseHex) {
-  const START = 66, CAP = 93;
-  const step = n > 1 ? Math.min(9, (CAP - START) / (n - 1)) : 0;
+  const CAP = 93;
+  // Accent gelap (L* < 66): slice paling gelap = accent itu sendiri, supaya range tidak jadi pastel semua.
+  const START = Math.min(66, pieLStar(baseHex));
+  const step = n > 1 ? Math.min(START < 66 ? 15 : 9, (CAP - START) / (n - 1)) : 0;
   const arr = [];
   for (let i = 0; i < n; i++) arr.push(pieShadeAtLStar(baseHex, START + step * i));
   return arr;
@@ -2638,12 +2640,12 @@ const YEAR_JOKES = [
  ],
  [
   [
-   "Every book you finished had your undivided attention. The rest had your very best intentions.",
-   "Ginger Cat of the Bath Cottage"
+   "Every book you finished had your undivided attention. The rest had your very best intentions. Indeed, a Sense and Sensibility.",
+   "Ginger Cat of the Barton Cottage"
   ],
   [
    "The March sisters would've read [X] books before breakfast. But hey, you did it with a phone in reach, so respect.",
-   "19th Century Hostage"
+   "Honorary Pickwick Club Member"
   ],
   [
    "Your TBR may have outgrown the Buendía family tree. Time to found a Macondo of your own, but with a less tragic ending!",
@@ -2654,14 +2656,14 @@ const YEAR_JOKES = [
    "Working Class in Hay Market"
   ],
   [
-   "Not many books, but I heard each was handpicked with care. Okay, except that one with the prettiest cover.",
-   "Professional Eavesdropper"
+   "Not many books, but I heard each was handpicked with care. Except for that one with the prettiest cover.",
+   "Honorary Collector of Whatever Editions"
   ]
  ],
  [
   [
-   "A solid year of pages. Your bookmark got promoted from intern to associate.",
-   "5:00 a.m. Specialist"
+   "A solid year of pages. Your bookmark got promoted from intern to associate. Maybe treat it to a bowl of milk?",
+   "A Traveling Salesman Specialist"
   ],
   [
    "Not a bookworm yet, but definitely a cocoon clinging to a book spine.",
@@ -2694,8 +2696,8 @@ const YEAR_JOKES = [
    "Honorary Citizen of Imaginary Towns"
   ],
   [
-   "Looks like you met the love of your life during the White Nights and longed for them along the banks of the Neva River. But it turns out, it was your books.",
-   "Passerby on the Neva Embankment"
+   "Looks like you met the love of your life during the White Nights and longed for them along the banks of the Neva. Turns out, it was your books.",
+   "Passerby in Saint Petersburg"
   ],
   [
    "\"Just one more chapter\" was the most committed lie you told this year.",
@@ -2704,7 +2706,7 @@ const YEAR_JOKES = [
  ],
  [
   [
-   "You haven't simply read books this year. You've assembled a fairly exhaustive encyclopedia of the literary arts, footnotes and all.",
+   "Oh, dear. You haven't simply read books this year. You've assembled a fairly exhaustive encyclopedia of the literary arts, footnotes and all. Most accomplished, indeed.",
    "Pemberley's Frequent Visitor"
   ],
   [
@@ -2742,13 +2744,13 @@ const YEAR_FACT_POOLS = {
   "fast": [
     "If you and your beloved phone are in a relationship, it has probably filed for separation.",
     "Your reading pace is allegedly faster than the Shinkansen.",
-    "Honestly, I fear you'll see pages everywhere now: in the clouds, in your slightly burnt toast, even on your bills.",
+    "Honestly, I fear you'll see pages everywhere now: on the ceiling, in your slightly burnt toast, even on your bills.",
     "Rocky would say: Amaze! Amaze! Amaze! You are secretly Eridian. Question?"
   ],
   "longest": [
     "Every page turned was worth a few kcal. Your arms got a workout too!",
     "Your total pages could write the ancestor of the Buendía family tree.",
-    "I know this one is generously heavy, but you won't use it to kill a cockroach, would you?"
+    "I know this one is generously heavy, but you won't use it as a pan coaster, would you?"
   ],
   "slowest": [
     "Even a sourdough starter gets more attention.",
@@ -3165,7 +3167,7 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
       const PX = 60, PW = 960, padH = 32, padV = 24, pillGap = 24, itemGap = 18;
       const mk = sz => {
         const vF = sz + 4, pF = sz;
-        const fVB = `600 ${vF}px Outfit, sans-serif`, fVP = `400 ${vF}px Outfit, sans-serif`;
+        const fVB = `600 ${vF}px Outfit, sans-serif`, fVP = `400 ${sz - 2}px Outfit, sans-serif`;
         const fPill = `500 ${pF}px Outfit, sans-serif`, fC = `400 ${sz}px "Noto Serif", serif`;
         ctx.font = fPill;
         const pw = Math.ceil(Math.max(0, ...bl.map(f => ctx.measureText(f.label).width))) + 44;
