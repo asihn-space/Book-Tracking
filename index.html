@@ -313,8 +313,9 @@
   .cover-list .cover-placeholder-letter, .cover-reading .cover-placeholder-letter { font-size: 16px; }
   .cover-grid .cover-placeholder-letter { font-size: 24px; }
   .cover-detail .cover-placeholder-letter { font-size: 30px; }
-  .cover-list { width: 48px; }
-  .item-info { flex: 1; min-width: 0; padding-right: 46px; }
+  .cover-list { width: 52px; }
+  .item-info { flex: 1; min-width: 0; padding-right: 46px; align-self: stretch; display: flex; flex-direction: column; justify-content: space-between; gap: 2px; }
+  .item-info .item-title, .item-info .item-author, .item-info .item-publisher, .item-info .status-line { margin: 0; }
   .item-title { font-family: var(--font-display); font-size: 13px; font-weight: 700; margin: 0; line-height: 1.32; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .item-author { font-size: 12.5px; color: var(--text-soft); margin: 2px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .rate-plain { display: inline-flex; align-items: center; gap: 3px; font-weight: 700; font-size: 12px; font-variant-numeric: tabular-nums; color: #CA8A04; position: absolute; top: 0; right: 0; }
@@ -369,16 +370,26 @@
   .detail-book-publisher { font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-faint); font-weight: 600; margin: 0 0 6px; }
   .detail-rating { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; font-size: 12px; color: #CA8A04; }
   .detail-rating svg { width: 12px; height: 12px; }
+  .detail-rating.cycle { color: var(--text-faint); }
+  .detail-rating.avg { font-size: 13px; }
+  .detail-rating.avg svg { width: 13px; height: 13px; }
   .detail-meta-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-  .detail-timeline-toggle { font-family: var(--font-body); font-size: 10.5px; font-weight: 500; color: var(--text-soft); padding: 4px 12px; border-radius: 9999px; border: 1px solid #D4D4D8; background: #E4E4E7; color: #52525B; cursor: pointer; white-space: nowrap; }
-  .detail-timeline-toggle:active { background: var(--border); }
+  .detail-timeline-toggle { font-family: var(--font-body); font-size: 10.5px; font-weight: 500; padding: 4px 8px 4px 12px; display: inline-flex; align-items: center; gap: 3px; border-radius: 9999px; background: rgba(var(--accent-rgb), 0.1); color: var(--accent-text); border: 1px solid var(--accent-text); cursor: pointer; white-space: nowrap; }
+  .detail-timeline-toggle:active { background: rgba(var(--accent-rgb), 0.22); }
+  .detail-timeline-toggle svg { width: 11px; height: 11px; flex-shrink: 0; }
   .timeline-sheet { max-width: 480px; }
   .timeline-sheet .reading-timeline-card.detail-timeline-card { border-top: none; margin: 0; padding: 6px 0 0; }
   .timeline-sheet .timeline-title { display: none; }
 
   /* Reading timeline: popup (centered modal) instead of bottom sheet */
   .timeline-popup-backdrop { position: fixed; inset: 0; z-index: 40; background: rgba(0,0,0,0.42); display: flex; align-items: center; justify-content: center; padding: 24px; }
-  .timeline-popup { position: relative; width: 100%; max-width: 380px; margin: 0 auto; background: var(--surface); border-radius: 20px; max-height: 80vh; overflow-y: auto; padding: 18px 18px 20px; animation: timeline-popup-in 0.18s ease-out; }
+  .timeline-popup { position: relative; width: 100%; max-width: 380px; margin: 0 auto; background: var(--surface); border-radius: 20px; max-height: 80vh; overflow: hidden; display: flex; flex-direction: column; padding: 18px 18px 20px; animation: timeline-popup-in 0.18s ease-out; }
+  .timeline-popup .reading-timeline-card { display: flex; flex-direction: column; min-height: 0; flex: 1 1 auto; }
+  .timeline-popup .reading-timeline-card > * { flex-shrink: 0; }
+  .timeline-popup .reading-timeline-card > .hist-panels { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+  .hist-panels { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .hist-panel { grid-area: 1 / 1; min-width: 0; visibility: hidden; }
+  .hist-panel.active { visibility: visible; }
   @keyframes timeline-popup-in { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
   .timeline-popup.list-timeline-sheet .reading-timeline-card { margin: 4px 0 0; padding: 0; }
   .timeline-popup.timeline-sheet { max-width: 380px; }
@@ -388,7 +399,7 @@
   .detail-info-grid .label { color: var(--text-faint); margin-right: 3px; }
   .detail-info-grid .col-start { grid-column: 1; }
   .review-box { margin: 0 0 4px; padding: 14px; background: #F5F5F6; border: 1px solid var(--border); border-radius: 10px; }
-  .review-heading { font-size: 11px; font-weight: 700; color: var(--text-faint); letter-spacing: 0.02em; margin: 0 0 6px; }
+  .review-heading { font-size: 11px; font-weight: 700; color: var(--text-soft); letter-spacing: 0.02em; margin: 0 0 6px; }
   .review-text { font-size: 13px; line-height: 1.6; color: var(--text); margin: 0; text-align: justify; }
   .action-row { display: flex; gap: 12px; margin-top: 12px; align-items: center; }
   .btn-ghost { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border); background: none; cursor: pointer; color: var(--text); font-family: inherit; }
@@ -452,6 +463,44 @@
   .achievement-actions { position: relative; z-index: 6; margin-top: 18px; width: 100%; max-width: 320px; }
   @keyframes celebration-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+  /* ---- Reread / reading cycles ---- */
+  .action-row { flex-wrap: wrap; }
+  .reads-chip { display: inline-flex; align-items: center; font-family: var(--font-body); font-size: 10.5px; font-weight: 500; padding: 4px 12px; border-radius: 9999px; color: var(--accent-text); background: rgba(var(--accent-rgb), 0.1); border: 1px solid var(--accent-text); white-space: nowrap; }
+  .reading-author-row { display: flex; align-items: center; gap: 6px; }
+  .reading-author-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .reread-pill { margin: 0; flex-shrink: 0; }
+  .hist-tabs { display: flex; gap: 20px; overflow-x: auto; margin: 0 0 14px; padding: 0 2px; scrollbar-width: none; }
+  .hist-tabs::-webkit-scrollbar { display: none; }
+  .hist-tab { flex: 0 0 auto; position: relative; display: inline-flex; flex-direction: column; align-items: center; font-family: var(--font-body); font-size: 13px; font-weight: 500; padding: 6px 0 9px; border: none; background: none; color: var(--text-soft); cursor: pointer; white-space: nowrap; }
+  .hist-tab::before { content: attr(data-label); font-weight: 700; height: 0; overflow: hidden; visibility: hidden; display: block; }
+  .hist-tab.active { color: var(--accent-text); font-weight: 700; }
+  .hist-tab.active::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; border-radius: 9999px; background: var(--accent-text); }
+  .hist-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; margin: 0 0 16px; font-size: 12.5px; color: var(--text); }
+  .hist-meta .label { display: block; font-size: 10.5px; color: var(--text-faint); margin-bottom: 2px; }
+  .hist-sum-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12.5px; margin: 0 0 6px; }
+  .hist-sum-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 0; border-top: 1px solid var(--border); cursor: pointer; }
+  .hist-sum-name { font-size: 13px; font-weight: 700; margin: 0 0 2px; }
+  .hist-sum-sub { font-size: 11.5px; color: var(--text-soft); margin: 0; }
+  .hist-sum-right { flex-shrink: 0; }
+  .hist-sum-right .status-mini { margin: 0; }
+  .review-cycle { margin: 0; }
+  .review-cycle + .review-cycle { margin-top: 14px; padding-top: 14px; border-top: 1px solid #D4D4D8; }
+  .review-quote + .review-quote { margin-top: 14px; padding-top: 14px; border-top: 1px solid #D4D4D8; }
+  .review-sub { font-size: 11px; font-weight: 500; color: var(--text-soft); margin: 0 0 4px; }
+
+  .form-cycle-note { font-size: 12px; line-height: 1.5; color: var(--text-soft); background: #F4F4F5; border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin: 0 0 14px; }
+  .read-again-popup { text-align: center; padding: 24px 20px 20px; max-width: 340px; }
+  .read-again-icon { width: 46px; height: 46px; border-radius: 9999px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; background: rgba(var(--accent-rgb), 0.12); color: var(--accent-text); }
+  .read-again-icon svg { width: 22px; height: 22px; }
+  .read-again-title { font-family: var(--font-display); font-weight: 800; font-size: 17px; margin: 0 0 6px; line-height: 1.3; }
+  .read-again-book { font-size: 13px; font-weight: 600; margin: 0 0 2px; }
+  .read-again-sub { font-size: 12.5px; color: var(--text-soft); margin: 0 0 16px; line-height: 1.5; }
+  .read-again-label { font-size: 12px; color: var(--text-soft); margin: 0 0 8px; text-align: left; }
+  .read-again-formats { display: flex; gap: 8px; margin-bottom: 18px; }
+  .read-again-format { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: none; font-family: inherit; font-size: 13px; cursor: pointer; color: var(--text); }
+  .read-again-format.active { border-color: var(--accent-text); background: rgba(var(--accent-rgb), 0.1); color: var(--accent-text); font-weight: 700; }
+  .read-again-popup .form-actions { margin: 0; }
 </style>
 </head>
 <body>
@@ -462,14 +511,15 @@ const NAME_KEY = 'reading-log-v2-name';
 const TARGETS_KEY = 'reading-log-v2-targets';
 const WELCOME_FACES = ['(„• ֊ •„)੭', '(❀❛ ֊ ❛„)♡', '⸜(｡˃ ᵕ ˂ )⸝♡', '≽^•⩊•^≼'];
 const WELCOME_FACE = WELCOME_FACES[Math.floor(Math.random() * WELCOME_FACES.length)];
-const emptyForm = { title:'', author:'', translator:'', publisher:'', language:'', country:'', originYear:'', isbn:'', coverUrl:'', startDate:'', endDate:'', currentPage:'', totalPages:'', rating:7, review:'', status:'tbr', format:'Physical', quotes: [], history: [] };
+const emptyForm = { title:'', author:'', translator:'', publisher:'', language:'', country:'', originYear:'', isbn:'', coverUrl:'', startDate:'', endDate:'', currentPage:'', totalPages:'', rating:7, review:'', status:'tbr', format:'Physical', quotes: [], history: [], pastReads: [] };
 
 const ACCENT = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#B9D9D5';
 
-const STATUS_ORDER = ['tbr','ongoing','dnf','done'];
+const STATUS_ORDER = ['tbr','ongoing','rereading','dnf','done'];
 const STATUS_META = {
   tbr:     { label: 'To be Read',     color: '#FFC118' },
   ongoing: { label: 'Reading',        color: '#82c8e5' },
+  rereading: { label: 'Rereading',    color: '#52B788' },
   dnf:     { label: "Didn't Finish",  color: '#FF5555' },
   done:    { label: 'Finished',       color: ACCENT }
 };
@@ -650,6 +700,11 @@ let state = {
   expandedId: null,
   expandedTimelineId: null,
   detailTimelineOpen: false,
+  historyTab: null,
+  readAgainId: null,
+  readAgainFormat: 'Physical',
+  readAgainResult: null,
+  confirmCancelReadId: null,
   expandedQuoteIndex: null,
   quoteSelectMode: false,
   selectedQuoteIndices: [],
@@ -715,7 +770,7 @@ function getTargetProgress() {
   const now = new Date();
   const y = String(now.getFullYear());
   const ym = y + '-' + String(now.getMonth() + 1).padStart(2, '0');
-  const done = state.books.filter(b => getBookStatus(b) === 'done' && b.endDate);
+  const done = getDoneEntries();
   return {
     year: done.filter(b => b.endDate.slice(0, 4) === y).length,
     month: done.filter(b => b.endDate.slice(0, 7) === ym).length
@@ -732,12 +787,120 @@ function getBookStatus(b) {
   if (b.startDate) return 'ongoing';
   return 'tbr';
 }
+
+// ---------- Reading cycles (reread support) ----------
+// The flat book fields (status/startDate/endDate/currentPage/rating/review/format/history)
+// always describe the LATEST cycle. Earlier finished cycles are archived, untouched, in book.pastReads.
+const ORDINAL_WORDS = ['First','Second','Third','Fourth','Fifth','Sixth','Seventh','Eighth','Ninth','Tenth'];
+function ordinalShort(n) {
+  const v = n % 100;
+  return n + (['th', 'st', 'nd', 'rd'][(v - 20) % 10] || ['th', 'st', 'nd', 'rd'][v] || 'th');
+}
+function ordinalWord(n) { return ORDINAL_WORDS[n - 1] || ordinalShort(n); }
+function getPastReads(b) { return Array.isArray(b.pastReads) ? b.pastReads : []; }
+function getCycleCount(b) { return getPastReads(b).length + 1; }
+function isRereading(b) { return getPastReads(b).length > 0 && getBookStatus(b) === 'ongoing'; }
+// Category used by Summary / Library filter: a book is in exactly one category.
+function getListStatus(b) { return isRereading(b) ? 'rereading' : getBookStatus(b); }
+function getStatusLabel(b) {
+  const s = getListStatus(b);
+  return s === 'rereading' ? ordinalWord(getCycleCount(b)) + ' Reading' : STATUS_META[s].label;
+}
+function getCycles(b) {
+  const past = getPastReads(b).map((c, i) => ({
+    startDate: c.startDate || '', endDate: c.endDate || '', currentPage: c.currentPage,
+    rating: c.rating, review: c.review || '', format: c.format || b.format || 'Physical',
+    history: Array.isArray(c.history) ? c.history : [], status: c.status || 'done',
+    totalPages: Number(c.totalPages) || Number(b.totalPages) || 0, n: i + 1, isCurrent: false
+  }));
+  const status = getBookStatus(b);
+  if (status === 'tbr' && !past.length) return [];
+  return [...past, {
+    startDate: b.startDate || '', endDate: b.endDate || '', currentPage: b.currentPage,
+    rating: b.rating, review: b.review || '', format: b.format || 'Physical',
+    history: Array.isArray(b.history) ? b.history : [], status,
+    totalPages: Number(b.totalPages) || 0, n: past.length + 1, isCurrent: true
+  }];
+}
+function getFinishedCycles(b) { return getCycles(b).filter(c => c.status === 'done'); }
+// Book rating = average of finished cycles; falls back to the flat rating when nothing is finished yet.
+function getBookRating(b) {
+  const fin = getFinishedCycles(b);
+  if (fin.length) return fin.reduce((sum, c) => sum + (Number(c.rating) || 0), 0) / fin.length;
+  return Number(b.rating) || 0;
+}
+// Every finished cycle as a normal-looking "done book" (used by calendar, wrap-ups, targets, pace).
+function getDoneEntries(needEnd = true) {
+  const out = [];
+  state.books.forEach(b => {
+    getFinishedCycles(b).forEach(c => {
+      if (needEnd && !c.endDate) return;
+      out.push({ ...b, startDate: c.startDate, endDate: c.endDate, rating: c.rating, review: c.review,
+        format: c.format || b.format, history: c.history, currentPage: c.currentPage,
+        totalPages: c.totalPages || b.totalPages, status: 'done', cycleN: c.n });
+    });
+  });
+  return out;
+}
+function defaultHistoryTab(book, mode) {
+  const cycles = getCycles(book);
+  if (mode === 'active') return cycles.length ? cycles[cycles.length - 1].n : 1;
+  return cycles.length > 1 ? 'summary' : 1;
+}
+function archiveFromBook(b) {
+  return {
+    status: 'done', startDate: b.startDate || '', endDate: b.endDate || '', currentPage: b.currentPage,
+    totalPages: Number(b.totalPages) || 0, rating: b.rating, review: b.review || '',
+    format: b.format || 'Physical', history: Array.isArray(b.history) ? b.history : []
+  };
+}
+// "Read Again": finished book -> archive the finished cycle and start a fresh one.
+// Didn't-finish book -> simply continue its first cycle.
+function startReadAgain(id, format) {
+  const book = state.books.find(b => b.id === id);
+  if (!book) return null;
+  const status = getBookStatus(book);
+  const fmt = format || book.format || 'Physical';
+  let next;
+  if (status === 'done') {
+    next = {
+      ...book, pastReads: [...getPastReads(book), archiveFromBook(book)],
+      status: 'ongoing', startDate: todayStr(), endDate: '', currentPage: 0,
+      rating: 7, review: '', format: fmt, history: [{ date: new Date().toISOString(), page: 0 }]
+    };
+  } else if (status === 'dnf') {
+    next = { ...book, status: 'ongoing', endDate: '', format: fmt, startDate: book.startDate || todayStr() };
+  } else {
+    return null;
+  }
+  state.books = state.books.map(b => b.id === id ? next : b);
+  saveBooks();
+  return { kind: status === 'done' ? 'reread' : 'retry', n: getCycleCount(next), title: book.title };
+}
+// "Cancel this Read": the unfinished cycle never happened -> restore the previous finished cycle as-is.
+function cancelCurrentRead(id) {
+  const book = state.books.find(b => b.id === id);
+  if (!book || !isRereading(book)) return;
+  const past = getPastReads(book);
+  const last = past[past.length - 1];
+  const restored = {
+    ...book, status: 'done', startDate: last.startDate || '', endDate: last.endDate || '',
+    currentPage: last.currentPage, rating: last.rating, review: last.review || '',
+    format: last.format || book.format || 'Physical', history: Array.isArray(last.history) ? last.history : [],
+    pastReads: past.slice(0, -1)
+  };
+  if (Number(last.totalPages)) restored.totalPages = last.totalPages;
+  state.books = state.books.map(b => b.id === id ? restored : b);
+  saveBooks();
+}
+
 function updateReadingHistory(prevBook, newBook) {
   const history = (prevBook && Array.isArray(prevBook.history)) ? [...prevBook.history] : [];
   const newStatus = getBookStatus(newBook);
   const prevStatus = prevBook ? getBookStatus(prevBook) : null;
 
-  if (newStatus === 'tbr') return history;
+  // TBR = nothing has been read in this cycle: the attempt's progress is wiped.
+  if (newStatus === 'tbr') return [];
 
   const totalPages = Number(newBook.totalPages) || 0;
   const rawCurrentPage = Number(newBook.currentPage) || 0;
@@ -780,10 +943,15 @@ function updateReadingHistory(prevBook, newBook) {
   if (prevPage === null || targetPage === prevPage) return history;
   if (targetPage > lastEntry.page) {
     history.push({ date: new Date().toISOString(), page: targetPage });
-  } else {
-    history[history.length - 1] = { ...lastEntry, page: targetPage };
+    return history;
   }
-  return history;
+  // Page went DOWN (a correction of a wrong record): drop every entry beyond the corrected page,
+  // so the timeline of this cycle only describes progress that really happened.
+  const removed = history.filter(h => (Number(h.page) || 0) > targetPage);
+  const kept = history.filter(h => (Number(h.page) || 0) <= targetPage);
+  if (!kept.length) kept.push({ date: removed.length ? removed[0].date : new Date().toISOString(), page: targetPage });
+  else if ((Number(kept[kept.length - 1].page) || 0) < targetPage) kept.push({ date: new Date().toISOString(), page: targetPage });
+  return kept;
 }
 function formatDate(d) { if (!d) return '-'; try { return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return d; } }
 function todayStr() { const dt = new Date(); const y = dt.getFullYear(); const m = String(dt.getMonth() + 1).padStart(2, '0'); const day = String(dt.getDate()).padStart(2, '0'); return `${y}-${m}-${day}`; }
@@ -840,7 +1008,7 @@ function getPagesReadForBook(b) {
   return 0;
 }
 function getTotalPagesRead(books) {
-  return books.reduce((sum, b) => sum + getPagesReadForBook(b), 0);
+  return books.reduce((sum, b) => sum + getPagesReadForBook(b) + getPastReads(b).reduce((acc, c) => acc + (Number(c.totalPages) || Number(b.totalPages) || 0), 0), 0);
 }
 function daysBetween(start, end) {
   try {
@@ -898,6 +1066,7 @@ const FILTER_OPTIONS = [
   { value: 'all', label: 'All' },
   { value: 'tbr', label: 'To be Read' },
   { value: 'ongoing', label: 'Reading' },
+  { value: 'rereading', label: 'Rereading' },
   { value: 'dnf', label: "Didn't Finish" },
   { value: 'done', label: 'Finished' }
 ];
@@ -942,12 +1111,12 @@ function renderCustomSelect(key, options, currentValue, align) {
 function getFiltered() {
   const q = state.query.trim().toLowerCase();
   let list = state.books.filter(b => {
-    if (state.statusFilter && state.statusFilter !== 'all' && getBookStatus(b) !== state.statusFilter) return false;
+    if (state.statusFilter && state.statusFilter !== 'all' && getListStatus(b) !== state.statusFilter) return false;
     if (!q) return true;
     return [b.title, b.author, b.publisher, b.country, b.translator, b.language].some(v => (v || '').toLowerCase().includes(q));
   });
   list = [...list].sort((a, b) => {
-    if (state.sortBy === 'rating') return (b.rating || 0) - (a.rating || 0);
+    if (state.sortBy === 'rating') return getBookRating(b) - getBookRating(a);
     if (state.sortBy === 'title') return (a.title || '').localeCompare(b.title || '');
     if (state.sortBy === 'finished') {
       const order = { done: 0, ongoing: 1, tbr: 2, dnf: 3 };
@@ -987,6 +1156,7 @@ function render() {
       <button class="bottom-nav-btn ${state.activeTab === 'quotes' ? 'active' : ''}" id="tab-quotes-btn">${ICONS.quote}<span>Quotes</span></button>
     </nav>
     ${state.expandedId ? renderDetailModal(state.books.find(b => b.id === state.expandedId)) : ''}
+    ${state.readAgainId ? renderReadAgainPopup() : ''}
     ${state.showSettings ? renderSettingsModal() : ''}
     ${state.showAchievement ? renderAchievementModal() : ''}
     ${state.showWrapup ? renderWrapupModal() : ''}
@@ -995,6 +1165,8 @@ function render() {
     ${state.showForm ? renderForm() : ''}
   `;
   attachHandlers();
+  const activeHistTab = app.querySelector('.hist-tab.active');
+  if (activeHistTab && activeHistTab.scrollIntoView) { try { activeHistTab.scrollIntoView({ block: 'nearest', inline: 'center' }); } catch (e) {} }
   if (savedScrollTop !== null) {
     const nextModalBody = app.querySelector('.modal-body');
     if (nextModalBody) nextModalBody.scrollTop = savedScrollTop;
@@ -1013,8 +1185,8 @@ function getStatusPillStyle(key) {
 }
 
 function renderHome() {
-  const counts = { tbr: 0, ongoing: 0, dnf: 0, done: 0 };
-  state.books.forEach(b => { const s = getBookStatus(b); if (counts[s] != null) counts[s]++; });
+  const counts = { tbr: 0, ongoing: 0, rereading: 0, dnf: 0, done: 0 };
+  state.books.forEach(b => { const s = getListStatus(b); if (counts[s] != null) counts[s]++; });
   const total = state.books.length;
   const max = Math.max(1, ...Object.values(counts));
   const rows = STATUS_ORDER.map(key => {
@@ -1029,7 +1201,7 @@ function renderHome() {
         <span class="chart-count">${count}</span>
       </div>`;
   }).join('');
-  const recentDone = state.books.filter(b => getBookStatus(b) === 'done')
+  const recentDone = getDoneEntries(false)
     .sort((a, b) => (b.endDate || '').localeCompare(a.endDate || '') || (b.addedAt || 0) - (a.addedAt || 0))
     .slice(0, 3);
   const recentRows = recentDone.map(b => `
@@ -1059,7 +1231,7 @@ function renderHome() {
               <span class="reading-title">${esc(b.title)}</span>
               <span class="reading-pct" style="color:${barColor}">${pct}%</span>
             </div>
-            <p class="reading-author">${esc(b.author)}</p>
+            ${isRereading(b) ? `<p class="reading-author reading-author-row"><span class="reading-author-name">${esc(b.author)}</span><span class="status-mini reread-pill" style="${getStatusPillStyle('rereading')}">${esc(getStatusLabel(b))}</span></p>` : `<p class="reading-author">${esc(b.author)}</p>`}
             <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
             <p class="reading-pages">${totalPages ? `${currentPage}/${totalPages} pages` : 'Total pages not set yet'}</p>
           </div>
@@ -1113,9 +1285,9 @@ function normalizeHistoryForDisplay(rawHistory) {
   });
   return result;
 }
-function renderReadingTimeline(book, opts = {}) {
-  const { hideBadge = false, variant = '' } = opts;
-  const history = normalizeHistoryForDisplay(book.history);
+function renderTimelineGroups(rawHistory) {
+  const history = normalizeHistoryForDisplay(rawHistory);
+  if (!history.length) return `<p class="timeline-empty">No progress recorded yet.</p>`;
   const pad2 = n => String(n).padStart(2, '0');
   const dayGroups = [];
   history.forEach(h => {
@@ -1150,10 +1322,70 @@ function renderReadingTimeline(book, opts = {}) {
         <div class="timeline-subs">${subsHtml}</div>
       </div>`;
   }).join('');
+  return `<div class="timeline-list">${groupsHtml}</div>`;
+}
+function getCycleStatusInfo(c) {
+  if (c.status === 'done') return { label: 'Finished', key: 'done' };
+  if (c.status === 'dnf') return { label: "Didn't Finish", key: 'dnf' };
+  if (c.n > 1) return { label: ordinalWord(c.n) + ' Reading', key: 'rereading' };
+  return { label: 'Reading', key: 'ongoing' };
+}
+function renderCycleHistory(c) {
+  const done = c.status === 'done';
+  return `
+    ${done ? `<div class="hist-meta"><div><span class="detail-rating">${ICONS.star}${(Number(c.rating) || 0).toFixed(1)}</span></div></div>` : ''}
+    ${renderTimelineGroups(c.history)}`;
+}
+function renderHistorySummary(book, cycles) {
+  const fin = cycles.filter(c => c.status === 'done');
+  const rows = cycles.map(c => {
+    const info = getCycleStatusInfo(c);
+    const range = `${c.startDate ? formatDateShort(c.startDate) : '—'} – ${c.endDate ? formatDateShort(c.endDate) : (c.status === 'done' ? '—' : 'now')}`;
+    const days = (c.startDate && c.endDate) ? daysBetween(c.startDate, c.endDate) : null;
+    return `
+      <div class="hist-sum-row" data-action="history-tab" data-tab="${c.n}">
+        <div>
+          <p class="hist-sum-name">${ordinalWord(c.n)} Read</p>
+          <p class="hist-sum-sub">${range}${days != null ? ` · ${days} day${days === 1 ? '' : 's'}` : ''} · ${esc(c.format)}</p>
+        </div>
+        <div class="hist-sum-right">${c.status === 'done'
+          ? `<span class="detail-rating cycle">${ICONS.star}${(Number(c.rating) || 0).toFixed(1)}</span>`
+          : `<span class="status-mini" style="${getStatusPillStyle(info.key)}">${esc(info.label)}</span>`}</div>
+      </div>`;
+  }).join('');
+  return `
+    <div class="hist-sum-head">
+      <span><strong>${fin.length}</strong> Finished Read${fin.length === 1 ? '' : 's'}</span>
+      ${fin.length ? `<span class="detail-rating avg">${ICONS.star}${getBookRating(book).toFixed(1)}</span>` : ''}
+    </div>
+    ${rows}`;
+}
+function renderReadingTimeline(book, opts = {}) {
+  const { hideBadge = false, variant = '' } = opts;
+  const cycles = getCycles(book);
+  const multi = cycles.length > 1;
+  let tab = state.historyTab;
+  const okTab = (tab === 'summary' && multi) || (typeof tab === 'number' && tab >= 1 && tab <= cycles.length);
+  if (!okTab) tab = defaultHistoryTab(book, 'detail');
+  const tabsHtml = multi ? `
+      <div class="hist-tabs" role="tablist">
+        <button type="button" class="hist-tab${tab === 'summary' ? ' active' : ''}" data-action="history-tab" data-tab="summary" data-label="Summary">Summary</button>
+        ${cycles.map(c => `<button type="button" class="hist-tab${tab === c.n ? ' active' : ''}" data-action="history-tab" data-tab="${c.n}" data-label="${ordinalShort(c.n)} Read">${ordinalShort(c.n)} Read</button>`).join('')}
+      </div>` : '';
+  let body;
+  if (!cycles.length) body = `<p class="timeline-empty">No progress recorded yet.</p>`;
+  else {
+    // All panels share one grid cell so the popup is always as tall as the tallest tab.
+    const panels = [];
+    if (multi) panels.push(['summary', renderHistorySummary(book, cycles)]);
+    cycles.forEach(c => panels.push([c.n, renderCycleHistory(c)]));
+    body = `<div class="hist-panels">${panels.map(([k, html]) => `<div class="hist-panel${k === tab ? ' active' : ''}" data-tab="${k}">${html}</div>`).join('')}</div>`;
+  }
   return `
     <div class="reading-timeline-card${variant ? ' ' + variant : ''}" data-action="stop">
-      <p class="timeline-title">READING TIMELINE</p>
-      ${history.length ? `<div class="timeline-list">${groupsHtml}</div>` : `<p class="timeline-empty">No progress recorded yet.</p>`}
+      <p class="timeline-title">READING HISTORY</p>
+      ${tabsHtml}
+      ${body}
       ${hideBadge ? '' : `<button type="button" class="book-details-badge" data-action="open-book-details" data-id="${book.id}">${ICONS.book} Book Details</button>`}
     </div>`;
 }
@@ -1226,8 +1458,7 @@ function formatDateShort(d) {
 }
 
 function renderListItem(book) {
-  const statusMeta = STATUS_META[getBookStatus(book)];
-  const isDone = getBookStatus(book) === 'done';
+  const statusMeta = { label: getStatusLabel(book) };
   return `
     <div class="item">
       <div class="item-row" data-action="toggle" data-id="${book.id}">
@@ -1237,38 +1468,41 @@ function renderListItem(book) {
           <p class="item-author">${esc(book.author)}</p>
           ${book.publisher ? `<p class="item-publisher">${esc(book.publisher)}</p>` : ''}
           <div class="status-line">
-            <span class="status-mini" style="${getStatusPillStyle(getBookStatus(book))}">${statusMeta.label}</span>
+            <span class="status-mini" style="${getStatusPillStyle(getListStatus(book))}">${statusMeta.label}</span>
           </div>
-          ${isDone && book.startDate && book.endDate ? `<p class="item-date-range">${formatDateShort(book.startDate)} - ${formatDateShort(book.endDate)}</p>` : ''}
         </div>
-        <span class="rate-plain">${ICONS.star}${Number(book.rating).toFixed(1)}</span>
+        <span class="rate-plain">${ICONS.star}${getBookRating(book).toFixed(1)}</span>
       </div>
     </div>`;
 }
 
 function renderGridItem(book) {
-  const statusMeta = STATUS_META[getBookStatus(book)];
+  const statusMeta = { label: getStatusLabel(book) };
   return `
     <div class="item">
       <div class="grid-top" data-action="toggle" data-id="${book.id}">
         <div class="cover cover-grid">
           ${renderCoverPlaceholder(book.title)}${book.coverUrl ? `<img class="cover-img-layer" src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}
           ${book.language ? `<span class="lang-badge-grid">${esc(getLangBadge(book.language))}</span>` : ''}
-          <span class="rate-badge-grid">${ICONS.star}${Number(book.rating).toFixed(1)}</span>
+          <span class="rate-badge-grid">${ICONS.star}${getBookRating(book).toFixed(1)}</span>
         </div>
         <p class="item-title-grid">${esc(book.title)}</p>
         <p class="item-author-grid">${esc(book.author)}</p>
-        <span class="status-mini status-mini-grid" style="${getStatusPillStyle(getBookStatus(book))}">${statusMeta.label}</span>
+        <span class="status-mini status-mini-grid" style="${getStatusPillStyle(getListStatus(book))}">${statusMeta.label}</span>
       </div>
     </div>`;
 }
 
 function renderDetailModal(book) {
   if (!book) return '';
-  const statusMeta = STATUS_META[getBookStatus(book)];
+  const statusMeta = { label: getStatusLabel(book) };
   const confirming = state.confirmDeleteId === book.id;
   const totalPages = Number(book.totalPages) || 0;
   const currentPage = getBookStatus(book) === 'done' ? totalPages : (Number(book.currentPage) || 0);
+  const hasPast = getPastReads(book).length > 0;
+  const firstCycle = getCycles(book)[0] || { startDate: book.startDate, endDate: book.endDate };
+  const shownStart = hasPast ? firstCycle.startDate : book.startDate;
+  const shownEnd = hasPast ? firstCycle.endDate : book.endDate;
   return `
     <div class="detail-sheet-backdrop" data-action="close-detail">
       <div class="detail-sheet" data-action="stop">
@@ -1281,11 +1515,12 @@ function renderDetailModal(book) {
               <p class="detail-book-author">${esc(book.author)}</p>
               ${book.translator ? `<p class="detail-book-translator">Translated by ${esc(book.translator)}</p>` : ''}
               ${book.publisher ? `<p class="detail-book-publisher">${esc(book.publisher)}</p>` : ''}
-              <span class="detail-rating">${ICONS.star}${Number(book.rating).toFixed(1)}</span>
+              <span class="detail-rating">${ICONS.star}${getBookRating(book).toFixed(1)}</span>
             </div>
             <div class="detail-meta-row">
-              <span class="status-mini status-mini-detail" style="${getStatusPillStyle(getBookStatus(book))}">${statusMeta.label}</span>
-              ${(book.history && book.history.length) ? `<button type="button" class="detail-timeline-toggle" data-action="open-reading-timeline" data-id="${book.id}">Timeline</button>` : ''}
+              <span class="status-mini status-mini-detail" style="${getStatusPillStyle(getListStatus(book))}">${statusMeta.label}</span>
+              ${hasPast ? `<span class="reads-chip">Read ${getFinishedCycles(book).length}×</span>` : ''}
+              ${((book.history && book.history.length) || hasPast) ? `<button type="button" class="detail-timeline-toggle" data-action="open-reading-timeline" data-id="${book.id}">Reading History${ICONS.chevronRight}</button>` : ''}
             </div>
           </div>
         </div>
@@ -1296,11 +1531,11 @@ function renderDetailModal(book) {
           ${book.isbn ? `<div><span class="label">ISBN</span> ${esc(book.isbn)}</div>` : ''}
           ${totalPages ? `<div class="col-start"><span class="label">Pages</span> ${currentPage}/${totalPages} (${getReadingPct(book)}%)</div>` : ''}
           ${book.format ? `<div${totalPages ? '' : ' class="col-start"'}><span class="label">Format</span> ${esc(book.format)}</div>` : ''}
-          <div class="col-start"><span class="label">Started</span> ${formatDate(book.startDate)}</div>
-          <div><span class="label">Finished</span> ${formatDate(book.endDate)}</div>
+          <div class="col-start"><span class="label">${hasPast ? 'First Started' : 'Started'}</span> ${formatDate(shownStart)}</div>
+          <div><span class="label">${hasPast ? 'First Finished' : 'Finished'}</span> ${formatDate(shownEnd)}</div>
         </div>
-        ${book.review ? `<div class="review-box"><p class="review-heading">What Stayed</p><p class="review-text">${esc(book.review)}</p></div>` : ''}
-        ${(book.quotes && book.quotes.filter(q => q && q.trim()).length) ? `<div class="review-box" style="margin-top:12px;"><p class="review-heading">Quotes</p>${book.quotes.filter(q => q && q.trim()).map(q => `<p class="review-text" style="margin-bottom:8px;">"${esc(q.trim())}"</p>`).join('')}</div>` : ''}
+        ${renderReviewBox(book)}
+        ${(book.quotes && book.quotes.filter(q => q && q.trim()).length) ? `<div class="review-box" style="margin-top:12px;"><p class="review-heading">Quotes</p>${book.quotes.filter(q => q && q.trim()).map(q => `<p class="review-text review-quote">"${esc(q.trim())}"</p>`).join('')}</div>` : ''}
         <div class="action-row">
           <button class="btn-ghost" data-action="edit" data-id="${book.id}">${ICONS.edit} Edit</button>
           ${confirming ? `
@@ -1311,10 +1546,73 @@ function renderDetailModal(book) {
             </div>` : `
             <button class="btn-ghost btn-danger" data-action="ask-delete" data-id="${book.id}">${ICONS.trash} Delete</button>
           `}
+          ${renderReadCycleButtons(book)}
         </div>
       </div>
     </div>
-    ${(state.detailTimelineOpen && book.history && book.history.length) ? renderReadingTimelineSheet(book) : ''}`;
+    ${(state.detailTimelineOpen && ((book.history && book.history.length) || getPastReads(book).length)) ? renderReadingTimelineSheet(book) : ''}`;
+}
+
+
+function renderReviewBox(book) {
+  const cycles = getCycles(book);
+  if (cycles.length <= 1) {
+    return book.review ? `<div class="review-box"><p class="review-heading">What Stayed</p><p class="review-text">${esc(book.review)}</p></div>` : '';
+  }
+  const withReview = cycles.filter(c => c.review && c.review.trim());
+  if (!withReview.length) return '';
+  return `<div class="review-box"><p class="review-heading">What Stayed</p>${withReview.map(c => `<div class="review-cycle"><p class="review-sub">${ordinalWord(c.n)} Read</p><p class="review-text">${esc(c.review)}</p></div>`).join('')}</div>`;
+}
+
+function renderReadCycleButtons(book) {
+  const st = getBookStatus(book);
+  let html = '';
+  if (st === 'done' || st === 'dnf') {
+    html += `<button class="btn-ghost" data-action="read-again" data-id="${book.id}">${ICONS.repeat} Read Again</button>`;
+  }
+  if (isRereading(book)) {
+    html += state.confirmCancelReadId === book.id
+      ? `<div class="confirm-row"><span style="color:#B91C1C;">Discard this read?</span><button data-action="confirm-cancel-read" data-id="${book.id}" style="color:#B91C1C;font-weight:500;">Yes, cancel</button><button data-action="cancel-cancel-read" style="color:var(--text-soft);">Keep</button></div>`
+      : `<button class="btn-ghost" data-action="ask-cancel-read" data-id="${book.id}">Cancel this Read</button>`;
+  }
+  return html;
+}
+
+function renderReadAgainPopup() {
+  const book = state.books.find(b => b.id === state.readAgainId);
+  if (!book) return '';
+  const res = state.readAgainResult;
+  if (res) {
+    const isRetry = res.kind === 'retry';
+    return `
+      <div class="timeline-popup-backdrop" data-action="read-again-close">
+        <div class="detail-sheet timeline-popup read-again-popup" data-action="stop">
+          <div class="read-again-icon">${ICONS.repeat}</div>
+          <p class="read-again-title">${isRetry ? "Welcome back, let's give it another go" : 'Congratulations!'}</p>
+          <p class="read-again-book">${esc(res.title)}</p>
+          <p class="read-again-sub">${isRetry ? 'Picked up again from where you left off.' : `You're reading this book for the ${ordinalShort(res.n)} time.`}</p>
+          <button type="button" class="btn btn-primary" data-action="read-again-close" style="width:100%;">Got it</button>
+        </div>
+      </div>`;
+  }
+  const isRetry = getBookStatus(book) === 'dnf';
+  return `
+    <div class="timeline-popup-backdrop" data-action="read-again-close">
+      <div class="detail-sheet timeline-popup read-again-popup" data-action="stop">
+        <div class="read-again-icon">${ICONS.repeat}</div>
+        <p class="read-again-title">${isRetry ? 'Pick this book up again?' : 'Read this book again?'}</p>
+        <p class="read-again-book">${esc(book.title)}</p>
+        <p class="read-again-sub">${isRetry ? 'You will continue from your last page.' : `This starts your ${ordinalWord(getCycleCount(book) + 1).toLowerCase()} read. Your earlier reads stay in Reading History.`}</p>
+        <p class="read-again-label">Which format this time?</p>
+        <div class="read-again-formats">
+          ${FORMAT_OPTIONS.map(o => `<button type="button" class="read-again-format${o.value === state.readAgainFormat ? ' active' : ''}" data-action="read-again-format" data-value="${o.value}">${esc(o.label)}</button>`).join('')}
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn" data-action="read-again-close">Cancel</button>
+          <button type="button" class="btn btn-primary" data-action="read-again-confirm">${ICONS.check} Confirm</button>
+        </div>
+      </div>
+    </div>`;
 }
 
 function renderReadingTimelineSheet(book) {
@@ -1572,7 +1870,7 @@ function renderAchievementModal() {
           <div class="achievement-card">
             <div class="achievement-cover">${book.coverUrl ? `<img src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}</div>
             <p class="achievement-heading">Congratulations!</p>
-            <p class="achievement-sub">You've finished reading</p>
+            <p class="achievement-sub">${getPastReads(book).length ? "You've finished rereading" : "You've finished reading"}</p>
             <p class="achievement-title">${esc(book.title)}</p>
             <p class="achievement-author">${esc(book.author)}</p>
             ${days != null ? `<div class="achievement-days-pill">${days} Day${days === 1 ? '' : 's'} of Reading</div>` : ''}
@@ -1706,8 +2004,8 @@ function truncateLabel(s, max) {
 
 function renderDashboardSummaryStrip() {
   const currentYear = String(new Date().getFullYear());
-  const doneThisYear = state.books.filter(b => getBookStatus(b) === 'done' && b.endDate && b.endDate.slice(0, 4) === currentYear).length;
-  const paceList = getPagesPerDayRanking(state.books);
+  const doneThisYear = getDoneEntries().filter(b => b.endDate.slice(0, 4) === currentYear).length;
+  const paceList = getPagesPerDayRanking(getDoneEntries());
   const avgPace = paceList.length ? paceList.reduce((s, b) => s + b.rate, 0) / paceList.length : null;
   const writerRank = rankBy(state.books, b => b.author && b.author.trim());
   const topWriter = writerRank.length ? writerRank[0][0] : null;
@@ -1790,8 +2088,8 @@ function renderAchievementSection() {
   if (!years.length) return `<p class="dash-empty">No data yet. Set an End Date on a book.</p>`;
   const activeYear = (state.dashboardYearFilter && years.includes(state.dashboardYearFilter)) ? state.dashboardYearFilter : years[0];
   const trigger = renderYearPickerTrigger(years, activeYear);
-  const g = getYearGrouping(state.books, activeYear)[0];
-  const m = getYearMonthlyBreakdown(state.books, activeYear)[0];
+  const g = getYearGrouping(getDoneEntries(), activeYear)[0];
+  const m = getYearMonthlyBreakdown(getDoneEntries(), activeYear)[0];
   if (!g) return `${trigger}<p class="dash-empty">No data yet.</p>`;
   const hasMore = g.allSorted.length > g.top5.length;
   const expanded = state.showAllYearBooks;
@@ -2023,8 +2321,7 @@ ${l.lines.map((ln, k) => `<text x="${l.textX}" y="${(l.y + 5 + k * 14).toFixed(1
 
 function getCalendarDoneBooksByDate() {
   const map = {};
-  state.books.forEach(b => {
-    if (getBookStatus(b) !== 'done' || !b.endDate) return;
+  getDoneEntries().forEach(b => {
     if (!map[b.endDate]) map[b.endDate] = [];
     map[b.endDate].push(b);
   });
@@ -2248,7 +2545,7 @@ function renderQuoteExpandSheet(index) {
 
 function getAvailableYears() {
   const years = new Set();
-  state.books.forEach(b => { if (getBookStatus(b) === 'done' && b.endDate) years.add(b.endDate.slice(0, 4)); });
+  getDoneEntries().forEach(b => { years.add(b.endDate.slice(0, 4)); });
   return [...years].sort((a, b) => b.localeCompare(a));
 }
 
@@ -2270,15 +2567,19 @@ function getYearMonthlyBreakdown(books, yearFilter) {
 function renderForm() {
   const f = state.form;
   const ratingVal = Number(f.rating) || 1;
+  const cycleNo = (f.pastReads && f.pastReads.length) ? f.pastReads.length + 1 : 1;
+  const cycleSuffix = cycleNo > 1 ? ` · ${ordinalWord(cycleNo)} Read` : '';
+  const statusOptions = cycleNo > 1 ? STATUS_OPTIONS.filter(o => o.value === 'ongoing' || o.value === 'done') : STATUS_OPTIONS;
   const quotesArr = (f.quotes && f.quotes.length) ? f.quotes : [''];
   return `
     <div class="modal">
       <div class="modal-inner">
         <div class="modal-header">
-          <h2>${state.editingId ? 'Edit book' : 'Add Book'}</h2>
+          <h2>${state.editingId ? 'Edit Book' : 'Add Book'}</h2>
           <button id="close-form" aria-label="Close">${ICONS.x}</button>
         </div>
         <form id="book-form" class="modal-body">
+          ${cycleNo > 1 ? `<p class="form-cycle-note">You're editing your ${ordinalWord(cycleNo)} Read. Dates, Pages, Rating, and What Stayed below belong to this read.</p>` : ''}
           <div class="cover-field">
             <div class="cover-preview" id="cover-preview">${f.coverUrl ? `<img src="${esc(f.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ICONS.book}</div>
             <div class="cover-actions">
@@ -2301,14 +2602,14 @@ function renderForm() {
           </div>
           <label class="field"><span class="field-label">ISBN</span><input id="f-isbn" value="${esc(f.isbn)}" /></label>
           <label class="field"><span class="field-label">Status</span>
-            ${renderCustomSelect('formStatus', STATUS_OPTIONS, f.status, 'left')}
+            ${renderCustomSelect('formStatus', statusOptions, f.status, 'left')}
           </label>
           <label class="field"><span class="field-label">Format</span>
             ${renderCustomSelect('formFormat', FORMAT_OPTIONS, f.format, 'left')}
           </label>
           <div class="grid-2">
-            <label class="field"><span class="field-label">Start Date</span><input type="date" id="f-start" value="${esc(f.startDate)}" /></label>
-            <label class="field"><span class="field-label">End Date</span><input type="date" id="f-end" value="${esc(f.endDate)}" /></label>
+            <label class="field"><span class="field-label">Start Date${cycleSuffix}</span><input type="date" id="f-start" value="${esc(f.startDate)}" /></label>
+            <label class="field"><span class="field-label">End Date${cycleSuffix}</span><input type="date" id="f-end" value="${esc(f.endDate)}" /></label>
           </div>
           ${(f.status === 'ongoing' || f.status === 'dnf') ? `
           <div class="grid-2" id="pages-field-row">
@@ -2543,8 +2844,8 @@ let wrapupCanvasCache = null;
 
 function getMonthlyWrapupData(year, month) {
   const prefix = `${year}-${String(month + 1).padStart(2, '0')}`;
-  const books = state.books
-    .filter(b => getBookStatus(b) === 'done' && b.endDate && b.endDate.startsWith(prefix))
+  const books = getDoneEntries()
+    .filter(b => b.endDate.startsWith(prefix))
     .sort((a, b) => a.endDate.localeCompare(b.endDate));
   const now = new Date();
   const isCurrent = now.getFullYear() === year && now.getMonth() === month;
@@ -2582,8 +2883,8 @@ function wrapupPickBest(items, score, dir = 1) {
 
 function getYearlyWrapupData(year) {
   const prefix = String(year);
-  const books = state.books
-    .filter(b => getBookStatus(b) === 'done' && b.endDate && b.endDate.startsWith(prefix + '-'))
+  const books = getDoneEntries()
+    .filter(b => b.endDate.startsWith(prefix + '-'))
     .sort((a, b) => a.endDate.localeCompare(b.endDate));
   // Urut rating tertinggi; yang rating-nya sama diacak (jadi Top Reads & Best Book tidak terkunci ke buku paling awal).
   const byRating = wrapupShuffle(books).sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0));
@@ -3497,8 +3798,8 @@ function generateYearlyBookListCanvas(year, callback) {
       ]);
     } catch (e) { /* fall back to whatever is available */ }
 
-    const books = state.books
-      .filter(b => getBookStatus(b) === 'done' && b.endDate && b.endDate.startsWith(year + '-'))
+    const books = getDoneEntries()
+      .filter(b => b.endDate.startsWith(year + '-'))
       .sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0) || a.endDate.localeCompare(b.endDate));
     const n = books.length;
 
@@ -3715,7 +4016,7 @@ function generateYearlyStatsCanvas(year, callback) {
       ]);
     } catch (e) { /* fall back to whatever is available */ }
 
-    const books = state.books.filter(b => getBookStatus(b) === 'done' && b.endDate && b.endDate.startsWith(year + '-'));
+    const books = getDoneEntries().filter(b => b.endDate.startsWith(year + '-'));
     const n = books.length;
 
     await new Promise(res => {
@@ -4496,12 +4797,26 @@ function csvEscape(val) {
   return s;
 }
 function exportCSV() {
-  const headers = ['Title', 'Author', 'Translator', 'Publisher', 'Origin Country', 'Origin Year', 'Language', 'ISBN', 'Rating', 'Status', 'Start Date', 'End Date', 'Current Page', 'Total Pages', 'Review'];
-  const rows = state.books.map(b => [
-    b.title, b.author, b.translator, b.publisher, b.country, b.originYear, b.language, b.isbn,
-    b.rating, STATUS_META[getBookStatus(b)].label,
-    b.startDate, b.endDate, b.currentPage, b.totalPages, b.review
-  ].map(csvEscape).join(','));
+  const maxCycles = Math.max(1, ...state.books.map(b => getCycles(b).length));
+  const headers = ['Title', 'Author', 'Translator', 'Publisher', 'Origin Country', 'Origin Year', 'Language', 'ISBN', 'Rating', 'Status', 'Start Date', 'End Date', 'Current Page', 'Total Pages', 'Review', 'Format', 'Read Count', 'Average Rating'];
+  for (let n = 2; n <= maxCycles; n++) headers.push(`Format ${n}`, `Start Date ${n}`, `End Date ${n}`, `Current Page ${n}`, `Rating ${n}`, `Review ${n}`);
+  const rows = state.books.map(b => {
+    const cycles = getCycles(b);
+    const c1 = cycles[0] || { startDate: b.startDate, endDate: b.endDate, currentPage: b.currentPage, rating: b.rating, review: b.review, format: b.format };
+    const fin = cycles.filter(c => c.status === 'done');
+    const row = [
+      b.title, b.author, b.translator, b.publisher, b.country, b.originYear, b.language, b.isbn,
+      c1.rating, STATUS_META[getListStatus(b)].label,
+      c1.startDate, c1.endDate, c1.currentPage, b.totalPages, c1.review, c1.format,
+      fin.length, fin.length ? getBookRating(b).toFixed(1) : ''
+    ];
+    for (let n = 2; n <= maxCycles; n++) {
+      const c = cycles[n - 1];
+      if (!c) { row.push('', '', '', '', '', ''); continue; }
+      row.push(c.format, c.startDate, c.endDate, c.currentPage, c.status === 'done' ? c.rating : '', c.review);
+    }
+    return row.map(csvEscape).join(',');
+  });
   const csv = [headers.map(csvEscape).join(','), ...rows].join('\r\n');
   const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
@@ -4683,6 +4998,7 @@ function attachHandlers() {
         state.form.status = value;
         if (value !== 'done') state.form.endDate = '';
         else if (!state.form.endDate) state.form.endDate = todayStr();
+        if (value === 'ongoing' && !state.form.startDate) state.form.startDate = todayStr();
       }
       if (key === 'formFormat') state.form.format = value;
       state.openDropdown = null;
@@ -4705,21 +5021,49 @@ function attachHandlers() {
     const action = el.getAttribute('data-action');
     const id = el.getAttribute('data-id');
     if (action === 'toggle') {
-      el.addEventListener('click', () => { state.expandedId = id; state.confirmDeleteId = null; state.detailTimelineOpen = false; render(); });
+      el.addEventListener('click', () => { state.expandedId = id; state.confirmDeleteId = null; state.confirmCancelReadId = null; state.detailTimelineOpen = false; render(); });
     } else if (action === 'toggle-timeline') {
-      el.addEventListener('click', () => { state.expandedTimelineId = state.expandedTimelineId === id ? null : id; render(); });
+      el.addEventListener('click', () => { const b = state.books.find(x => x.id === id); if (b) state.historyTab = defaultHistoryTab(b, 'active'); state.expandedTimelineId = state.expandedTimelineId === id ? null : id; render(); });
     } else if (action === 'close-timeline-sheet') {
       el.addEventListener('click', e => { e.stopPropagation(); state.expandedTimelineId = null; render(); });
     } else if (action === 'open-reading-timeline') {
-      el.addEventListener('click', e => { e.stopPropagation(); state.detailTimelineOpen = true; render(); });
+      el.addEventListener('click', e => { e.stopPropagation(); const b = state.books.find(x => x.id === id); state.historyTab = b ? defaultHistoryTab(b, 'detail') : 1; state.detailTimelineOpen = true; render(); });
     } else if (action === 'close-reading-timeline') {
       el.addEventListener('click', e => { e.stopPropagation(); state.detailTimelineOpen = false; render(); });
     } else if (action === 'open-book-details') {
-      el.addEventListener('click', e => { e.stopPropagation(); state.expandedId = id; state.confirmDeleteId = null; state.detailTimelineOpen = false; state.expandedTimelineId = null; render(); });
+      el.addEventListener('click', e => { e.stopPropagation(); state.expandedId = id; state.confirmDeleteId = null; state.confirmCancelReadId = null; state.detailTimelineOpen = false; state.expandedTimelineId = null; render(); });
+    } else if (action === 'history-tab') {
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        const t = el.getAttribute('data-tab');
+        state.historyTab = t === 'summary' ? 'summary' : Number(t);
+        const card = el.closest('.reading-timeline-card');
+        if (!card) { render(); return; }
+        // Swap tabs in place (no re-render) so the popup stays still.
+        card.querySelectorAll('.hist-tab').forEach(b => b.classList.toggle('active', b === el));
+        card.querySelectorAll('.hist-panel').forEach(pn => pn.classList.toggle('active', pn.getAttribute('data-tab') === t));
+        const hp = card.querySelector('.hist-panels');
+        if (hp) hp.scrollTop = 0;
+        if (el.scrollIntoView) { try { el.scrollIntoView({ block: 'nearest', inline: 'center' }); } catch (err) {} }
+      });
+    } else if (action === 'read-again') {
+      el.addEventListener('click', e => { e.stopPropagation(); const b = state.books.find(x => x.id === id); if (!b) return; state.readAgainId = id; state.readAgainFormat = b.format || 'Physical'; state.readAgainResult = null; render(); });
+    } else if (action === 'read-again-format') {
+      el.addEventListener('click', e => { e.stopPropagation(); state.readAgainFormat = el.getAttribute('data-value'); render(); });
+    } else if (action === 'read-again-confirm') {
+      el.addEventListener('click', e => { e.stopPropagation(); const r = startReadAgain(state.readAgainId, state.readAgainFormat); if (!r) state.readAgainId = null; state.readAgainResult = r; render(); });
+    } else if (action === 'read-again-close') {
+      el.addEventListener('click', e => { e.stopPropagation(); state.readAgainId = null; state.readAgainResult = null; render(); });
+    } else if (action === 'ask-cancel-read') {
+      el.addEventListener('click', e => { e.stopPropagation(); state.confirmCancelReadId = id; render(); });
+    } else if (action === 'cancel-cancel-read') {
+      el.addEventListener('click', e => { e.stopPropagation(); state.confirmCancelReadId = null; render(); });
+    } else if (action === 'confirm-cancel-read') {
+      el.addEventListener('click', e => { e.stopPropagation(); cancelCurrentRead(id); state.confirmCancelReadId = null; state.detailTimelineOpen = false; render(); });
     } else if (action === 'stop') {
       el.addEventListener('click', e => e.stopPropagation());
     } else if (action === 'close-detail') {
-      el.addEventListener('click', e => { e.stopPropagation(); state.expandedId = null; state.confirmDeleteId = null; state.detailTimelineOpen = false; render(); });
+      el.addEventListener('click', e => { e.stopPropagation(); state.expandedId = null; state.confirmDeleteId = null; state.confirmCancelReadId = null; state.detailTimelineOpen = false; render(); });
     } else if (action === 'expand-quote') {
       const qIndex = parseInt(id, 10);
       let pressTimer = null;
@@ -4768,9 +5112,9 @@ function attachHandlers() {
     } else if (action === 'ask-delete') {
       el.addEventListener('click', e => { e.stopPropagation(); state.confirmDeleteId = id; render(); });
     } else if (action === 'cancel-delete') {
-      el.addEventListener('click', e => { e.stopPropagation(); state.confirmDeleteId = null; render(); });
+      el.addEventListener('click', e => { e.stopPropagation(); state.confirmDeleteId = null; state.confirmCancelReadId = null; render(); });
     } else if (action === 'delete') {
-      el.addEventListener('click', e => { e.stopPropagation(); state.books = state.books.filter(b => b.id !== id); saveBooks(); state.confirmDeleteId = null; state.expandedId = null; render(); });
+      el.addEventListener('click', e => { e.stopPropagation(); state.books = state.books.filter(b => b.id !== id); saveBooks(); state.confirmDeleteId = null; state.confirmCancelReadId = null; state.expandedId = null; render(); });
     } else if (action === 'view-list') {
       el.addEventListener('click', () => { state.libraryView = 'list'; render(); });
     } else if (action === 'view-grid') {
@@ -4947,6 +5291,8 @@ function attachHandlers() {
       e.preventDefault();
       if (!state.form.title.trim() || !state.form.author.trim()) return;
       if (state.form.status !== 'done') state.form.endDate = '';
+      // Saved as TBR: this attempt never happened, so start date and page progress reset too.
+      if (state.form.status === 'tbr') { state.form.startDate = ''; state.form.currentPage = ''; }
       state.form.quotes = (state.form.quotes || []).map(q => (q || '').trim()).filter(Boolean);
       const wasDoneBefore = state.editingId ? getBookStatus(state.books.find(b => b.id === state.editingId)) === 'done' : false;
       const isDoneNow = state.form.status === 'done';
