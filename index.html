@@ -106,6 +106,8 @@
   .cal-nav-btn:hover { background: var(--bg); }
   .cal-month-label { font-family: var(--font-display); font-weight: 800; font-size: 15px; margin: 0; color: var(--accent-text); text-transform: uppercase; letter-spacing: 0.03em; }
   .cal-label-btn { background: none; border: none; cursor: pointer; font: inherit; color: inherit; text-transform: inherit; letter-spacing: inherit; padding: 4px 7px; border-radius: 8px; display: inline-flex; align-items: center; gap: 3px; }
+  .cal-label-btn[data-action="open-cal-month-sheet"] { padding-right: 3px; }
+  .cal-label-btn[data-action="open-cal-year-sheet"] { padding-left: 3px; }
   .cal-label-btn:hover, .cal-label-btn:active { background: rgba(var(--accent-rgb), 0.12); }
   .cal-sheet-backdrop { position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,0.42); display: flex; align-items: center; justify-content: center; padding: 20px; }
   .cal-sheet { width: 100%; max-width: 320px; max-height: 70vh; overflow-y: auto; background: var(--surface); border-radius: 18px; padding: 16px; box-shadow: 0 20px 48px rgba(0,0,0,0.28); animation: picker-sheet-pop 0.15s ease-out; }
@@ -209,18 +211,21 @@
   .quote-expand-sheet { text-align: center; padding-top: 34px; }
   .quote-expand-mark { color: rgba(var(--accent-rgb), 0.22); display: flex; justify-content: center; margin-bottom: 4px; }
   .quote-expand-mark svg { width: 34px; height: 34px; }
-  .quote-expand-text { font-family: 'Noto Serif', serif; font-size: 17px; font-weight: 400; line-height: 1.7; color: var(--text); margin: 8px 0 22px; text-align: left; }
+  .quote-expand-text { font-family: 'Noto Serif', serif; font-size: 17px; font-weight: 400; line-height: 1.7; color: var(--text); margin: 8px 0 22px; text-align: left; white-space: pre-line; }
   .quote-expand-book { display: block; font-family: 'Alex Brush', cursive; font-size: 26px; font-weight: 400; color: var(--accent-text); line-height: 1.2; }
   .quote-expand-author { display: block; font-family: var(--font-body); font-size: 12px; font-weight: 500; color: var(--text-faint); letter-spacing: 0.01em; margin-top: 2px; }
   .quote-card-mark { position: absolute; top: 8px; left: 10px; color: rgba(var(--accent-rgb), 0.22); }
   .quote-card-mark svg { width: 26px; height: 26px; }
-  .quote-card-text { position: relative; font-family: 'Noto Serif', serif; font-size: 13px; font-weight: 400; line-height: 1.55; color: var(--text); margin: 6px 0 14px; }
+  .quote-card-text { position: relative; font-family: 'Noto Serif', serif; font-size: 13px; font-weight: 400; line-height: 1.55; color: var(--text); margin: 6px 0 14px; white-space: pre-line; }
   .quote-card-book { display: block; text-align: right; font-family: 'Alex Brush', cursive; font-size: 16px; font-weight: 400; color: var(--accent-text); line-height: 1; }
   .quote-card-author { display: block; text-align: right; font-family: var(--font-body); font-size: 10px; font-weight: 500; color: var(--text-faint); letter-spacing: 0.01em; margin-top: 0; }
 
   /* Quote inputs (form) */
   .quote-input-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; }
   .quote-input-row textarea { flex: 1; }
+  .author-input-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .author-input-row input { flex: 1; }
+  .author-input-row .quote-remove-btn { margin-top: 0; }
   .quote-remove-btn { flex-shrink: 0; width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text-soft); cursor: pointer; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
   .reading-list { display: flex; flex-direction: column; gap: 16px; }
   .reading-row { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
@@ -313,8 +318,8 @@
   .cover-list .cover-placeholder-letter, .cover-reading .cover-placeholder-letter { font-size: 16px; }
   .cover-grid .cover-placeholder-letter { font-size: 24px; }
   .cover-detail .cover-placeholder-letter { font-size: 30px; }
-  .cover-list { width: 46px; }
-  .item-info { flex: 1; min-width: 0; padding-right: 46px; align-self: stretch; display: flex; flex-direction: column; justify-content: space-between; gap: 2px; }
+  .cover-list { width: 48px; }
+  .item-info { flex: 1; min-width: 0; padding-right: 46px; align-self: stretch; display: flex; flex-direction: column; justify-content: center; gap: 3px; }
   .item-info .item-title, .item-info .item-author, .item-info .item-publisher, .item-info .status-line { margin: 0; }
   .item-title { font-family: var(--font-display); font-size: 13px; font-weight: 700; margin: 0; line-height: 1.32; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .item-author { font-size: 12.5px; color: var(--text-soft); margin: 2px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -361,7 +366,7 @@
   /* Detail modal (shared) */
   .status-mini { display: inline-block; font-size: 9.5px; font-weight: 500; padding: 2px 8px; border-radius: 9999px; margin-top: 5px; }
   .status-mini-detail { font-size: 10.5px; padding: 4px 12px; margin: 0; }
-  .cover-detail { width: 106px; flex-shrink: 0; margin: 0; }
+  .cover-detail { width: 80px; flex-shrink: 0; margin: 0; }
   .detail-head { display: flex; gap: 14px; align-items: stretch; margin-bottom: 16px; }
   .detail-head-info { flex: 1; min-width: 0; padding-top: 2px; display: flex; flex-direction: column; justify-content: flex-start; }
   .detail-book-title { font-family: var(--font-display); font-size: 17px; font-weight: 800; margin: 0 0 4px; line-height: 1.3; }
@@ -399,10 +404,11 @@
   .detail-info-grid .label { color: var(--text-faint); margin-right: 3px; }
   .detail-info-grid .col-start { grid-column: 1; }
   .review-box { margin: 0 0 4px; padding: 14px; background: #F5F5F6; border: 1px solid var(--border); border-radius: 10px; }
-  .review-heading { font-size: 11px; font-weight: 700; color: var(--text-soft); letter-spacing: 0.02em; margin: 0 0 6px; }
-  .review-text { font-size: 13px; line-height: 1.6; color: var(--text); margin: 0; text-align: justify; }
+  .review-heading { font-size: 12.5px; font-weight: 700; color: var(--text-soft); letter-spacing: 0.02em; margin: 0 0 6px; }
+  .review-text { font-size: 13px; line-height: 1.6; color: var(--text); margin: 0; text-align: justify; white-space: pre-line; }
   .action-row { display: flex; gap: 12px; margin-top: 12px; align-items: center; }
   .btn-ghost { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border); background: none; cursor: pointer; color: var(--text); font-family: inherit; }
+  .btn-ghost svg { width: 12px; height: 12px; stroke-width: 2; flex-shrink: 0; }
   .btn-danger { color: #B91C1C; }
   .confirm-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
   .confirm-row button { background: none; border: none; cursor: pointer; font-family: inherit; font-size: 12px; }
@@ -1018,12 +1024,24 @@ function daysBetween(start, end) {
     return Math.max(1, diff + 1);
   } catch (e) { return 1; }
 }
+function getAuthorList(b) {
+  if (Array.isArray(b.authors) && b.authors.length) return b.authors.map(a => (a || '').trim()).filter(Boolean);
+  const a = (b.author || '').trim();
+  return a ? [a] : [];
+}
+function getFormAuthors(f) {
+  return (Array.isArray(f.authors) && f.authors.length) ? f.authors : [f.author || ''];
+}
+const LANGUAGE_NAMES = ['Indonesian', 'English', 'Japanese', 'Korean', 'Russian', 'German', 'French', 'Spanish'];
+const LANGUAGE_OPTIONS = [...LANGUAGE_NAMES.map(n => ({ value: n, label: n })), { value: '__other', label: 'Other' }];
 function rankBy(books, keyFn) {
   const map = new Map();
   books.forEach(b => {
-    const key = keyFn(b);
-    if (!key) return;
-    map.set(key, (map.get(key) || 0) + 1);
+    const raw = keyFn(b);
+    (Array.isArray(raw) ? raw : [raw]).forEach(key => {
+      if (!key) return;
+      map.set(key, (map.get(key) || 0) + 1);
+    });
   });
   return [...map.entries()].sort((a, b) => b[1] - a[1]);
 }
@@ -1088,7 +1106,7 @@ const FORMAT_OPTIONS = [
 ];
 
 function renderCustomSelect(key, options, currentValue, align) {
-  const placeholder = key === 'filter' ? 'Filter by' : key === 'sort' ? 'Sort by' : 'Select';
+  const placeholder = key === 'filter' ? 'Filter by' : key === 'sort' ? 'Sort by' : key === 'formLanguage' ? 'Select language' : 'Select';
   const current = options.find(o => o.value === currentValue);
   const label = current ? current.label : placeholder;
   const isOpen = state.openDropdown === key;
@@ -1129,7 +1147,7 @@ function getFiltered() {
   return list;
 }
 
-function openAddForm() { state.form = { ...emptyForm, quotes: [''] }; state.editingId = null; state.showForm = true; render(); }
+function openAddForm() { state.langOtherMode = false; state.form = { ...emptyForm, quotes: [''] }; state.editingId = null; state.showForm = true; render(); }
 
 function render() {
   const app = document.getElementById('app');
@@ -2007,7 +2025,7 @@ function renderDashboardSummaryStrip() {
   const doneThisYear = getDoneEntries().filter(b => b.endDate.slice(0, 4) === currentYear).length;
   const paceList = getPagesPerDayRanking(getDoneEntries());
   const avgPace = paceList.length ? paceList.reduce((s, b) => s + b.rate, 0) / paceList.length : null;
-  const writerRank = rankBy(state.books, b => b.author && b.author.trim());
+  const writerRank = rankBy(state.books, getAuthorList);
   const topWriter = writerRank.length ? writerRank[0][0] : null;
   return `
     <div class="dash-summary-strip">
@@ -2027,7 +2045,7 @@ function renderDashboardSummaryStrip() {
 }
 
 const STATISTICS_FIELDS = [
-  { key: 'writer', label: 'Writer', getKey: b => b.author && b.author.trim() },
+  { key: 'writer', label: 'Writer', getKey: getAuthorList },
   { key: 'publisher', label: 'Publisher', getKey: b => b.publisher && b.publisher.trim() },
   { key: 'language', label: 'Language', getKey: b => b.language && b.language.trim() },
   { key: 'country', label: 'Country', getKey: b => b.country && b.country.trim() },
@@ -2363,7 +2381,7 @@ function renderCalendarSection() {
     <div class="year-group">
       <div class="cal-nav-row">
         <button type="button" class="cal-nav-btn" data-action="calendar-prev-month">${ICONS.calChevronLeft}</button>
-        <p class="cal-month-label" style="display:flex;align-items:center;gap:2px;">
+        <p class="cal-month-label" style="display:flex;align-items:center;gap:0;">
           <button type="button" class="cal-label-btn" data-action="open-cal-month-sheet" aria-label="Pilih bulan">${monthName}</button>
           <button type="button" class="cal-label-btn" data-action="open-cal-year-sheet" aria-label="Pilih tahun">${year}</button>
         </p>
@@ -2568,6 +2586,8 @@ function renderForm() {
   const f = state.form;
   const ratingVal = Number(f.rating) || 1;
   const cycleNo = (f.pastReads && f.pastReads.length) ? f.pastReads.length + 1 : 1;
+  const formAuthors = getFormAuthors(f);
+  const langSel = state.langOtherMode ? '__other' : (f.language ? (LANGUAGE_NAMES.includes(f.language) ? f.language : '__other') : '');
   const cycleSuffix = cycleNo > 1 ? ` · ${ordinalWord(cycleNo)} Read` : '';
   const statusOptions = cycleNo > 1 ? STATUS_OPTIONS.filter(o => o.value === 'ongoing' || o.value === 'done') : STATUS_OPTIONS;
   const quotesArr = (f.quotes && f.quotes.length) ? f.quotes : [''];
@@ -2590,11 +2610,23 @@ function renderForm() {
             </div>
           </div>
           <label class="field"><span class="field-label">Book Title *</span><input required id="f-title" value="${esc(f.title)}" placeholder="e.g. The Great Gatsby" /></label>
-          <label class="field"><span class="field-label">Author *</span><input required id="f-author" value="${esc(f.author)}" /></label>
+          <div class="field">
+            <span class="field-label">Author *</span>
+            ${formAuthors.map((a, i) => `
+              <div class="author-input-row">
+                <input class="f-author-input" data-index="${i}" ${i === 0 ? 'required' : ''} value="${esc(a)}" placeholder="${i === 0 ? '' : 'Another author'}" />
+                ${formAuthors.length > 1 ? `<button type="button" class="quote-remove-btn" data-action="remove-author" data-index="${i}" aria-label="Remove author">${ICONS.x}</button>` : ''}
+              </div>`).join('')}
+            <button type="button" class="btn-secondary-sm" data-action="add-author" style="margin-top:2px;">${ICONS.plus} Add author</button>
+          </div>
           <label class="field"><span class="field-label">Translator</span><input id="f-translator" value="${esc(f.translator)}" placeholder="if a translated book" /></label>
           <div class="grid-2">
             <label class="field"><span class="field-label">Publisher</span><input id="f-publisher" value="${esc(f.publisher)}" /></label>
-            <label class="field"><span class="field-label">Language</span><input id="f-language" value="${esc(f.language)}" placeholder="e.g. English" /></label>
+            <div class="field">
+              <span class="field-label">Language</span>
+              ${renderCustomSelect('formLanguage', LANGUAGE_OPTIONS, langSel, 'left')}
+              ${langSel === '__other' ? `<input id="f-language" value="${esc(LANGUAGE_NAMES.includes(f.language) ? '' : f.language)}" placeholder="Type a language" style="margin-top:8px;" />` : ''}
+            </div>
           </div>
           <div class="grid-2">
             <label class="field"><span class="field-label">Origin Country</span><input id="f-country" value="${esc(f.country)}" placeholder="e.g. Japan" /></label>
@@ -3139,7 +3171,7 @@ function buildYearFacts(data, year) {
   const slow = wrapupPickBest(timed.filter(x => x.d >= 7), x => x.d);
   if (slow) add('slowest', 'Slowest Read', ttl(slow.b), unit(slow.d, 'day'));
   const cnt = {};
-  bks.forEach(b => { const a = (b.author || '').trim(); if (!a) return; const k = a.toLowerCase(); (cnt[k] = cnt[k] || { a, n: 0 }).n++; });
+  bks.forEach(b => getAuthorList(b).forEach(a => { const k = a.toLowerCase(); (cnt[k] = cnt[k] || { a, n: 0 }).n++; }));
   const fav = wrapupPickBest(Object.values(cnt), x => x.n);
   if (fav && fav.n >= 2) add('author', 'Top Author', fav.a, unit(fav.n, 'book'), { Author: fav.a });
   return out.slice(0, YEAR_FACTS_MAX);
@@ -5001,6 +5033,15 @@ function attachHandlers() {
         if (value === 'ongoing' && !state.form.startDate) state.form.startDate = todayStr();
       }
       if (key === 'formFormat') state.form.format = value;
+      if (key === 'formLanguage') {
+        if (value === '__other') {
+          state.langOtherMode = true;
+          if (LANGUAGE_NAMES.includes(state.form.language)) state.form.language = '';
+        } else {
+          state.langOtherMode = false;
+          state.form.language = value;
+        }
+      }
       state.openDropdown = null;
       render();
     });
@@ -5107,7 +5148,7 @@ function attachHandlers() {
       el.addEventListener('click', e => {
         e.stopPropagation();
         const book = state.books.find(b => b.id === id);
-        if (book) { state.form = { ...emptyForm, ...book, status: book.status || getBookStatus(book), format: book.format || 'Physical', quotes: (book.quotes && book.quotes.length) ? [...book.quotes] : [''] }; state.editingId = id; state.expandedId = null; state.showForm = true; render(); }
+        if (book) { state.langOtherMode = false; state.form = { ...emptyForm, ...book, status: book.status || getBookStatus(book), format: book.format || 'Physical', quotes: (book.quotes && book.quotes.length) ? [...book.quotes] : [''] }; state.editingId = id; state.expandedId = null; state.showForm = true; render(); }
       });
     } else if (action === 'ask-delete') {
       el.addEventListener('click', e => { e.stopPropagation(); state.confirmDeleteId = id; render(); });
@@ -5229,6 +5270,17 @@ function attachHandlers() {
       el.addEventListener('click', () => { state.showStatSheet = true; render(); });
     } else if (action === 'close-stat-sheet') {
       el.addEventListener('click', e => { e.stopPropagation(); state.showStatSheet = false; render(); });
+    } else if (action === 'add-author') {
+      el.addEventListener('click', () => {
+        state.form.authors = [...getFormAuthors(state.form), ''];
+        render();
+      });
+    } else if (action === 'remove-author') {
+      el.addEventListener('click', () => {
+        const idx = Number(el.getAttribute('data-index'));
+        state.form.authors = getFormAuthors(state.form).filter((_, i2) => i2 !== idx);
+        render();
+      });
     } else if (action === 'add-quote') {
       el.addEventListener('click', () => {
         const current = (state.form.quotes && state.form.quotes.length) ? state.form.quotes : [''];
@@ -5248,10 +5300,19 @@ function attachHandlers() {
   const form = document.getElementById('book-form');
   if (form) {
     const bind = (elId, key) => { const el = document.getElementById(elId); if (el) el.addEventListener('input', e => { state.form[key] = e.target.value; }); };
-    bind('f-title', 'title'); bind('f-author', 'author'); bind('f-translator', 'translator');
+    bind('f-title', 'title'); bind('f-translator', 'translator');
     bind('f-publisher', 'publisher'); bind('f-language', 'language'); bind('f-country', 'country'); bind('f-origin-year', 'originYear'); bind('f-isbn', 'isbn');
     bind('f-start', 'startDate'); bind('f-end', 'endDate'); bind('f-review', 'review');
     bind('f-current-page', 'currentPage'); bind('f-total-pages', 'totalPages');
+
+    document.querySelectorAll('.f-author-input').forEach(el => {
+      el.addEventListener('input', e => {
+        const idx = Number(el.getAttribute('data-index'));
+        const cur = [...getFormAuthors(state.form)];
+        cur[idx] = e.target.value;
+        state.form.authors = cur;
+      });
+    });
 
     document.querySelectorAll('.f-quote-input').forEach(el => {
       el.addEventListener('input', e => {
@@ -5289,7 +5350,10 @@ function attachHandlers() {
 
     form.addEventListener('submit', e => {
       e.preventDefault();
-      if (!state.form.title.trim() || !state.form.author.trim()) return;
+      const authorList = getFormAuthors(state.form).map(a => (a || '').trim()).filter(Boolean);
+      if (!state.form.title.trim() || !authorList.length) return;
+      state.form.authors = authorList;
+      state.form.author = authorList.join(', ');
       if (state.form.status !== 'done') state.form.endDate = '';
       // Saved as TBR: this attempt never happened, so start date and page progress reset too.
       if (state.form.status === 'tbr') { state.form.startDate = ''; state.form.currentPage = ''; }
