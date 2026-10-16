@@ -525,7 +525,7 @@ const ACCENT = getComputedStyle(document.documentElement).getPropertyValue('--ac
 const STATUS_ORDER = ['tbr','ongoing','rereading','dnf','done'];
 const STATUS_META = {
   tbr:     { label: 'To be Read',     color: '#FFC118' },
-  ongoing: { label: 'Reading',        color: '#82c8e5' },
+  ongoing: { label: 'Reading',        color: '#219ebc' },
   rereading: { label: 'Rereading',    color: '#52B788' },
   dnf:     { label: "Didn't Finish",  color: '#FF5555' },
   done:    { label: 'Finished',       color: ACCENT }
@@ -1420,7 +1420,7 @@ function getReadingPct(book) {
 function getReadingBarColor(pct) {
   if (pct < 100 / 3) return '#FF5555';
   if (pct <= 200 / 3) return '#FFC118';
-  return '#82c8e5';
+  return '#219ebc';
 }
 
 function renderLibrary() {
