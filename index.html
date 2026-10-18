@@ -170,8 +170,12 @@
   .pie-pop-row::before { content: ''; position: absolute; left: 0.6em; top: 50%; width: 0.3em; height: 0.3em; margin-top: -0.15em; border-radius: 50%; background: var(--accent-text); }
   .pie-pop-row:active { background: rgba(128,150,147,0.16); background: color-mix(in srgb, var(--accent-text) 16%, transparent); }
   .pie-pop-row-t { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 1.21em; color: var(--text); color: color-mix(in srgb, var(--text) 84%, var(--text-soft)); }
-  .pie-pop-more { display: block; width: 100%; height: 1.8em; padding: 0 0.45em 0 1.3em; margin: 0; background: none; border: none; font: inherit; font-weight: 400; line-height: 1.8em; text-align: left; color: var(--accent-text); cursor: pointer; }
+  .pie-pop-more { display: block; width: 100%; height: 1.8em; padding: 0 0.45em 0 1.3em; margin: 0; background: none; border: none; font: inherit; font-weight: 600; line-height: 1.8em; text-align: left; color: var(--accent-text); cursor: pointer; }
   .pie-pop-more-t { font-size: 1.21em; }
+  .pie-pop-row-t.pie-pop-row-multi { display: flex; align-items: baseline; text-overflow: clip; }
+  .pie-pop-row-title { flex: 0 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .pie-pop-row-sep { flex: 0 0 auto; margin: 0 0.35em; color: var(--text-soft); }
+  .pie-pop-row-name { flex: 0 0 auto; max-width: 40%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--text-soft); }
   .pie-pop-pager { flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; height: 2em; margin-top: 0.333em; font-size: 0.9em; font-weight: 600; color: var(--text-soft); }
   .pie-pop-pg { width: 2.6em; height: 100%; padding: 0; background: none; border: none; font: inherit; font-size: 1.15em; line-height: 1; color: var(--accent-text); cursor: pointer; }
   .pie-pop-pg:disabled { color: var(--text-faint); opacity: 0.45; cursor: default; }
@@ -2399,9 +2403,14 @@ function buildPieSlices(entries) {
   const rest = entries.slice(5);
   const restTotal = rest.reduce((sum, e) => sum + e[1], 0);
   if (restTotal > 0) {
-    const seen = new Set(), books = [];
-    rest.forEach(e => (e[2] || []).forEach(bk => { if (!seen.has(bk.id)) { seen.add(bk.id); books.push(bk); } }));
-    slices.push(['Others', restTotal, books]);
+    const byId = new Map(), books = [];
+    rest.forEach(e => (e[2] || []).forEach(bk => {
+      let item = byId.get(bk.id);
+      if (!item) { item = { id: bk.id, title: bk.title, names: [] }; byId.set(bk.id, item); books.push(item); }
+      if (e[0] && !item.names.includes(e[0])) item.names.push(e[0]);   // e[0] = nama kategori (penulis/negara/dst)
+    }));
+    books.forEach(b => b.names.sort((x, y) => String(x).localeCompare(String(y), undefined, { sensitivity: 'base' })));
+    slices.push(['Others', restTotal, books, true]);
   }
   return slices;
 }
@@ -2460,7 +2469,12 @@ function renderPiePopup() {
   const sl = buildPieSlices(rankBooksBy(state.books, active.getKey))[sel.idx];
   if (!sl) { state.pieSel = null; return ''; }
   const name = sl[0];
-  const books = [...(sl[2] || [])].sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }));
+  const isOthers = !!sl[3];
+  const cmp = (x, y) => String(x).localeCompare(String(y), undefined, { sensitivity: 'base' });
+  // Others: urut per nama kategori dulu (buku dengan nama yang sama mengumpul), baru judul; slice lain tetap urut judul
+  const books = [...(sl[2] || [])].sort(isOthers
+    ? (a, b) => cmp((a.names && a.names[0]) || '', (b.names && b.names[0]) || '') || cmp(a.title, b.title)
+    : (a, b) => cmp(a.title, b.title));
   const n = books.length;
   const fs = sel.fs || 12;
   const row = 1.8 * fs, head = 1.95 * fs, pad = 0.575 * fs, lp = 0.4 * fs + 2, pg = 0.3 * fs;   // pad = setengah dari (padding atas 0.45em + bawah 0.7em); head = tinggi 1.85em + margin 0.1em; lp = padding + border kotak abu, pg = jarak kotak ke pager
@@ -2470,7 +2484,9 @@ function renderPiePopup() {
   const PREVIEW = 5;
   const perPage = Math.max(3, Math.min(6, Math.floor((vh - 24 - 2 * pad - head - lp - row - pg) / row)));
   const countTxt = `${n} book${n === 1 ? '' : 's'}`;
-  const rowsHtml = list => list.map(b => `<button type="button" class="pie-pop-row" data-action="pie-open-book" data-id="${esc(b.id)}"><span class="pie-pop-row-t">${esc(b.title)}</span></button>`).join('');
+  const rowsHtml = list => list.map(b => `<button type="button" class="pie-pop-row" data-action="pie-open-book" data-id="${esc(b.id)}">${isOthers && b.names && b.names.length
+    ? `<span class="pie-pop-row-t pie-pop-row-multi"><span class="pie-pop-row-title">${esc(b.title)}</span><span class="pie-pop-row-sep">·</span><span class="pie-pop-row-name">${esc(b.names.join(', '))}</span></span>`
+    : `<span class="pie-pop-row-t">${esc(b.title)}</span>`}</button>`).join('');
   // Animasi pop-in hanya saat popup baru dibuka; ganti page / expand / balik dari Book Details tidak mengulang animasi
   const animate = !sel.shown;
   sel.shown = true;
