@@ -408,7 +408,6 @@
   .detail-timeline-toggle svg { width: 11px; height: 11px; flex-shrink: 0; }
   .timeline-sheet { max-width: 480px; }
   .timeline-sheet .reading-timeline-card.detail-timeline-card { border-top: none; margin: 0; padding: 6px 0 0; }
-  .timeline-sheet .timeline-title { display: none; }
 
   /* Reading timeline: popup (centered modal) instead of bottom sheet */
   .timeline-popup-backdrop { position: fixed; inset: 0; z-index: 40; background: rgba(0,0,0,0.42); display: flex; align-items: center; justify-content: center; padding: 24px; }
@@ -424,7 +423,6 @@
   .timeline-popup.list-timeline-sheet .reading-timeline-card { margin: 4px 0 0; padding: 0; }
   .timeline-popup.timeline-sheet { max-width: 380px; }
   .timeline-popup.timeline-sheet .reading-timeline-card.detail-timeline-card { border-top: none; margin: 0; padding: 6px 0 0; }
-  .timeline-popup.timeline-sheet .timeline-title { display: none; }
   /* Rapatkan jarak dari tepi atas popup Reading History ke konten pertama */
   /* Gap seragam 14px di semua sisi; radius popup = radius kotak abu (10) + gap (14) supaya sudutnya konsentris */
   .timeline-popup.list-timeline-sheet, .timeline-popup.timeline-sheet { padding: 14px; border-radius: 24px; }
@@ -1419,8 +1417,8 @@ function getCycleStatusInfo(c) {
   if (c.n > 1) return { label: ordinalWord(c.n) + ' Reading', key: 'rereading' };
   return { label: 'Reading', key: 'ongoing' };
 }
-function renderCycleHistory(c) {
-  const done = c.status === 'done';
+function renderCycleHistory(c, showRating = true) {
+  const done = c.status === 'done' && showRating;   // rating di atas hanya kalau ada lebih dari satu read
   return `
     ${done ? `<div class="hist-meta"><div><span class="detail-rating">${ICONS.star}${(Number(c.rating) || 0).toFixed(1)}</span></div></div>` : ''}
     ${renderTimelineGroups(c.history)}`;
@@ -1470,14 +1468,14 @@ function renderReadingTimeline(book, opts = {}) {
     // All panels share one grid cell so the popup is always as tall as the tallest tab.
     const panels = [];
     if (multi) panels.push(['summary', renderHistorySummary(book, cycles)]);
-    cycles.forEach(c => panels.push([c.n, renderCycleHistory(c)]));
+    cycles.forEach(c => panels.push([c.n, renderCycleHistory(c, multi)]));
     body = `<div class="hist-panels rt-gray">${panels.map(([k, html]) => `<div class="hist-panel${k === tab ? ' active' : ''}" data-tab="${k}">${html}</div>`).join('')}</div>`;
   }
   return `
     <div class="reading-timeline-card${variant ? ' ' + variant : ''}" data-action="stop">
       ${showHead
         ? `<div class="rt-head"><p class="timeline-title">READING HISTORY</p><button type="button" class="book-details-badge" data-action="open-book-details" data-id="${book.id}">${ICONS.book} Book Details</button></div>`
-        : `<p class="timeline-title">READING HISTORY</p>`}
+        : `<div class="rt-head"><p class="timeline-title">READING HISTORY</p></div>`}
       ${tabsHtml}
       ${body}
     </div>`;
