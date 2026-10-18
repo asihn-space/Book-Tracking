@@ -156,6 +156,24 @@
   .stat-chip { flex: 1 0 auto; padding: 9px 16px; border-radius: 9999px; background: none; border: none; font-size: 12.5px; font-weight: 700; color: var(--text-soft); cursor: pointer; font-family: var(--font-display); white-space: nowrap; }
   .stat-chip.active { background: var(--accent); color: var(--accent-contrast); box-shadow: 0 3px 10px rgba(var(--accent-rgb), 0.28); }
   .pie-chart-svg { width: 100%; max-width: 640px; height: auto; display: block; margin: 4px auto 0; }
+  /* Pie slice popup (Statistics) */
+  .pie-pop-backdrop { position: fixed; inset: 0; z-index: 40; background: transparent; touch-action: none; }
+  .pie-pop-backdrop.pie-under { z-index: 30; pointer-events: none; }
+  .pie-pop { position: fixed; z-index: 41; box-sizing: border-box; display: flex; flex-direction: column; padding: 0.45em; background: var(--surface); border-radius: 0.9em; box-shadow: 0 10px 26px rgba(0,0,0,0.2); font-family: var(--font-body); color: var(--text); }
+  .pie-pop.pie-pop-anim { animation: picker-sheet-pop 0.15s ease-out; }
+  .pie-pop-head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.6em; flex: 0 0 auto; box-sizing: border-box; height: 1.9em; padding: 0.3em 0.45em 0; margin: 0 0 0.3em; background: none; border: none; font: inherit; text-align: left; }
+  .pie-pop-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.95em; line-height: 1.3; font-weight: 600; color: var(--accent-text); }
+  .pie-pop-count { flex: 0 0 auto; font-size: 0.95em; line-height: 1.3; font-weight: 600; color: var(--accent-text); }
+  .pie-pop-back { width: 100%; cursor: pointer; }
+  .pie-pop-list { flex: 1 1 auto; min-height: 0; overflow: hidden; box-sizing: border-box; padding: 0.2em 0.1em; background: #F5F5F6; border: 1px solid var(--border); border-radius: 0.8em; }
+  .pie-pop-row { display: block; position: relative; width: 100%; box-sizing: border-box; height: 1.8em; margin: 0; padding: 0 0.45em 0 1.3em; background: none; border: none; border-radius: 0.45em; font: inherit; font-weight: 400; line-height: 1.8em; text-align: left; color: var(--text); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .pie-pop-row::before { content: ''; position: absolute; left: 0.6em; top: 50%; width: 0.3em; height: 0.3em; margin-top: -0.15em; border-radius: 50%; background: var(--accent-text); }
+  .pie-pop-row:active { background: rgba(128,150,147,0.16); background: color-mix(in srgb, var(--accent-text) 16%, transparent); }
+  .pie-pop-row-t { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 0.95em; color: var(--text); color: color-mix(in srgb, var(--text) 84%, var(--text-soft)); }
+  .pie-pop-more { display: block; width: 100%; height: 1.8em; padding: 0 0.45em 0 1.3em; margin: 0; background: none; border: none; font: inherit; font-weight: 400; line-height: 1.8em; text-align: left; color: var(--accent-text); cursor: pointer; }
+  .pie-pop-pager { flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; height: 2em; margin-top: 0.333em; font-size: 0.9em; font-weight: 600; color: var(--text-soft); }
+  .pie-pop-pg { width: 2.6em; height: 100%; padding: 0; background: none; border: none; font: inherit; font-size: 1.15em; line-height: 1; color: var(--accent-text); cursor: pointer; }
+  .pie-pop-pg:disabled { color: var(--text-faint); opacity: 0.45; cursor: default; }
 
   main { padding: 16px 16px 40px; }
   .error-banner { margin-bottom: 16px; padding: 10px 12px; border-radius: 8px; font-size: 14px; background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
@@ -680,6 +698,7 @@ let state = {
   calendarMonth: new Date().getMonth(),
   calendarSelectedDate: null,
   statisticsField: 'writer',
+  pieSel: null,
   query: '',
   sortBy: '',
   statusFilter: '',
@@ -1046,6 +1065,21 @@ function rankBy(books, keyFn) {
   });
   return [...map.entries()].sort((a, b) => b[1] - a[1]);
 }
+// Sama seperti rankBy, tapi tiap kategori juga membawa daftar bukunya: [nama, jumlah, [{id,title}]]
+function rankBooksBy(books, keyFn) {
+  const map = new Map();
+  books.forEach(b => {
+    const raw = keyFn(b);
+    (Array.isArray(raw) ? raw : [raw]).forEach(key => {
+      if (!key) return;
+      let e = map.get(key);
+      if (!e) { e = { count: 0, books: [], seen: new Set() }; map.set(key, e); }
+      e.count += 1;
+      if (!e.seen.has(b.id)) { e.seen.add(b.id); e.books.push({ id: b.id, title: b.title || 'Untitled' }); }
+    });
+  });
+  return [...map.entries()].map(([k, e]) => [k, e.count, e.books]).sort((a, b) => b[1] - a[1]);
+}
 function getPagesPerDayRanking(books) {
   return books
     .filter(b => getBookStatus(b) === 'done' && b.startDate && b.endDate && Number(b.totalPages) > 0)
@@ -1152,6 +1186,7 @@ function openAddForm() { state.langOtherMode = false; state.form = { ...emptyFor
 
 function render() {
   const app = document.getElementById('app');
+  if (state.activeTab !== 'dashboard') state.pieSel = null;
   const prevModalBody = app.querySelector('.modal-body');
   const savedScrollTop = prevModalBody ? prevModalBody.scrollTop : null;
   app.innerHTML = `
@@ -2061,7 +2096,7 @@ function renderStatisticsSection() {
     <button type="button" class="picker-trigger" data-action="open-stat-sheet">
       ${esc(active.label)} ${ICONS.chevronDown}
     </button>`;
-  const entries = rankBy(state.books, active.getKey);
+  const entries = rankBooksBy(state.books, active.getKey);
   return `${trigger}<div class="year-group">${renderPieChart(entries)}</div>`;
 }
 
@@ -2255,11 +2290,9 @@ function wrapPieLabel(name, maxW, maxLines) {
 
 function renderPieChart(entries) {
   if (!entries.length) return `<p class="dash-empty">No data yet.</p>`;
-  const top5 = entries.slice(0, 5);
-  const rest = entries.slice(5);
-  const restTotal = rest.reduce((s, [, c]) => s + c, 0);
-  const slices = [...top5];
-  if (restTotal > 0) slices.push(['Others', restTotal]);
+  const slices = buildPieSlices(entries);
+  const selIdx = (state.pieSel && state.pieSel.field === state.statisticsField) ? state.pieSel.idx : -1;
+  const dimOf = i => (selIdx < 0 || selIdx === i) ? 1 : 0.35;
 
   const total = slices.reduce((s, [, c]) => s + c, 0);
   // Ukuran chart menyesuaikan lebar kartu: pie tidak pernah lebih kecil dari 112, dan tambahan lebar
@@ -2280,10 +2313,10 @@ function renderPieChart(entries) {
     const startAngle = angle;
     const endAngle = angle + sliceAngle;
     const midAngle = (startAngle + endAngle) / 2;
-    arcs.push(`<path d="${describeArc(cx, cy, r, startAngle, endAngle)}" fill="${shades[i]}" stroke="${shades[i]}" stroke-width="0.5" />`);
+    arcs.push(`<path data-action="pie-open-slice" data-idx="${i}" d="${describeArc(cx, cy, r, startAngle, endAngle)}" fill="${shades[i]}" stroke="${shades[i]}" stroke-width="0.5" opacity="${dimOf(i)}" style="cursor:pointer;-webkit-tap-highlight-color:transparent" />`);
     const pct = Math.round((count / total) * 100);
     const isLeft = midAngle > 180;
-    const entry = { name, count, pct, midAngle };
+    const entry = { name, count, pct, midAngle, idx: i };
     if (isLeft) leftLabels.push(entry); else rightLabels.push(entry);
     angle = endAngle;
   });
@@ -2328,15 +2361,146 @@ function renderPieChart(entries) {
   function labelSvg(l, side) {
     const anchor = side === 'left' ? 'end' : 'start';
     const halo = 'stroke="var(--surface)" stroke-width="4" paint-order="stroke fill" stroke-linejoin="round"';
+    const sub = `${l.count} book${l.count === 1 ? '' : 's'} · ${l.pct}%`;
+    // Area tap transparan seukuran blok teks label
+    const hitW = Math.min(LABEL_MAX_W, Math.max(...l.lines.map(measurePieText), measurePieText(sub))) + 8;
+    const hitX = side === 'left' ? l.textX - hitW + 4 : l.textX - 4;
+    const hitY = l.y - 6, hitH = 32 + (l.lines.length - 1) * 14;
     return `
+      <g class="pie-label" data-action="pie-open-slice" data-idx="${l.idx}" data-side="${side}" opacity="${dimOf(l.idx)}" style="cursor:pointer;-webkit-tap-highlight-color:transparent">
+      <rect x="${hitX.toFixed(1)}" y="${hitY.toFixed(1)}" width="${hitW.toFixed(1)}" height="${hitH}" fill="transparent" />
       <polyline points="${l.edgePoint.x.toFixed(1)},${l.edgePoint.y.toFixed(1)} ${l.elbow.x.toFixed(1)},${l.elbow.y.toFixed(1)} ${l.lineEndX},${l.y.toFixed(1)}" fill="none" stroke="var(--text-faint)" stroke-width="1.5" stroke-linejoin="round" />
 ${l.lines.map((ln, k) => `<text x="${l.textX}" y="${(l.y + 5 + k * 14).toFixed(1)}" text-anchor="${anchor}" font-size="12" font-weight="700" fill="var(--text)" font-family="Outfit, sans-serif" ${halo}>${esc(ln)}</text>`).join('')}
-      <text x="${l.textX}" y="${(l.y + 21 + (l.lines.length - 1) * 14).toFixed(1)}" text-anchor="${anchor}" font-size="10.5" fill="var(--text-soft)" font-family="Outfit, sans-serif" ${halo}>${l.count} book${l.count === 1 ? '' : 's'} · <tspan font-weight="700" fill="var(--accent-text)">${l.pct}%</tspan></text>`;
+      <text x="${l.textX}" y="${(l.y + 21 + (l.lines.length - 1) * 14).toFixed(1)}" text-anchor="${anchor}" font-size="10.5" fill="var(--text-soft)" font-family="Outfit, sans-serif" ${halo}>${l.count} book${l.count === 1 ? '' : 's'} · <tspan font-weight="700" fill="var(--accent-text)">${l.pct}%</tspan></text>
+      </g>`;
   }
 
   const labelsSvg = [...leftLaidOut.map(l => labelSvg(l, 'left')), ...rightLaidOut.map(l => labelSvg(l, 'right'))].join('');
 
   return `<svg viewBox="0 0 ${W} ${H}" class="pie-chart-svg">${arcs.join('')}${labelsSvg}</svg>`;
+}
+
+// Slice pie: 5 teratas + "Others" (buku dari kategori ke-6 dst, digabung & tanpa duplikat)
+function buildPieSlices(entries) {
+  const slices = entries.slice(0, 5);
+  const rest = entries.slice(5);
+  const restTotal = rest.reduce((sum, e) => sum + e[1], 0);
+  if (restTotal > 0) {
+    const seen = new Set(), books = [];
+    rest.forEach(e => (e[2] || []).forEach(bk => { if (!seen.has(bk.id)) { seen.add(bk.id); books.push(bk); } }));
+    slices.push(['Others', restTotal, books]);
+  }
+  return slices;
+}
+
+// Ukur label yang di-tap: posisi di layar + skala SVG (supaya font popup = font label yang tampil)
+function pieMeasure(svg, idx) {
+  const g = svg.querySelector('.pie-label[data-idx="' + idx + '"]');
+  if (!g) return null;
+  const hit = g.querySelector('rect') || g;
+  const r = hit.getBoundingClientRect();
+  const vbW = svg.viewBox && svg.viewBox.baseVal ? svg.viewBox.baseVal.width : 0;
+  const sw = svg.getBoundingClientRect().width;
+  const scale = vbW && sw ? sw / vbW : 1;
+  const arc = svg.querySelector('path[data-idx="' + idx + '"]');
+  return {
+    field: state.statisticsField, idx,
+    color: (arc && arc.getAttribute('fill')) || 'var(--accent-text)',
+    side: g.getAttribute('data-side') === 'left' ? 'left' : 'right',
+    rect: { left: r.left, right: r.right, top: r.top, bottom: r.bottom },
+    fs: Math.round(Math.max(9, 12 * scale) * 10) / 10,
+    expanded: false, page: 0
+  };
+}
+function pieToggleSlice(el) {
+  const svg = el.closest('svg');
+  if (!svg) return;
+  const idx = Number(el.getAttribute('data-idx'));
+  const m = pieMeasure(svg, idx);
+  if (!m) return;
+  state.pieSel = m;
+  render();
+}
+// Tap di luar popup: tutup. Kalau yang di-tap label/slice lain, popup pindah ke sana.
+function pieCloseAt(e, backdrop) {
+  let next = null;
+  try {
+    backdrop.style.pointerEvents = 'none';
+    const under = document.elementFromPoint(e.clientX, e.clientY);
+    backdrop.style.pointerEvents = '';
+    const hit = under && under.closest ? under.closest('[data-action="pie-open-slice"]') : null;
+    if (hit) {
+      const idx = Number(hit.getAttribute('data-idx'));
+      const same = state.pieSel && state.pieSel.idx === idx;
+      if (!same) next = pieMeasure(hit.closest('svg'), idx);
+    }
+  } catch (err) { backdrop.style.pointerEvents = ''; }
+  state.pieSel = next;
+  render();
+}
+
+function renderPiePopup() {
+  const sel = state.pieSel;
+  if (!sel) return '';
+  if (sel.field !== state.statisticsField) { state.pieSel = null; return ''; }
+  const active = STATISTICS_FIELDS.find(f => f.key === state.statisticsField) || STATISTICS_FIELDS[0];
+  const sl = buildPieSlices(rankBooksBy(state.books, active.getKey))[sel.idx];
+  if (!sl) { state.pieSel = null; return ''; }
+  const name = sl[0];
+  const books = [...(sl[2] || [])].sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }));
+  const n = books.length;
+  const fs = sel.fs || 12;
+  const row = 1.8 * fs, head = 2.2 * fs, pad = 0.45 * fs, lp = 0.4 * fs + 2, pg = 0.3 * fs;   // lp = padding + border kotak abu, pg = jarak kotak ke pager
+   // head = tinggi 1.9em + margin bawah 0.3em
+  const vw = window.innerWidth || 400, vh = window.innerHeight || 700;
+  const w = Math.min(18 * fs, vw - 16);
+  const PREVIEW = 5;
+  const perPage = Math.max(3, Math.min(6, Math.floor((vh - 24 - 2 * pad - head - lp - row - pg) / row)));
+  const countTxt = `${n} book${n === 1 ? '' : 's'}`;
+  const rowsHtml = list => list.map(b => `<button type="button" class="pie-pop-row" data-action="pie-open-book" data-id="${esc(b.id)}"><span class="pie-pop-row-t">${esc(b.title)}</span></button>`).join('');
+  // Animasi pop-in hanya saat popup baru dibuka; ganti page / expand / balik dari Book Details tidak mengulang animasi
+  const animate = !sel.shown;
+  sel.shown = true;
+  let headHtml, listHtml, footHtml = '', h;
+
+  if (sel.expanded && n > PREVIEW) {
+    const pages = Math.ceil(n / perPage);
+    const page = Math.max(0, Math.min(sel.page || 0, pages - 1));
+    sel.page = page;
+    headHtml = `<button type="button" class="pie-pop-head pie-pop-back" data-action="pie-collapse"><span class="pie-pop-name">‹ ${esc(name)}</span><span class="pie-pop-count">${countTxt}</span></button>`;
+    listHtml = rowsHtml(books.slice(page * perPage, page * perPage + perPage));
+    if (pages > 1) {
+      footHtml = `<div class="pie-pop-pager">
+        <button type="button" class="pie-pop-pg" data-action="pie-page" data-dir="-1" aria-label="Previous page" ${page === 0 ? 'disabled' : ''}>‹</button>
+        <span>${page + 1} / ${pages}</span>
+        <button type="button" class="pie-pop-pg" data-action="pie-page" data-dir="1" aria-label="Next page" ${page >= pages - 1 ? 'disabled' : ''}>›</button>
+      </div>`;
+    }
+    h = 2 * pad + head + lp + Math.min(perPage, n) * row + (pages > 1 ? row + pg : 0);
+  } else {
+    const shown = books.slice(0, PREVIEW), more = n - shown.length;
+    headHtml = `<div class="pie-pop-head"><span class="pie-pop-name">${esc(name)}</span><span class="pie-pop-count">${countTxt}</span></div>`;
+    listHtml = rowsHtml(shown) + (more > 0 ? `<button type="button" class="pie-pop-more" data-action="pie-expand">+${more} more book${more === 1 ? '' : 's'}</button>` : '');
+    h = 2 * pad + head + lp + shown.length * row + (more > 0 ? row : 0);
+  }
+
+  const gap = 4;
+  let left = sel.side === 'left' ? sel.rect.left : sel.rect.right - w;
+  left = Math.max(8, Math.min(left, vw - 8 - w));
+  let top = sel.rect.bottom + gap, oy = 'top';
+  if (top + h > vh - 8) {
+    const up = sel.rect.top - gap - h;
+    if (up >= 8) { top = up; oy = 'bottom'; } else { top = Math.max(8, vh - 8 - h); }
+  }
+  const ox = sel.side === 'left' ? 'left' : 'right';
+  return `
+    <div class="pie-pop-backdrop${state.expandedId ? ' pie-under' : ''}" data-action="pie-close">
+      <div class="pie-pop${animate ? ' pie-pop-anim' : ''}" data-action="stop" style="font-size:${fs}px;left:${left.toFixed(1)}px;top:${top.toFixed(1)}px;width:${w.toFixed(1)}px;height:${h.toFixed(1)}px;transform-origin:${ox} ${oy}">
+        ${headHtml}
+        <div class="pie-pop-list">${listHtml}</div>
+        ${footHtml}
+      </div>
+    </div>`;
 }
 
 function getCalendarDoneBooksByDate() {
@@ -2461,6 +2625,7 @@ function renderCalendarPopup() {
 
 function renderDashboardTab() {
   const cat = state.dashboardCategory;
+  if (cat !== 'statistics') state.pieSel = null;
   const tabs = [
     { key: 'year', label: 'Achievement', icon: ICONS.trophy },
     { key: 'calendar', label: 'Calendar', icon: ICONS.calendar },
@@ -2476,6 +2641,7 @@ function renderDashboardTab() {
       <div class="dash-content${anim}">${content}</div>
     </div>
     ${cat === 'calendar' ? renderCalendarPopup() : ''}
+    ${cat === 'statistics' ? renderPiePopup() : ''}
     ${cat === 'calendar' && state.showCalMonthSheet ? renderCalMonthSheet() : ''}
     ${cat === 'calendar' && state.showCalYearSheet ? renderCalYearSheet() : ''}
     ${state.showYearSheet ? renderYearSheet() : ''}
@@ -5235,6 +5401,18 @@ function attachHandlers() {
       });
     } else if (action === 'calendar-close-day') {
       el.addEventListener('click', e => { e.stopPropagation(); state.calendarSelectedDate = null; render(); });
+    } else if (action === 'pie-open-slice') {
+      el.addEventListener('click', e => { e.stopPropagation(); pieToggleSlice(el); });
+    } else if (action === 'pie-open-book') {
+      el.addEventListener('click', e => { e.stopPropagation(); state.expandedId = id; state.confirmDeleteId = null; state.confirmCancelReadId = null; state.detailTimelineOpen = false; state.expandedTimelineId = null; render(); });
+    } else if (action === 'pie-close') {
+      el.addEventListener('click', e => { e.stopPropagation(); pieCloseAt(e, el); });
+    } else if (action === 'pie-expand') {
+      el.addEventListener('click', e => { e.stopPropagation(); if (state.pieSel) { state.pieSel.expanded = true; state.pieSel.page = 0; } render(); });
+    } else if (action === 'pie-collapse') {
+      el.addEventListener('click', e => { e.stopPropagation(); if (state.pieSel) { state.pieSel.expanded = false; state.pieSel.page = 0; } render(); });
+    } else if (action === 'pie-page') {
+      el.addEventListener('click', e => { e.stopPropagation(); if (state.pieSel) state.pieSel.page = (state.pieSel.page || 0) + Number(el.getAttribute('data-dir')); render(); });
     } else if (action === 'pick-year') {
       el.addEventListener('click', e => {
         e.stopPropagation();
@@ -5447,6 +5625,14 @@ document.addEventListener('click', () => {
     state.openDropdown = null;
     render();
   }
+});
+
+// Popup slice pie ditutup kalau lebar layar berubah (rotate/resize) karena posisinya sudah tidak valid
+let _pieLastW = window.innerWidth;
+window.addEventListener('resize', () => {
+  if (window.innerWidth === _pieLastW) return;
+  _pieLastW = window.innerWidth;
+  if (state.pieSel) { state.pieSel = null; render(); }
 });
 
 render();
