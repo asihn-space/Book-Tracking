@@ -426,7 +426,8 @@
   .timeline-popup.timeline-sheet .reading-timeline-card.detail-timeline-card { border-top: none; margin: 0; padding: 6px 0 0; }
   .timeline-popup.timeline-sheet .timeline-title { display: none; }
   /* Rapatkan jarak dari tepi atas popup Reading History ke konten pertama */
-  .timeline-popup.list-timeline-sheet, .timeline-popup.timeline-sheet { padding-top: 14px; }
+  /* Gap seragam 14px di semua sisi; radius popup = radius kotak abu (10) + gap (14) supaya sudutnya konsentris */
+  .timeline-popup.list-timeline-sheet, .timeline-popup.timeline-sheet { padding: 14px; border-radius: 24px; }
   .timeline-popup.list-timeline-sheet .reading-timeline-card { margin-top: 0; }
   .timeline-popup.timeline-sheet .reading-timeline-card.detail-timeline-card { padding-top: 0; }
   .timeline-popup.timeline-sheet .hist-tab { padding-top: 2px; }
