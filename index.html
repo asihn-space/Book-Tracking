@@ -852,6 +852,8 @@ function ordinalShort(n) {
   return n + (['th', 'st', 'nd', 'rd'][(v - 20) % 10] || ['th', 'st', 'nd', 'rd'][v] || 'th');
 }
 function ordinalWord(n) { return ORDINAL_WORDS[n - 1] || ordinalShort(n); }
+const CARDINAL_WORDS = ['Zero','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten'];
+function cardinalWord(n) { return CARDINAL_WORDS[n] || String(n); }
 function getPastReads(b) { return Array.isArray(b.pastReads) ? b.pastReads : []; }
 function getCycleCount(b) { return getPastReads(b).length + 1; }
 function isRereading(b) { return getPastReads(b).length > 0 && getBookStatus(b) === 'ongoing'; }
@@ -1448,7 +1450,7 @@ function renderHistorySummary(book, cycles) {
   }).join('');
   return `
     <div class="hist-sum-head">
-      <span><strong>${fin.length}</strong> Finished Read${fin.length === 1 ? '' : 's'}</span>
+      <span><strong>${cardinalWord(fin.length)}</strong> Finished Read${fin.length === 1 ? '' : 's'}</span>
       ${fin.length ? `<span class="detail-rating avg">${ICONS.star}${getBookRating(book).toFixed(1)}</span>` : ''}
     </div>
     ${rows}`;
