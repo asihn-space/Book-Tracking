@@ -878,6 +878,8 @@ function getCycles(b) {
   }];
 }
 function getFinishedCycles(b) { return getCycles(b).filter(c => c.status === 'done'); }
+// Rating hanya ditampilkan kalau sudah ada minimal satu read yang selesai (TBR / Reading / DNF belum dinilai)
+function hasRating(b) { return getFinishedCycles(b).length > 0; }
 // Book rating = average of finished cycles; falls back to the flat rating when nothing is finished yet.
 function getBookRating(b) {
   const fin = getFinishedCycles(b);
@@ -1198,7 +1200,11 @@ function getFiltered() {
     return [b.title, b.author, b.publisher, b.country, b.translator, b.language].some(v => (v || '').toLowerCase().includes(q));
   });
   list = [...list].sort((a, b) => {
-    if (state.sortBy === 'rating') return getBookRating(b) - getBookRating(a);
+    if (state.sortBy === 'rating') {
+      const ra = hasRating(a), rb = hasRating(b);
+      if (ra !== rb) return ra ? -1 : 1;
+      return (ra ? getBookRating(b) - getBookRating(a) : 0);
+    }
     if (state.sortBy === 'title') return (a.title || '').localeCompare(b.title || '');
     if (state.sortBy === 'finished') {
       const order = { done: 0, ongoing: 1, tbr: 2, dnf: 3 };
@@ -1563,7 +1569,7 @@ function renderListItem(book) {
             <span class="status-mini" style="${getStatusPillStyle(getListStatus(book))}">${statusMeta.label}</span>
           </div>
         </div>
-        <span class="rate-plain">${ICONS.star}${getBookRating(book).toFixed(1)}</span>
+        ${hasRating(book) ? `<span class="rate-plain">${ICONS.star}${getBookRating(book).toFixed(1)}</span>` : ''}
       </div>
     </div>`;
 }
@@ -1576,7 +1582,7 @@ function renderGridItem(book) {
         <div class="cover cover-grid">
           ${renderCoverPlaceholder(book.title)}${book.coverUrl ? `<img class="cover-img-layer" src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}
           ${book.language ? `<span class="lang-badge-grid">${esc(getLangBadge(book.language))}</span>` : ''}
-          <span class="rate-badge-grid">${ICONS.star}${getBookRating(book).toFixed(1)}</span>
+          ${hasRating(book) ? `<span class="rate-badge-grid">${ICONS.star}${getBookRating(book).toFixed(1)}</span>` : ''}
         </div>
         <p class="item-title-grid">${esc(book.title)}</p>
         <p class="item-author-grid">${esc(book.author)}</p>
@@ -1611,7 +1617,7 @@ function renderDetailModal(book) {
               <p class="detail-book-author">${esc(book.author)}</p>
               ${book.translator ? `<p class="detail-book-translator">Translated by ${esc(book.translator)}</p>` : ''}
               ${book.publisher ? `<p class="detail-book-publisher">${esc(book.publisher)}</p>` : ''}
-              <span class="detail-rating">${ICONS.star}${getBookRating(book).toFixed(1)}</span>
+              ${hasRating(book) ? `<span class="detail-rating">${ICONS.star}${getBookRating(book).toFixed(1)}</span>` : ''}
             </div>
             <div class="detail-meta-row">
               <span class="status-mini status-mini-detail" style="${getStatusPillStyle(getListStatus(book))}">${statusMeta.label}</span>
