@@ -159,18 +159,19 @@
   /* Pie slice popup (Statistics) */
   .pie-pop-backdrop { position: fixed; inset: 0; z-index: 40; background: transparent; touch-action: none; }
   .pie-pop-backdrop.pie-under { z-index: 30; pointer-events: none; }
-  .pie-pop { position: fixed; z-index: 41; box-sizing: border-box; display: flex; flex-direction: column; padding: 0.45em; background: var(--surface); border-radius: 0.9em; box-shadow: 0 10px 26px rgba(0,0,0,0.2); font-family: var(--font-body); color: var(--text); }
+  .pie-pop { position: fixed; z-index: 41; box-sizing: border-box; display: flex; flex-direction: column; padding: 0.45em 0.7em 0.7em; background: var(--surface); border-radius: 0.9em; box-shadow: 0 10px 26px rgba(0,0,0,0.2); font-family: var(--font-body); color: var(--text); }
   .pie-pop.pie-pop-anim { animation: picker-sheet-pop 0.15s ease-out; }
-  .pie-pop-head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.6em; flex: 0 0 auto; box-sizing: border-box; height: 1.9em; padding: 0.3em 0.45em 0; margin: 0 0 0.3em; background: none; border: none; font: inherit; text-align: left; }
-  .pie-pop-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.95em; line-height: 1.3; font-weight: 600; color: var(--accent-text); }
-  .pie-pop-count { flex: 0 0 auto; font-size: 0.95em; line-height: 1.3; font-weight: 600; color: var(--accent-text); }
+  .pie-pop-head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.6em; flex: 0 0 auto; box-sizing: border-box; height: 1.85em; padding: 0.25em 0.2em 0; margin: 0 0 0.1em; background: none; border: none; font: inherit; text-align: left; }
+  .pie-pop-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 1.21em; line-height: 1.3; font-weight: 600; color: var(--accent-text); }
+  .pie-pop-count { flex: 0 0 auto; font-size: 1.21em; line-height: 1.3; font-weight: 600; color: var(--accent-text); }
   .pie-pop-back { width: 100%; cursor: pointer; }
   .pie-pop-list { flex: 1 1 auto; min-height: 0; overflow: hidden; box-sizing: border-box; padding: 0.2em 0.1em; background: #F5F5F6; border: 1px solid var(--border); border-radius: 0.8em; }
   .pie-pop-row { display: block; position: relative; width: 100%; box-sizing: border-box; height: 1.8em; margin: 0; padding: 0 0.45em 0 1.3em; background: none; border: none; border-radius: 0.45em; font: inherit; font-weight: 400; line-height: 1.8em; text-align: left; color: var(--text); cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .pie-pop-row::before { content: ''; position: absolute; left: 0.6em; top: 50%; width: 0.3em; height: 0.3em; margin-top: -0.15em; border-radius: 50%; background: var(--accent-text); }
   .pie-pop-row:active { background: rgba(128,150,147,0.16); background: color-mix(in srgb, var(--accent-text) 16%, transparent); }
-  .pie-pop-row-t { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 0.95em; color: var(--text); color: color-mix(in srgb, var(--text) 84%, var(--text-soft)); }
+  .pie-pop-row-t { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 1.21em; color: var(--text); color: color-mix(in srgb, var(--text) 84%, var(--text-soft)); }
   .pie-pop-more { display: block; width: 100%; height: 1.8em; padding: 0 0.45em 0 1.3em; margin: 0; background: none; border: none; font: inherit; font-weight: 400; line-height: 1.8em; text-align: left; color: var(--accent-text); cursor: pointer; }
+  .pie-pop-more-t { font-size: 1.21em; }
   .pie-pop-pager { flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; height: 2em; margin-top: 0.333em; font-size: 0.9em; font-weight: 600; color: var(--text-soft); }
   .pie-pop-pg { width: 2.6em; height: 100%; padding: 0; background: none; border: none; font: inherit; font-size: 1.15em; line-height: 1; color: var(--accent-text); cursor: pointer; }
   .pie-pop-pg:disabled { color: var(--text-faint); opacity: 0.45; cursor: default; }
@@ -414,6 +415,7 @@
   .hist-panels { display: grid; grid-template-columns: minmax(0, 1fr); }
   .hist-panel { grid-area: 1 / 1; min-width: 0; visibility: hidden; }
   .hist-panel.active { visibility: visible; }
+  .detail-sheet.no-anim, .timeline-popup.no-anim { animation: none; }
   @keyframes timeline-popup-in { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
   .timeline-popup.list-timeline-sheet .reading-timeline-card { margin: 4px 0 0; padding: 0; }
   .timeline-popup.timeline-sheet { max-width: 380px; }
@@ -1186,6 +1188,8 @@ function openAddForm() { state.langOtherMode = false; state.form = { ...emptyFor
 
 function render() {
   const app = document.getElementById('app');
+  if (!state.expandedId) _detailAnimId = null;
+  if (!state.readAgainId) _readAgainAnimKey = null;
   if (state.activeTab !== 'dashboard') state.pieSel = null;
   const prevModalBody = app.querySelector('.modal-body');
   const savedScrollTop = prevModalBody ? prevModalBody.scrollTop : null;
@@ -1548,8 +1552,12 @@ function renderGridItem(book) {
     </div>`;
 }
 
+// Animasi slide-up Book Details hanya saat pertama dibuka; render ulang (mis. popup Read Again muncul) tidak mengulangnya
+let _detailAnimId = null;
 function renderDetailModal(book) {
   if (!book) return '';
+  const detailAnimate = _detailAnimId !== book.id;
+  _detailAnimId = book.id;
   const statusMeta = { label: getStatusLabel(book) };
   const confirming = state.confirmDeleteId === book.id;
   const totalPages = Number(book.totalPages) || 0;
@@ -1560,7 +1568,7 @@ function renderDetailModal(book) {
   const shownEnd = hasPast ? firstCycle.endDate : book.endDate;
   return `
     <div class="detail-sheet-backdrop" data-action="close-detail">
-      <div class="detail-sheet" data-action="stop">
+      <div class="detail-sheet${detailAnimate ? '' : ' no-anim'}" data-action="stop">
         <div class="detail-sheet-handle"></div>
         <div class="detail-head">
           <div class="cover cover-detail">${renderCoverPlaceholder(book.title)}${book.coverUrl ? `<img class="cover-img-layer" src="${esc(book.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}</div>
@@ -1633,15 +1641,20 @@ function renderReadCycleButtons(book) {
   return html;
 }
 
+// Pop-in popup Read Again hanya saat popup (atau layar Congratulations) baru muncul; ganti format tidak mengulangnya
+let _readAgainAnimKey = null;
 function renderReadAgainPopup() {
   const book = state.books.find(b => b.id === state.readAgainId);
   if (!book) return '';
+  const raKey = state.readAgainId + '|' + (state.readAgainResult ? 'result' : 'ask');
+  const raCls = raKey === _readAgainAnimKey ? ' no-anim' : '';
+  _readAgainAnimKey = raKey;
   const res = state.readAgainResult;
   if (res) {
     const isRetry = res.kind === 'retry';
     return `
       <div class="timeline-popup-backdrop" data-action="read-again-close">
-        <div class="detail-sheet timeline-popup read-again-popup" data-action="stop">
+        <div class="detail-sheet timeline-popup read-again-popup${raCls}" data-action="stop">
           <div class="read-again-icon">${ICONS.repeat}</div>
           <p class="read-again-title">${isRetry ? "Welcome back, let's give it another go" : 'Congratulations!'}</p>
           <p class="read-again-book">${esc(res.title)}</p>
@@ -1653,7 +1666,7 @@ function renderReadAgainPopup() {
   const isRetry = getBookStatus(book) === 'dnf';
   return `
     <div class="timeline-popup-backdrop" data-action="read-again-close">
-      <div class="detail-sheet timeline-popup read-again-popup" data-action="stop">
+      <div class="detail-sheet timeline-popup read-again-popup${raCls}" data-action="stop">
         <div class="read-again-icon">${ICONS.repeat}</div>
         <p class="read-again-title">${isRetry ? 'Pick this book up again?' : 'Read this book again?'}</p>
         <p class="read-again-book">${esc(book.title)}</p>
@@ -2450,7 +2463,7 @@ function renderPiePopup() {
   const books = [...(sl[2] || [])].sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }));
   const n = books.length;
   const fs = sel.fs || 12;
-  const row = 1.8 * fs, head = 2.2 * fs, pad = 0.45 * fs, lp = 0.4 * fs + 2, pg = 0.3 * fs;   // lp = padding + border kotak abu, pg = jarak kotak ke pager
+  const row = 1.8 * fs, head = 1.95 * fs, pad = 0.575 * fs, lp = 0.4 * fs + 2, pg = 0.3 * fs;   // pad = setengah dari (padding atas 0.45em + bawah 0.7em); head = tinggi 1.85em + margin 0.1em; lp = padding + border kotak abu, pg = jarak kotak ke pager
    // head = tinggi 1.9em + margin bawah 0.3em
   const vw = window.innerWidth || 400, vh = window.innerHeight || 700;
   const w = Math.min(18 * fs, vw - 16);
@@ -2480,7 +2493,7 @@ function renderPiePopup() {
   } else {
     const shown = books.slice(0, PREVIEW), more = n - shown.length;
     headHtml = `<div class="pie-pop-head"><span class="pie-pop-name">${esc(name)}</span><span class="pie-pop-count">${countTxt}</span></div>`;
-    listHtml = rowsHtml(shown) + (more > 0 ? `<button type="button" class="pie-pop-more" data-action="pie-expand">+${more} more book${more === 1 ? '' : 's'}</button>` : '');
+    listHtml = rowsHtml(shown) + (more > 0 ? `<button type="button" class="pie-pop-more" data-action="pie-expand"><span class="pie-pop-more-t">+${more} more book${more === 1 ? '' : 's'}</span></button>` : '');
     h = 2 * pad + head + lp + shown.length * row + (more > 0 ? row : 0);
   }
 
