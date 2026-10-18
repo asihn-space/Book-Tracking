@@ -511,15 +511,17 @@
   .hist-meta .label { display: block; font-size: 10.5px; color: var(--text-faint); margin-bottom: 2px; }
   /* Popup Reading History (Home): header seragam dengan popup pie, isi di kotak abu, tab dengan pudar tepi */
   .rt-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 12px; }
-  .rt-head .timeline-title { margin: 0; padding-right: 0; font-size: 12px; font-weight: 600; line-height: 1.3; color: var(--accent-text); }
+  .rt-head .timeline-title { margin: 0; padding-right: 0; font-size: 15px; font-weight: 600; line-height: 1.3; color: var(--accent-text); }
   .rt-head .book-details-badge { position: static; flex: 0 0 auto; font-size: 12px; font-weight: 600; }
   .rt-head .book-details-badge svg { width: 12px; height: 12px; }
   .rt-gray { box-sizing: border-box; padding: 12px 14px; background: #F5F5F6; border: 1px solid var(--border); border-radius: 10px; }
   .rt-gray .timeline-list { margin-bottom: 0; }
   .rt-gray .timeline-empty { margin: 0; }
   .rt-gray .hist-sum-row:last-child { padding-bottom: 0; }
-  .list-timeline-sheet .hist-tab { text-transform: uppercase; }
-  .list-timeline-sheet .hist-sum-head { font-size: 13px; }
+  .timeline-popup .hist-tab { text-transform: uppercase; }
+  .timeline-popup .hist-sum-head { font-size: 13px; }
+  .timeline-popup .hist-sum-head > span:first-child { font-weight: 700; }
+  .timeline-popup .hist-tab.active::after { height: 2px; }
   .hist-tabs-wrap { position: relative; margin: 0 0 10px; }
   .hist-tabs-wrap .hist-tabs { margin: 0; }
   .hist-tabs-wrap::before, .hist-tabs-wrap::after { content: ''; position: absolute; top: 0; bottom: 0; width: 24px; z-index: 2; pointer-events: none; opacity: 0; transition: opacity 0.15s; }
@@ -1448,26 +1450,26 @@ function renderReadingTimeline(book, opts = {}) {
   let tab = state.historyTab;
   const okTab = (tab === 'summary' && multi) || (typeof tab === 'number' && tab >= 1 && tab <= cycles.length);
   if (!okTab) tab = defaultHistoryTab(book, 'detail');
-  const listMode = !hideBadge;   // popup Reading History di Home (bukan versi di Book Details)
-  const readLabel = n => (listMode ? ordinalWord(n) : ordinalShort(n)) + ' Read';
+  const showHead = !hideBadge;   // header + pill Book Details hanya di popup Home; tab dan kotak abu berlaku di kedua popup
+  const readLabel = n => ordinalWord(n) + ' Read';
   const tabsInner = multi ? `
       <div class="hist-tabs" role="tablist">
         <button type="button" class="hist-tab${tab === 'summary' ? ' active' : ''}" data-action="history-tab" data-tab="summary" data-label="Summary">Summary</button>
         ${cycles.map(c => `<button type="button" class="hist-tab${tab === c.n ? ' active' : ''}" data-action="history-tab" data-tab="${c.n}" data-label="${readLabel(c.n)}">${readLabel(c.n)}</button>`).join('')}
       </div>` : '';
-  const tabsHtml = (multi && listMode) ? `<div class="hist-tabs-wrap">${tabsInner}</div>` : tabsInner;
+  const tabsHtml = multi ? `<div class="hist-tabs-wrap">${tabsInner}</div>` : '';
   let body;
-  if (!cycles.length) body = listMode ? `<div class="rt-gray"><p class="timeline-empty">No progress recorded yet.</p></div>` : `<p class="timeline-empty">No progress recorded yet.</p>`;
+  if (!cycles.length) body = `<div class="rt-gray"><p class="timeline-empty">No progress recorded yet.</p></div>`;
   else {
     // All panels share one grid cell so the popup is always as tall as the tallest tab.
     const panels = [];
     if (multi) panels.push(['summary', renderHistorySummary(book, cycles)]);
     cycles.forEach(c => panels.push([c.n, renderCycleHistory(c)]));
-    body = `<div class="hist-panels${listMode ? ' rt-gray' : ''}">${panels.map(([k, html]) => `<div class="hist-panel${k === tab ? ' active' : ''}" data-tab="${k}">${html}</div>`).join('')}</div>`;
+    body = `<div class="hist-panels rt-gray">${panels.map(([k, html]) => `<div class="hist-panel${k === tab ? ' active' : ''}" data-tab="${k}">${html}</div>`).join('')}</div>`;
   }
   return `
     <div class="reading-timeline-card${variant ? ' ' + variant : ''}" data-action="stop">
-      ${listMode
+      ${showHead
         ? `<div class="rt-head"><p class="timeline-title">READING HISTORY</p><button type="button" class="book-details-badge" data-action="open-book-details" data-id="${book.id}">${ICONS.book} Book Details</button></div>`
         : `<p class="timeline-title">READING HISTORY</p>`}
       ${tabsHtml}
