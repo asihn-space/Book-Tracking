@@ -2727,7 +2727,7 @@ function buildQuotesList() {
   const list = [];
   state.books.forEach(b => {
     (b.quotes || []).forEach(q => {
-      if (q && q.trim()) list.push({ text: q.trim(), bookTitle: b.title, author: b.author });
+      if (q && q.trim()) list.push({ text: q.trim(), bookTitle: b.title, author: b.author, coverUrl: b.coverUrl || '' });
     });
   });
   return list;
@@ -2942,6 +2942,17 @@ function getWrappedLines(ctx, text, maxWidth) {
   }
   lines.push(line.trim());
   return lines;
+}
+
+// Same as getWrappedLines, but keeps the line breaks (Enter) typed in a quote.
+// Used only by the quote share canvases.
+function getWrappedLinesNL(ctx, text, maxWidth) {
+  const out = [];
+  String(text).replace(/\r\n?/g, '\n').split('\n').forEach(par => {
+    if (!par.trim()) { out.push(''); return; }
+    getWrappedLines(ctx, par, maxWidth).forEach(l => out.push(l));
+  });
+  return out;
 }
 
 function generateAchievementCanvas(book, days, callback) {
@@ -4631,8 +4642,30 @@ function renderWrapupModal() {
     </div>`;
 }
 
+// Book cover for the single-quote share image: soft shadow, rounded corners, cover-fit crop.
+function drawQuoteShareCover(ctx, img, x, y, w, h) {
+  const r = 14;
+  ctx.save();
+  ctx.shadowColor = 'rgba(0,0,0,0.28)';
+  ctx.shadowBlur = 32;
+  ctx.shadowOffsetY = 14;
+  ctx.fillStyle = '#FFFFFF';
+  ctx.beginPath(); ctx.roundRect(x, y, w, h, r); ctx.fill();
+  ctx.restore();
+  ctx.save();
+  ctx.beginPath(); ctx.roundRect(x, y, w, h, r); ctx.clip();
+  const ir = img.width / img.height, cr = w / h;
+  let dw, dh, dx, dy;
+  if (ir > cr) { dh = h; dw = h * ir; dx = x - (dw - w) / 2; dy = y; }
+  else { dw = w; dh = w / ir; dx = x; dy = y - (dh - h) / 2; }
+  ctx.drawImage(img, dx, dy, dw, dh);
+  ctx.restore();
+}
+
 function generateQuoteCollageCanvas(quotes, callback) {
-  document.fonts.ready.then(() => {
+  document.fonts.ready.then(async () => {
+    // Only when a single quote is shared: the book cover goes above it (skipped if the book has no cover).
+    const coverImg = quotes.length === 1 ? await wrapupLoadImage(quotes[0].coverUrl) : null;
     const canvas = document.createElement('canvas');
     canvas.width = 1080;
     canvas.height = 1920;
@@ -4694,7 +4727,7 @@ function generateQuoteCollageCanvas(quotes, callback) {
       ctx.font = `${s('quoteFont')}px "Noto Serif", serif`;
       let total = 0;
       const blocks = quotes.map((q, i) => {
-        const lines = getWrappedLines(ctx, `"${q.text}"`, textWidth);
+        const lines = getWrappedLinesNL(ctx, `"${q.text}"`, textWidth);
         const quoteH = lines.length * s('quoteLineHeight');
         const hasAuthor = !!(q.author && q.author.trim());
         const blockH = quoteH + s('afterQuoteGap') + s('bookFont') + (hasAuthor ? s('authorFont') + 10 : 0) + s('afterAuthorGap');
@@ -4710,16 +4743,24 @@ function generateQuoteCollageCanvas(quotes, callback) {
       // Small tracked kicker above the script title
       ctx.font = '600 19px Outfit, sans-serif';
       ctx.fillStyle = getAccentTextColor(accent);
-      drawTracked('A COLLECTION OF LINES I LOVE', cx, 150, 5);
+      drawTracked(quotes.length > 1 ? 'OF MY OWN' : 'A COLLECTION OF LINES I LOVE', cx, 150, 5);
 
       ctx.font = '84px "Alex Brush", cursive';
       ctx.fillStyle = getAccentTextColor(accent);
-      ctx.fillText('My Favorite Quotes', cx, 236);
+      ctx.fillText(quotes.length > 1 ? 'Florilegium' : 'My Favorite Quotes', cx, 236);
 
       drawOrnament(276, { armLength: 70, gap: 12, size: 4 });
 
+      // Cover size: the biggest one that still leaves the quote text at full size.
+      let coverH = 0, coverW = 0, coverReserve = 0;
+      if (coverImg) {
+        const textAt1 = measureAt(1).total;
+        coverH = [450, 400, 350, 300].find(h => textAt1 <= (areaBottom - areaTop) - h - 56) || 300;
+        coverW = Math.round(coverH * 2 / 3);
+        coverReserve = coverH + 56;
+      }
       let { total } = measureAt(1);
-      const available = areaBottom - areaTop;
+      const available = areaBottom - areaTop - coverReserve;
       const scale = total > available ? Math.max(available / total, 0.55) : 1;
       const { blocks, s } = measureAt(scale);
       const recalculated = measureAt(scale).total;
@@ -4727,6 +4768,10 @@ function generateQuoteCollageCanvas(quotes, callback) {
       const extraGap = leftover / (blocks.length + 1);
 
       let y = areaTop + extraGap;
+      if (coverImg) {
+        drawQuoteShareCover(ctx, coverImg, cx - coverW / 2, y, coverW, coverH);
+        y += coverReserve;
+      }
       blocks.forEach((block, i) => {
         ctx.font = `${s('quoteFont')}px "Noto Serif", serif`;
         ctx.fillStyle = '#2c2c2a';
@@ -4775,6 +4820,8 @@ let quoteShareCanvases = [null, null];
 // "Cards" layout: quote cards styled like the Quotes tab, placed on the paper canvas.
 function generateQuoteCardsCanvas(quotes, callback) {
   document.fonts.ready.then(async () => {
+    // Only when a single quote is shared: the book cover goes above the card (skipped if the book has no cover).
+    const coverImg = quotes.length === 1 ? await wrapupLoadImage(quotes[0].coverUrl) : null;
     const canvas = document.createElement('canvas');
     canvas.width = 1080;
     canvas.height = 1920;
@@ -4829,9 +4876,9 @@ function generateQuoteCardsCanvas(quotes, callback) {
     ctx.textAlign = 'center';
     ctx.font = '600 19px Outfit, sans-serif';
     ctx.fillStyle = accentTxt;
-    drawTracked('A COLLECTION OF LINES I LOVE', cx, 150, 5);
+    drawTracked(quotes.length > 1 ? 'OF MY OWN' : 'A COLLECTION OF LINES I LOVE', cx, 150, 5);
     ctx.font = '84px "Alex Brush", cursive';
-    ctx.fillText('My Favorite Quotes', cx, 236);
+    ctx.fillText(quotes.length > 1 ? 'Florilegium' : 'My Favorite Quotes', cx, 236);
     drawOrnament(276, 70, 12, 4);
 
     // ----- card layout: masonry, 2 columns (1 wide card for a single quote) -----
@@ -4851,7 +4898,7 @@ function generateQuoteCardsCanvas(quotes, callback) {
       ctx.font = `${z.quote}px "Noto Serif", serif`;
       const innerW = cardW - z.pad * 2;
       const cards = quotes.map(q => {
-        const lines = getWrappedLines(ctx, q.text, innerW);
+        const lines = getWrappedLinesNL(ctx, q.text, innerW);
         const hasAuthor = !!(q.author && q.author.trim());
         const h = z.padTop + lines.length * z.lh + z.afterQuote + z.book +
           (hasAuthor ? z.afterBook + z.author : 0) + z.padBottom;
@@ -4866,16 +4913,24 @@ function generateQuoteCardsCanvas(quotes, callback) {
       return { cards, z, total: Math.max(...colH) - gap };
     }
 
-    const avail = areaBottom - areaTop;
+    let coverH = 0, coverW = 0, coverReserve = 0;
+    if (coverImg) {
+      const cardAt1 = layout(1).total;
+      coverH = [420, 360, 300].find(h => cardAt1 <= (areaBottom - areaTop) - h - 44) || 300;
+      coverW = Math.round(coverH * 2 / 3);
+      coverReserve = coverH + 44;
+    }
+    const avail = areaBottom - areaTop - coverReserve;
     let scale = 1, L = layout(scale);
     while (L.total > avail && scale > 0.5) { scale = Math.round((scale - 0.05) * 100) / 100; L = layout(scale); }
     const offY = Math.min(Math.max((avail - L.total) / 2, 0), 120);
     const quoteMark = new Path2D('M9.983 3v7.391c0 5.704-3.731 9.57-8.983 10.609l-.995-2.151c2.432-.917 3.995-3.638 3.995-5.849h-4v-10h9.983zm14.017 0v7.391c0 5.704-3.748 9.571-9 10.609l-.996-2.151c2.433-.917 3.996-3.638 3.996-5.849h-4v-10h10z');
     const { z } = L;
+    if (coverImg) drawQuoteShareCover(ctx, coverImg, cx - coverW / 2, areaTop + offY, coverW, coverH);
 
     L.cards.forEach(c => {
       const x = cols === 1 ? (canvas.width - cardW) / 2 : marginX + c.col * (cardW + gap);
-      const y = areaTop + offY + c.y;
+      const y = areaTop + offY + coverReserve + c.y;
 
       // card body
       ctx.save();
