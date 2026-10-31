@@ -234,12 +234,12 @@
   .quote-expand-sheet { text-align: center; padding-top: 34px; }
   .quote-expand-mark { color: rgba(var(--accent-rgb), 0.22); display: flex; justify-content: center; margin-bottom: 4px; }
   .quote-expand-mark svg { width: 34px; height: 34px; }
-  .quote-expand-text { font-family: 'Noto Serif', serif; font-size: 17px; font-weight: 400; line-height: 1.7; color: var(--text); margin: 8px 0 22px; text-align: left; white-space: pre-line; }
+  .quote-expand-text { font-family: 'Noto Serif', serif; font-size: 17px; font-weight: 400; line-height: 1.7; color: var(--text); margin: 8px 0 22px; text-align: center; white-space: pre-line; }
   .quote-expand-book { display: block; font-family: 'Alex Brush', cursive; font-size: 26px; font-weight: 400; color: var(--accent-text); line-height: 1.2; }
   .quote-expand-author { display: block; font-family: var(--font-body); font-size: 12px; font-weight: 500; color: var(--text-faint); letter-spacing: 0.01em; margin-top: 2px; }
   .quote-card-mark { position: absolute; top: 8px; left: 10px; color: rgba(var(--accent-rgb), 0.22); }
   .quote-card-mark svg { width: 26px; height: 26px; }
-  .quote-card-text { position: relative; font-family: 'Noto Serif', serif; font-size: 13px; font-weight: 400; line-height: 1.55; color: var(--text); margin: 6px 0 14px; white-space: pre-line; }
+  .quote-card-text { position: relative; font-family: 'Noto Serif', serif; font-size: 13px; font-weight: 400; line-height: 1.55; color: var(--text); margin: 6px 0 14px; white-space: pre-line; text-align: justify; }
   .quote-card-book { display: block; text-align: right; font-family: 'Alex Brush', cursive; font-size: 16px; font-weight: 400; color: var(--accent-text); line-height: 1; }
   .quote-card-author { display: block; text-align: right; font-family: var(--font-body); font-size: 10px; font-weight: 500; color: var(--text-faint); letter-spacing: 0.01em; margin-top: 0; }
 
@@ -432,6 +432,9 @@
   .detail-info-grid { display: grid; grid-template-columns: 1fr 1fr; row-gap: 12px; column-gap: 10px; font-size: 12.5px; color: var(--text-soft); margin-bottom: 14px; padding: 14px; border: 1px solid var(--border); border-radius: 10px; }
   .detail-info-grid .label { color: var(--text-faint); margin-right: 3px; }
   .detail-info-grid .col-start { grid-column: 1; }
+  .para { display: block; margin-top: 0.5em; }
+  .para:first-child { margin-top: 0; }
+  .para:empty { height: 0.5em; }
   .review-box { margin: 0 0 4px; padding: 14px; background: #F5F5F6; border: 1px solid var(--border); border-radius: 10px; }
   .review-heading { font-size: 12.5px; font-weight: 700; color: var(--text-soft); letter-spacing: 0.02em; margin: 0 0 6px; }
   .review-text { font-size: 13px; line-height: 1.6; color: var(--text); margin: 0; text-align: justify; white-space: pre-line; }
@@ -1014,6 +1017,14 @@ function updateReadingHistory(prevBook, newBook) {
 }
 function formatDate(d) { if (!d) return '-'; try { return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return d; } }
 function todayStr() { const dt = new Date(); const y = dt.getFullYear(); const m = String(dt.getMonth() + 1).padStart(2, '0'); const day = String(dt.getDate()).padStart(2, '0'); return `${y}-${m}-${day}`; }
+// Long text fields (quotes, What Stayed): every Enter starts a new paragraph with a small
+// automatic gap (about a third of a line) instead of a plain line break or a full blank line.
+function escParas(text, pre, post) {
+  const lines = String(text == null ? '' : text).replace(/\r\n?/g, '\n').split('\n');
+  return lines.map((l, i) =>
+    `<span class="para">${i === 0 && pre ? pre : ''}${esc(l)}${i === lines.length - 1 && post ? post : ''}</span>`
+  ).join('');
+}
 function esc(s) { if (s == null) return ''; return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
 function hashStr(s) {
@@ -1639,7 +1650,7 @@ function renderDetailModal(book) {
           <div><span class="label">${hasPast ? 'First Finished' : 'Finished'}</span> ${formatDate(shownEnd)}</div>
         </div>
         ${renderReviewBox(book)}
-        ${(book.quotes && book.quotes.filter(q => q && q.trim()).length) ? `<div class="review-box" style="margin-top:12px;"><p class="review-heading">Quotes</p>${book.quotes.filter(q => q && q.trim()).map(q => `<p class="review-text review-quote">"${esc(q.trim())}"</p>`).join('')}</div>` : ''}
+        ${(book.quotes && book.quotes.filter(q => q && q.trim()).length) ? `<div class="review-box" style="margin-top:12px;"><p class="review-heading">Quotes</p>${book.quotes.filter(q => q && q.trim()).map(q => `<p class="review-text review-quote">${escParas(q.trim(), '"', '"')}</p>`).join('')}</div>` : ''}
         <div class="action-row">
           <button class="btn-ghost" data-action="edit" data-id="${book.id}">${ICONS.edit} Edit</button>
           ${confirming ? `
@@ -1661,11 +1672,11 @@ function renderDetailModal(book) {
 function renderReviewBox(book) {
   const cycles = getCycles(book);
   if (cycles.length <= 1) {
-    return book.review ? `<div class="review-box"><p class="review-heading">What Stayed</p><p class="review-text">${esc(book.review)}</p></div>` : '';
+    return book.review ? `<div class="review-box"><p class="review-heading">What Stayed</p><p class="review-text">${escParas(book.review)}</p></div>` : '';
   }
   const withReview = cycles.filter(c => c.review && c.review.trim());
   if (!withReview.length) return '';
-  return `<div class="review-box"><p class="review-heading">What Stayed</p>${withReview.map(c => `<div class="review-cycle"><p class="review-sub">${ordinalWord(c.n)} Read</p><p class="review-text">${esc(c.review)}</p></div>`).join('')}</div>`;
+  return `<div class="review-box"><p class="review-heading">What Stayed</p>${withReview.map(c => `<div class="review-cycle"><p class="review-sub">${ordinalWord(c.n)} Read</p><p class="review-text">${escParas(c.review)}</p></div>`).join('')}</div>`;
 }
 
 function renderReadCycleButtons(book) {
@@ -2763,7 +2774,7 @@ function renderQuotes() {
       <div class="quote-card${selectMode ? ' select-mode' : ''}${isSelected ? ' quote-selected' : ''}" data-action="expand-quote" data-id="${i}">
         ${selectMode ? `<span class="quote-select-check${isSelected ? ' checked' : ''}">${isSelected ? ICONS.check : ''}</span>` : ''}
         <span class="quote-card-mark">${ICONS.quote}</span>
-        <p class="quote-card-text">${esc(q.text)}</p>
+        <p class="quote-card-text">${escParas(q.text)}</p>
         <span class="quote-card-book">${esc(q.bookTitle)}</span>
         ${q.author && q.author.trim() ? `<span class="quote-card-author">${esc(q.author.trim())}</span>` : ''}
       </div>`;
@@ -2788,7 +2799,7 @@ function renderQuoteExpandSheet(index) {
       <div class="detail-sheet quote-expand-sheet" data-action="stop">
         <div class="detail-sheet-handle"></div>
         <span class="quote-expand-mark">${ICONS.quote}</span>
-        <p class="quote-expand-text">${esc(q.text)}</p>
+        <p class="quote-expand-text">${escParas(q.text)}</p>
         <span class="quote-expand-book">${esc(q.bookTitle)}</span>
         ${q.author && q.author.trim() ? `<span class="quote-expand-author">${esc(q.author.trim())}</span>` : ''}
       </div>
@@ -2945,14 +2956,48 @@ function getWrappedLines(ctx, text, maxWidth) {
 }
 
 // Same as getWrappedLines, but keeps the line breaks (Enter) typed in a quote.
-// Used only by the quote share canvases.
+// Used only by the quote share canvases. The result also carries `gapUnits`: for every line,
+// how many small paragraph gaps come right before it (0 inside a paragraph).
 function getWrappedLinesNL(ctx, text, maxWidth) {
   const out = [];
+  out.gapUnits = [];
+  let pending = 0;
   String(text).replace(/\r\n?/g, '\n').split('\n').forEach(par => {
-    if (!par.trim()) { out.push(''); return; }
-    getWrappedLines(ctx, par, maxWidth).forEach(l => out.push(l));
+    if (!par.trim()) { if (out.length) pending++; return; }
+    getWrappedLines(ctx, par, maxWidth).forEach((l, i) => {
+      out.push(l);
+      out.gapUnits.push(i === 0 && out.length > 1 ? pending + 1 : 0);
+    });
+    pending = 0;
   });
   return out;
+}
+// Extra vertical offset (px) in front of line `li` / over the whole quote, for a gap of g px per unit.
+function quoteExtraBefore(lines, li, g) {
+  let n = 0;
+  for (let i = 0; i <= li; i++) n += (lines.gapUnits && lines.gapUnits[i]) || 0;
+  return n * g;
+}
+function quoteExtraTotal(lines, g) { return quoteExtraBefore(lines, lines.length - 1, g); }
+// Last line of a paragraph (or of the quote): never stretched when justifying.
+function isParaEnd(lines, li) {
+  return li === lines.length - 1 || !!(lines.gapUnits && lines.gapUnits[li + 1] > 0);
+}
+// Draws one line justified to `width` starting at x (extra space spread between words).
+// Like CSS text-align: justify, a line with a single word is drawn as is.
+function drawJustified(ctx, line, x, y, width) {
+  const words = line.split(' ').filter(Boolean);
+  const prevAlign = ctx.textAlign;
+  ctx.textAlign = 'left';
+  const wordsW = words.reduce((a, w) => a + ctx.measureText(w).width, 0);
+  const space = words.length > 1 ? (width - wordsW) / (words.length - 1) : 0;
+  if (words.length < 2 || space <= 0) {
+    ctx.fillText(line, x, y);
+  } else {
+    let cursor = x;
+    words.forEach(w => { ctx.fillText(w, cursor, y); cursor += ctx.measureText(w).width + space; });
+  }
+  ctx.textAlign = prevAlign;
 }
 
 function generateAchievementCanvas(book, days, callback) {
@@ -4642,6 +4687,27 @@ function renderWrapupModal() {
     </div>`;
 }
 
+// Quote-mark icon (same one the Cards layout uses), as an SVG path on a 24x24 grid.
+const QUOTE_MARK_PATH_D = 'M9.983 3v7.391c0 5.704-3.731 9.57-8.983 10.609l-.995-2.151c2.432-.917 3.995-3.638 3.995-5.849h-4v-10h9.983zm14.017 0v7.391c0 5.704-3.748 9.571-9 10.609l-.996-2.151c2.433-.917 3.996-3.638 3.996-5.849h-4v-10h10z';
+
+// Single-quote share: font sizes for the book title (script) and the author.
+// The quote itself never goes above min(28, author size), so title and author always read bigger.
+function fitSingleQuoteHead(ctx, q, maxW, upper) {
+  let fb = 64, fa = 30;
+  ctx.font = `${fb}px "Alex Brush", cursive`;
+  const wb = ctx.measureText(q.bookTitle || '').width;
+  if (wb > maxW) fb = Math.max(40, Math.floor(fb * maxW / wb));
+  const author = (q.author || '').trim();
+  if (author) {
+    const text = upper ? author.toUpperCase() : author;
+    const sp = upper ? 2 : 0;
+    ctx.font = `600 ${fa}px Outfit, sans-serif`;
+    const wa = text.split('').reduce((a, c) => a + ctx.measureText(c).width, 0) + sp * (text.length - 1);
+    if (wa > maxW) fa = Math.max(18, Math.floor(fa * maxW / wa));
+  }
+  return { fb, fa, qf: Math.min(28, fa) };
+}
+
 // Book cover for the single-quote share image: soft shadow, rounded corners, cover-fit crop.
 function drawQuoteShareCover(ctx, img, x, y, w, h) {
   const r = 14;
@@ -4680,7 +4746,7 @@ function generateQuoteCollageCanvas(quotes, callback) {
     // (it's the "heading" of each block), the quote is the body copy, and the
     // author is a small tracked caption. This mirrors the hierarchy already
     // used on the in-app quote cards instead of fighting it.
-    const base = { quoteFont: 29, quoteLineHeight: 43, bookFont: 40, authorFont: 19, afterQuoteGap: 22, afterBookGap: 12, afterAuthorGap: 34, dividerGap: 58 };
+    const base = { quoteFont: 26, quoteLineHeight: 41, bookFont: 48, authorFont: 24, afterQuoteGap: 22, afterBookGap: 12, afterAuthorGap: 34, dividerGap: 58 };
 
     // Draws text with manual letter-spacing (canvas' built-in letterSpacing
     // support is inconsistent across browsers), centered on cx.
@@ -4728,39 +4794,121 @@ function generateQuoteCollageCanvas(quotes, callback) {
       let total = 0;
       const blocks = quotes.map((q, i) => {
         const lines = getWrappedLinesNL(ctx, `"${q.text}"`, textWidth);
-        const quoteH = lines.length * s('quoteLineHeight');
+        const qGap = Math.round(s('quoteFont') * 0.5);
+        const quoteH = lines.length * s('quoteLineHeight') + quoteExtraTotal(lines, qGap);
         const hasAuthor = !!(q.author && q.author.trim());
         const blockH = quoteH + s('afterQuoteGap') + s('bookFont') + (hasAuthor ? s('authorFont') + 10 : 0) + s('afterAuthorGap');
         total += blockH + (i < quotes.length - 1 ? s('dividerGap') : 0);
-        return { lines, hasAuthor, blockH, quoteLineHeight: s('quoteLineHeight') };
+        return { lines, hasAuthor, blockH, quoteLineHeight: s('quoteLineHeight'), qGap };
       });
       return { total, blocks, s };
+    }
+
+    // Single quote: "A Fragment / FROM" heading -> cover -> book title -> author -> quote mark -> quote.
+    // The whole stack is centered on the canvas so every gap stays tight.
+    function drawSingleClassic() {
+      const q = quotes[0];
+      const hasAuthor = !!(q.author && q.author.trim());
+      const headColor = getAccentTextColor(accent);
+      const { fb, fa } = fitSingleQuoteHead(ctx, q, textWidth, true);
+      const regionTop = 120, regionBottom = 1790;
+      const HEAD_H = 190, GAP_HEAD = 60, GAP_COVER = 40, GAP_MARK = 52, MARK = 44, GAP_TEXT = 10;
+      const authorH = hasAuthor ? 8 + fa : 0;
+      const coverSizes = coverImg ? [450, 400, 350, 300] : [0];
+      const quoteSizes = [28, 26, 24, 22].map(v => Math.min(v, fa));
+      let chosen = null;
+      outer:
+      for (const ch of coverSizes) {
+        for (const qf of quoteSizes) {
+          const lh = Math.round(qf * 1.58);
+          ctx.font = `${qf}px "Noto Serif", serif`;
+          const lines = getWrappedLinesNL(ctx, q.text, textWidth);
+          const qg = Math.round(qf * 0.5);
+          const H = HEAD_H + GAP_HEAD + (ch ? ch + GAP_COVER : 0) + fb + authorH + GAP_MARK + MARK + GAP_TEXT + lines.length * lh + quoteExtraTotal(lines, qg) + GAP_TEXT + MARK;
+          chosen = { ch, qf, lh, lines, H, qg };
+          if (H <= regionBottom - regionTop) break outer;
+        }
+      }
+      let y = regionTop + Math.max((regionBottom - regionTop - chosen.H) / 2, 0);
+
+      ctx.textAlign = 'center';
+      ctx.fillStyle = headColor;
+      ctx.font = '105px "Alex Brush", cursive';
+      ctx.fillText('A Fragment', cx, y + 88);
+      ctx.font = '600 30px Outfit, sans-serif';
+      drawTracked('FROM', cx, y + 149, 26);
+      drawOrnament(y + 183, { armLength: 80, gap: 14, size: 4.5 });
+      y += HEAD_H + GAP_HEAD;
+
+      if (coverImg) {
+        const cw = Math.round(chosen.ch * 2 / 3);
+        drawQuoteShareCover(ctx, coverImg, cx - cw / 2, y, cw, chosen.ch);
+        y += chosen.ch + GAP_COVER;
+      }
+
+      ctx.font = `${fb}px "Alex Brush", cursive`;
+      ctx.fillStyle = headColor;
+      ctx.fillText(q.bookTitle, cx, y + fb * 0.72, textWidth);
+      y += fb;
+      if (hasAuthor) {
+        y += 8;
+        ctx.font = `600 ${fa}px Outfit, sans-serif`;
+        ctx.fillStyle = '#8A8580';
+        drawTracked(q.author.trim().toUpperCase(), cx, y + fa * 0.78, 2);
+        y += fa;
+      }
+      y += GAP_MARK;
+
+      // quote block: same quote icon at the top-left and bottom-right corners,
+      // both sitting on the corners of the widest line.
+      ctx.font = `${chosen.qf}px "Noto Serif", serif`;
+      const blockW = Math.min(textWidth, Math.max(...chosen.lines.map(l => ctx.measureText(l).width)));
+      const markL = cx - blockW / 2, markR = cx + blockW / 2;
+      const drawMark = (x, yy) => {
+        ctx.save();
+        ctx.globalAlpha = 0.6;
+        ctx.fillStyle = accent;
+        ctx.translate(x, yy);
+        ctx.scale(MARK / 24, MARK / 24);
+        ctx.fill(new Path2D(QUOTE_MARK_PATH_D));
+        ctx.restore();
+      };
+      drawMark(markL, y);
+      y += MARK + GAP_TEXT;
+
+      ctx.textAlign = 'center';
+      ctx.font = `${chosen.qf}px "Noto Serif", serif`;
+      ctx.fillStyle = '#2c2c2a';
+      chosen.lines.forEach((line, li) => ctx.fillText(line, cx, y + chosen.lh * (li + 1) - chosen.lh * 0.3 + quoteExtraBefore(chosen.lines, li, chosen.qg)));
+      y += chosen.lines.length * chosen.lh + quoteExtraTotal(chosen.lines, chosen.qg) + GAP_TEXT;
+      drawMark(markR - MARK, y);
     }
 
     function drawCollage() {
       ctx.textAlign = 'center';
 
-      // Small tracked kicker above the script title
-      ctx.font = '600 19px Outfit, sans-serif';
-      ctx.fillStyle = getAccentTextColor(accent);
-      drawTracked(quotes.length > 1 ? 'OF MY OWN' : 'A COLLECTION OF LINES I LOVE', cx, 150, 5);
-
-      ctx.font = '84px "Alex Brush", cursive';
-      ctx.fillStyle = getAccentTextColor(accent);
-      ctx.fillText(quotes.length > 1 ? 'Florilegium' : 'My Favorite Quotes', cx, 236);
-
-      drawOrnament(276, { armLength: 70, gap: 12, size: 4 });
-
-      // Cover size: the biggest one that still leaves the quote text at full size.
-      let coverH = 0, coverW = 0, coverReserve = 0;
-      if (coverImg) {
-        const textAt1 = measureAt(1).total;
-        coverH = [450, 400, 350, 300].find(h => textAt1 <= (areaBottom - areaTop) - h - 56) || 300;
-        coverW = Math.round(coverH * 2 / 3);
-        coverReserve = coverH + 56;
+      if (quotes.length === 1) {
+        drawSingleClassic();
+        ctx.font = '500 22px Outfit, sans-serif';
+        ctx.fillStyle = '#A1A1AA';
+        ctx.fillText('via Book Tracking', cx, 1872);
+        callback(canvas);
+        return;
       }
+
+      // Small tracked kicker above the script title
+      ctx.font = '600 28px Outfit, sans-serif';
+      ctx.fillStyle = getAccentTextColor(accent);
+      drawTracked('OF MY OWN', cx, 128, 14);
+
+      ctx.font = '105px "Alex Brush", cursive';
+      ctx.fillStyle = getAccentTextColor(accent);
+      ctx.fillText('Florilegium', cx, 246);
+
+      drawOrnament(294, { armLength: 80, gap: 14, size: 4.5 });
+
       let { total } = measureAt(1);
-      const available = areaBottom - areaTop - coverReserve;
+      const available = areaBottom - areaTop;
       const scale = total > available ? Math.max(available / total, 0.55) : 1;
       const { blocks, s } = measureAt(scale);
       const recalculated = measureAt(scale).total;
@@ -4768,21 +4916,17 @@ function generateQuoteCollageCanvas(quotes, callback) {
       const extraGap = leftover / (blocks.length + 1);
 
       let y = areaTop + extraGap;
-      if (coverImg) {
-        drawQuoteShareCover(ctx, coverImg, cx - coverW / 2, y, coverW, coverH);
-        y += coverReserve;
-      }
       blocks.forEach((block, i) => {
         ctx.font = `${s('quoteFont')}px "Noto Serif", serif`;
         ctx.fillStyle = '#2c2c2a';
         block.lines.forEach((line, li) => {
-          ctx.fillText(line, cx, y + block.quoteLineHeight * (li + 1) - block.quoteLineHeight * 0.3);
+          ctx.fillText(line, cx, y + block.quoteLineHeight * (li + 1) - block.quoteLineHeight * 0.3 + quoteExtraBefore(block.lines, li, block.qGap));
         });
-        y += block.lines.length * block.quoteLineHeight + s('afterQuoteGap');
+        y += block.lines.length * block.quoteLineHeight + quoteExtraTotal(block.lines, block.qGap) + s('afterQuoteGap');
 
         ctx.font = `${s('bookFont')}px "Alex Brush", cursive`;
         ctx.fillStyle = getAccentTextColor(accent);
-        ctx.fillText(quotes[i].bookTitle, cx, y + s('bookFont') * 0.72);
+        ctx.fillText(quotes[i].bookTitle, cx, y + s('bookFont') * 0.72, textWidth);
         y += s('bookFont');
 
         if (block.hasAuthor) {
@@ -4874,34 +5018,40 @@ function generateQuoteCardsCanvas(quotes, callback) {
 
     // ----- header (same as the Classic layout) -----
     ctx.textAlign = 'center';
-    ctx.font = '600 19px Outfit, sans-serif';
-    ctx.fillStyle = accentTxt;
-    drawTracked(quotes.length > 1 ? 'OF MY OWN' : 'A COLLECTION OF LINES I LOVE', cx, 150, 5);
-    ctx.font = '84px "Alex Brush", cursive';
-    ctx.fillText(quotes.length > 1 ? 'Florilegium' : 'My Favorite Quotes', cx, 236);
-    drawOrnament(276, 70, 12, 4);
+    if (quotes.length > 1) {
+      ctx.font = '600 28px Outfit, sans-serif';
+      ctx.fillStyle = accentTxt;
+      drawTracked('OF MY OWN', cx, 128, 14);
+      ctx.font = '105px "Alex Brush", cursive';
+      ctx.fillText('Florilegium', cx, 246);
+      drawOrnament(294, 80, 14, 4.5);
+    }
 
     // ----- card layout: masonry, 2 columns (1 wide card for a single quote) -----
     const areaTop = 340, areaBottom = 1820, marginX = 70, gap = 24;
     const cols = quotes.length === 1 ? 1 : 2;
-    const cardW = cols === 1 ? 760 : (canvas.width - marginX * 2 - gap) / 2;
+    const cardW = cols === 1 ? 840 : (canvas.width - marginX * 2 - gap) / 2;
     const single = cols === 1;
+    // Single quote: title + author are bigger than the quote text (see fitSingleQuoteHead).
+    const headFit = single ? fitSingleQuoteHead(ctx, quotes[0], 860, false) : null;
 
     function layout(scale) {
       const f = v => Math.round(v * scale);
       const z = {
-        quote: f(single ? 38 : 28), lh: f(single ? 58 : 43),
-        pad: f(single ? 52 : 36), padTop: f(single ? 76 : 54), padBottom: f(single ? 48 : 34),
-        book: f(single ? 54 : 38), author: f(single ? 24 : 19),
-        afterQuote: f(single ? 38 : 28), afterBook: f(8)
+        quote: f(single ? headFit.qf : 24), lh: f(single ? Math.round(headFit.qf * 1.58) : 38),
+        pad: f(single ? 52 : 36), padTop: f(single ? 72 : 54), padBottom: f(single ? 72 : 34),
+        book: f(single ? 54 : 40), author: f(24),
+        afterQuote: f(single ? 38 : 28), afterBook: f(8), qg: Math.round(f(single ? headFit.qf : 24) * 0.5)
       };
       ctx.font = `${z.quote}px "Noto Serif", serif`;
       const innerW = cardW - z.pad * 2;
       const cards = quotes.map(q => {
         const lines = getWrappedLinesNL(ctx, q.text, innerW);
         const hasAuthor = !!(q.author && q.author.trim());
-        const h = z.padTop + lines.length * z.lh + z.afterQuote + z.book +
-          (hasAuthor ? z.afterBook + z.author : 0) + z.padBottom;
+        const h = single
+          ? z.padTop + lines.length * z.lh + quoteExtraTotal(lines, z.qg) + z.padBottom
+          : z.padTop + lines.length * z.lh + quoteExtraTotal(lines, z.qg) + z.afterQuote + z.book +
+            (hasAuthor ? z.afterBook + z.author : 0) + z.padBottom;
         return { q, lines, hasAuthor, h };
       });
       const colH = Array(cols).fill(0);
@@ -4913,24 +5063,57 @@ function generateQuoteCardsCanvas(quotes, callback) {
       return { cards, z, total: Math.max(...colH) - gap };
     }
 
+    const sq = quotes[0];
+    const sqHasAuthor = !!(sq.author && sq.author.trim());
+    // Single quote: the whole stack (heading, cover, title, author, card) is centered on the canvas.
+    const topY = single ? 120 : areaTop;
+    const botY = single ? 1790 : areaBottom;
+    const HEAD_H = 190, GAP_HEAD = 60, GAP_COVER = 40, GAP_CARD = 40;
+    const topReserve = single ? HEAD_H + GAP_HEAD : 0;
+    const titleBlockH = single ? headFit.fb + (sqHasAuthor ? 8 + headFit.fa : 0) + GAP_CARD : 0;
     let coverH = 0, coverW = 0, coverReserve = 0;
     if (coverImg) {
       const cardAt1 = layout(1).total;
-      coverH = [420, 360, 300].find(h => cardAt1 <= (areaBottom - areaTop) - h - 44) || 300;
+      coverH = [450, 400, 350, 300].find(h => cardAt1 <= (botY - topY) - topReserve - h - GAP_COVER - titleBlockH) || 300;
       coverW = Math.round(coverH * 2 / 3);
-      coverReserve = coverH + 44;
+      coverReserve = coverH + GAP_COVER;
     }
-    const avail = areaBottom - areaTop - coverReserve;
+    const avail = botY - topY - topReserve - coverReserve - titleBlockH;
     let scale = 1, L = layout(scale);
     while (L.total > avail && scale > 0.5) { scale = Math.round((scale - 0.05) * 100) / 100; L = layout(scale); }
-    const offY = Math.min(Math.max((avail - L.total) / 2, 0), 120);
-    const quoteMark = new Path2D('M9.983 3v7.391c0 5.704-3.731 9.57-8.983 10.609l-.995-2.151c2.432-.917 3.995-3.638 3.995-5.849h-4v-10h9.983zm14.017 0v7.391c0 5.704-3.748 9.571-9 10.609l-.996-2.151c2.433-.917 3.996-3.638 3.996-5.849h-4v-10h10z');
+    const offY = single ? Math.max((avail - L.total) / 2, 0) : Math.min(Math.max((avail - L.total) / 2, 0), 120);
+    const quoteMark = new Path2D(QUOTE_MARK_PATH_D);
     const { z } = L;
-    if (coverImg) drawQuoteShareCover(ctx, coverImg, cx - coverW / 2, areaTop + offY, coverW, coverH);
+    const baseY = topY + offY;
+    if (single) {
+      let hy = baseY;
+      ctx.textAlign = 'center';
+      ctx.fillStyle = accentTxt;
+      ctx.font = '105px "Alex Brush", cursive';
+      ctx.fillText('A Fragment', cx, hy + 88);
+      ctx.font = '600 30px Outfit, sans-serif';
+      drawTracked('FROM', cx, hy + 149, 26);
+      drawOrnament(hy + 183, 80, 14, 4.5);
+      hy += HEAD_H + GAP_HEAD;
+      if (coverImg) {
+        drawQuoteShareCover(ctx, coverImg, cx - coverW / 2, hy, coverW, coverH);
+        hy += coverReserve;
+      }
+      ctx.font = `${headFit.fb}px "Alex Brush", cursive`;
+      ctx.fillStyle = accentTxt;
+      ctx.fillText(sq.bookTitle, cx, hy + headFit.fb * 0.72, 900);
+      hy += headFit.fb;
+      if (sqHasAuthor) {
+        hy += 8;
+        ctx.font = `500 ${headFit.fa}px Outfit, sans-serif`;
+        ctx.fillStyle = '#8A8580';
+        ctx.fillText(sq.author.trim(), cx, hy + headFit.fa * 0.82, 900);
+      }
+    }
 
     L.cards.forEach(c => {
       const x = cols === 1 ? (canvas.width - cardW) / 2 : marginX + c.col * (cardW + gap);
-      const y = areaTop + offY + coverReserve + c.y;
+      const y = baseY + topReserve + coverReserve + titleBlockH + c.y;
 
       // card body
       ctx.save();
@@ -4944,22 +5127,38 @@ function generateQuoteCardsCanvas(quotes, callback) {
       ctx.strokeStyle = accentTxt;
       ctx.beginPath(); ctx.roundRect(x, y, cardW, c.h, 28); ctx.stroke();
 
-      // faint quote mark, top-left
+      // faint quote mark, top-left (single quote also gets a closing one, bottom-right)
       ctx.save();
-      ctx.globalAlpha = 0.22;
+      ctx.globalAlpha = single ? 0.4 : 0.22;
       ctx.fillStyle = accent;
-      const qm = (single ? 64 : 52) * scale;
+      const qm = (single ? 48 : 52) * scale;
       ctx.translate(x + 22 * scale, y + 18 * scale);
       ctx.scale(qm / 24, qm / 24);
       ctx.fill(quoteMark);
       ctx.restore();
+      if (single) {
+        // closing mark: the very same icon (not turned), bottom-right corner
+        ctx.save();
+        ctx.globalAlpha = 0.4;
+        ctx.fillStyle = accent;
+        ctx.translate(x + cardW - 22 * scale - qm, y + c.h - 18 * scale - qm);
+        ctx.scale(qm / 24, qm / 24);
+        ctx.fill(quoteMark);
+        ctx.restore();
+      }
 
       // quote text
-      ctx.textAlign = 'left';
+      ctx.textAlign = single ? 'center' : 'left';
       ctx.font = `${z.quote}px "Noto Serif", serif`;
       ctx.fillStyle = '#2c2c2a';
-      c.lines.forEach((line, li) => ctx.fillText(line, x + z.pad, y + z.padTop + li * z.lh + z.lh * 0.72));
-      let ty = y + z.padTop + c.lines.length * z.lh + z.afterQuote;
+      c.lines.forEach((line, li) => {
+        const ly = y + z.padTop + li * z.lh + z.lh * 0.72 + quoteExtraBefore(c.lines, li, z.qg);
+        if (single) ctx.fillText(line, x + cardW / 2, ly);                       // single quote: centered
+        else if (isParaEnd(c.lines, li)) ctx.fillText(line, x + z.pad, ly);       // last line of a paragraph
+        else drawJustified(ctx, line, x + z.pad, ly, cardW - z.pad * 2);          // 2+ quotes: justified
+      });
+      if (single) return;
+      let ty = y + z.padTop + c.lines.length * z.lh + quoteExtraTotal(c.lines, z.qg) + z.afterQuote;
 
       // book title (script) + author, right aligned like the cards in the Quotes tab
       ctx.textAlign = 'right';
