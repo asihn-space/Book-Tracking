@@ -4692,8 +4692,8 @@ const QUOTE_MARK_PATH_D = 'M9.983 3v7.391c0 5.704-3.731 9.57-8.983 10.609l-.995-
 
 // Single-quote share: font sizes for the book title (script) and the author.
 // The quote itself never goes above min(28, author size), so title and author always read bigger.
-function fitSingleQuoteHead(ctx, q, maxW, upper) {
-  let fb = 64, fa = 30;
+function fitSingleQuoteHead(ctx, q, maxW, upper, faBase = 30) {
+  let fb = 64, fa = faBase;
   ctx.font = `${fb}px "Alex Brush", cursive`;
   const wb = ctx.measureText(q.bookTitle || '').width;
   if (wb > maxW) fb = Math.max(40, Math.floor(fb * maxW / wb));
@@ -4810,12 +4810,12 @@ function generateQuoteCollageCanvas(quotes, callback) {
       const q = quotes[0];
       const hasAuthor = !!(q.author && q.author.trim());
       const headColor = getAccentTextColor(accent);
-      const { fb, fa } = fitSingleQuoteHead(ctx, q, textWidth, true);
-      const headTop = 100, regionBottom = 1790;
-      const HEAD_H = 175, GAP_HEAD = 100, GAP_COVER = 40, GAP_MARK = 52, MARK = 28, MARK_GAP = 12;
+      const { fb, fa } = fitSingleQuoteHead(ctx, q, textWidth, true, 24);
+      const regionTop = 120, regionBottom = 1790;
+      const HEAD_H = 175, GAP_HEAD = 60, GAP_COVER = 40, GAP_MARK = 52, MARK = 36, MARK_GAP = 12;
       const authorH = hasAuthor ? 8 + fa : 0;
       const coverSizes = coverImg ? [450, 400, 350, 300] : [0];
-      const quoteSizes = [28, 26, 24, 22].map(v => Math.min(v, fa));
+      const quoteSizes = [32, 30, 28, 26];
       let chosen = null;
       outer:
       for (const ch of coverSizes) {
@@ -4824,14 +4824,13 @@ function generateQuoteCollageCanvas(quotes, callback) {
           ctx.font = `${qf}px "Noto Serif", serif`;
           const lines = getWrappedLinesNL(ctx, q.text, textWidth);
           const qg = Math.round(qf * 0.5);
-          const H = (ch ? ch + GAP_COVER : 0) + fb + authorH + GAP_MARK + lines.length * lh + quoteExtraTotal(lines, qg);
+          const H = HEAD_H + GAP_HEAD + (ch ? ch + GAP_COVER : 0) + fb + authorH + GAP_MARK + lines.length * lh + quoteExtraTotal(lines, qg);
           chosen = { ch, qf, lh, lines, H, qg };
-          if (H <= regionBottom - (headTop + HEAD_H + GAP_HEAD)) break outer;
+          if (H <= regionBottom - regionTop) break outer;
         }
       }
-      // heading is pinned to the top; everything below it is centered in the remaining space
-      const contentTop = headTop + HEAD_H + GAP_HEAD;
-      let y = headTop;
+      // whole stack (heading, cover, title, author, quote) is centered on the canvas
+      let y = regionTop + Math.max((regionBottom - regionTop - chosen.H) / 2, 0);
 
       ctx.textAlign = 'center';
       ctx.fillStyle = headColor;
@@ -4839,7 +4838,7 @@ function generateQuoteCollageCanvas(quotes, callback) {
       ctx.fillText('A Fragment', cx, y + 88);
       ctx.font = '600 30px Outfit, sans-serif';
       drawTracked('FROM', cx, y + 168, 26);
-      y = contentTop + Math.max((regionBottom - contentTop - chosen.H) / 2, 0);
+      y += HEAD_H + GAP_HEAD;
 
       if (coverImg) {
         const cw = Math.round(chosen.ch * 2 / 3);
@@ -4870,8 +4869,7 @@ function generateQuoteCollageCanvas(quotes, callback) {
       const k = MARK / 24; // the icon path occupies y 3..21 of its 24-unit box
       const drawMark = (x, yy) => {
         ctx.save();
-        ctx.globalAlpha = 0.35;
-        ctx.fillStyle = accent;
+        ctx.fillStyle = headColor;
         ctx.translate(x, yy);
         ctx.scale(k, k);
         ctx.fill(new Path2D(QUOTE_MARK_PATH_D));
@@ -5066,9 +5064,9 @@ function generateQuoteCardsCanvas(quotes, callback) {
     const sq = quotes[0];
     const sqHasAuthor = !!(sq.author && sq.author.trim());
     // Single quote: the whole stack (heading, cover, title, author, card) is centered on the canvas.
-    const topY = single ? 120 : areaTop;
+    const topY = single ? 100 : areaTop;
     const botY = single ? 1790 : areaBottom;
-    const HEAD_H = 190, GAP_HEAD = 60, GAP_COVER = 40, GAP_CARD = 40;
+    const HEAD_H = 175, GAP_HEAD = 60, GAP_COVER = 40, GAP_CARD = 40;
     const topReserve = single ? HEAD_H + GAP_HEAD : 0;
     const titleBlockH = single ? headFit.fb + (sqHasAuthor ? 8 + headFit.fa : 0) + GAP_CARD : 0;
     let coverH = 0, coverW = 0, coverReserve = 0;
@@ -5081,7 +5079,7 @@ function generateQuoteCardsCanvas(quotes, callback) {
     const avail = botY - topY - topReserve - coverReserve - titleBlockH;
     let scale = 1, L = layout(scale);
     while (L.total > avail && scale > 0.5) { scale = Math.round((scale - 0.05) * 100) / 100; L = layout(scale); }
-    const offY = single ? Math.max((avail - L.total) / 2, 0) : Math.min(Math.max((avail - L.total) / 2, 0), 120);
+    const offY = single ? Math.max((avail - L.total) * 0.2, 0) : Math.min(Math.max((avail - L.total) / 2, 0), 120);
     const quoteMark = new Path2D(QUOTE_MARK_PATH_D);
     const { z } = L;
     const baseY = topY + offY;
@@ -5092,8 +5090,7 @@ function generateQuoteCardsCanvas(quotes, callback) {
       ctx.font = '105px "Alex Brush", cursive';
       ctx.fillText('A Fragment', cx, hy + 88);
       ctx.font = '600 30px Outfit, sans-serif';
-      drawTracked('FROM', cx, hy + 149, 26);
-      drawOrnament(hy + 183, 80, 14, 4.5);
+      drawTracked('FROM', cx, hy + 168, 26);
       hy += HEAD_H + GAP_HEAD;
       if (coverImg) {
         drawQuoteShareCover(ctx, coverImg, cx - coverW / 2, hy, coverW, coverH);
