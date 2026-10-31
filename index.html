@@ -238,7 +238,7 @@
   .quote-expand-book { display: block; font-family: 'Alex Brush', cursive; font-size: 26px; font-weight: 400; color: var(--accent-text); line-height: 1.2; }
   .quote-expand-author { display: block; font-family: var(--font-body); font-size: 12px; font-weight: 500; color: var(--text-faint); letter-spacing: 0.01em; margin-top: 2px; }
   .quote-card-mark { position: absolute; top: 8px; left: 10px; color: rgba(var(--accent-rgb), 0.22); }
-  .quote-card-mark svg { width: 26px; height: 26px; }
+  .quote-card-mark svg { width: 20px; height: 20px; }
   .quote-card-text { position: relative; font-family: 'Noto Serif', serif; font-size: 13px; font-weight: 400; line-height: 1.55; color: var(--text); margin: 6px 0 14px; white-space: pre-line; text-align: justify; }
   .quote-card-book { display: block; text-align: right; font-family: 'Alex Brush', cursive; font-size: 16px; font-weight: 400; color: var(--accent-text); line-height: 1; }
   .quote-card-author { display: block; text-align: right; font-family: var(--font-body); font-size: 10px; font-weight: 500; color: var(--text-faint); letter-spacing: 0.01em; margin-top: 0; }
@@ -4811,8 +4811,8 @@ function generateQuoteCollageCanvas(quotes, callback) {
       const hasAuthor = !!(q.author && q.author.trim());
       const headColor = getAccentTextColor(accent);
       const { fb, fa } = fitSingleQuoteHead(ctx, q, textWidth, true);
-      const regionTop = 120, regionBottom = 1790;
-      const HEAD_H = 190, GAP_HEAD = 60, GAP_COVER = 40, GAP_MARK = 52, MARK = 44, GAP_TEXT = 10;
+      const headTop = 100, regionBottom = 1790;
+      const HEAD_H = 175, GAP_HEAD = 100, GAP_COVER = 40, GAP_MARK = 52, MARK = 28, MARK_GAP = 12;
       const authorH = hasAuthor ? 8 + fa : 0;
       const coverSizes = coverImg ? [450, 400, 350, 300] : [0];
       const quoteSizes = [28, 26, 24, 22].map(v => Math.min(v, fa));
@@ -4824,21 +4824,22 @@ function generateQuoteCollageCanvas(quotes, callback) {
           ctx.font = `${qf}px "Noto Serif", serif`;
           const lines = getWrappedLinesNL(ctx, q.text, textWidth);
           const qg = Math.round(qf * 0.5);
-          const H = HEAD_H + GAP_HEAD + (ch ? ch + GAP_COVER : 0) + fb + authorH + GAP_MARK + MARK + GAP_TEXT + lines.length * lh + quoteExtraTotal(lines, qg) + GAP_TEXT + MARK;
+          const H = (ch ? ch + GAP_COVER : 0) + fb + authorH + GAP_MARK + lines.length * lh + quoteExtraTotal(lines, qg);
           chosen = { ch, qf, lh, lines, H, qg };
-          if (H <= regionBottom - regionTop) break outer;
+          if (H <= regionBottom - (headTop + HEAD_H + GAP_HEAD)) break outer;
         }
       }
-      let y = regionTop + Math.max((regionBottom - regionTop - chosen.H) / 2, 0);
+      // heading is pinned to the top; everything below it is centered in the remaining space
+      const contentTop = headTop + HEAD_H + GAP_HEAD;
+      let y = headTop;
 
       ctx.textAlign = 'center';
       ctx.fillStyle = headColor;
       ctx.font = '105px "Alex Brush", cursive';
       ctx.fillText('A Fragment', cx, y + 88);
       ctx.font = '600 30px Outfit, sans-serif';
-      drawTracked('FROM', cx, y + 149, 26);
-      drawOrnament(y + 183, { armLength: 80, gap: 14, size: 4.5 });
-      y += HEAD_H + GAP_HEAD;
+      drawTracked('FROM', cx, y + 168, 26);
+      y = contentTop + Math.max((regionBottom - contentTop - chosen.H) / 2, 0);
 
       if (coverImg) {
         const cw = Math.round(chosen.ch * 2 / 3);
@@ -4859,29 +4860,28 @@ function generateQuoteCollageCanvas(quotes, callback) {
       }
       y += GAP_MARK;
 
-      // quote block: same quote icon at the top-left and bottom-right corners,
-      // both sitting on the corners of the widest line.
-      ctx.font = `${chosen.qf}px "Noto Serif", serif`;
-      const blockW = Math.min(textWidth, Math.max(...chosen.lines.map(l => ctx.measureText(l).width)));
-      const markL = cx - blockW / 2, markR = cx + blockW / 2;
-      const drawMark = (x, yy) => {
-        ctx.save();
-        ctx.globalAlpha = 0.6;
-        ctx.fillStyle = accent;
-        ctx.translate(x, yy);
-        ctx.scale(MARK / 24, MARK / 24);
-        ctx.fill(new Path2D(QUOTE_MARK_PATH_D));
-        ctx.restore();
-      };
-      drawMark(markL, y);
-      y += MARK + GAP_TEXT;
-
+      // quote block: opening mark sits right before the first line, closing mark right after
+      // the last line (same row as the text, so no extra rows above/below the quote).
       ctx.textAlign = 'center';
       ctx.font = `${chosen.qf}px "Noto Serif", serif`;
       ctx.fillStyle = '#2c2c2a';
-      chosen.lines.forEach((line, li) => ctx.fillText(line, cx, y + chosen.lh * (li + 1) - chosen.lh * 0.3 + quoteExtraBefore(chosen.lines, li, chosen.qg)));
-      y += chosen.lines.length * chosen.lh + quoteExtraTotal(chosen.lines, chosen.qg) + GAP_TEXT;
-      drawMark(markR - MARK, y);
+      const baseOf = li => y + chosen.lh * (li + 1) - chosen.lh * 0.3 + quoteExtraBefore(chosen.lines, li, chosen.qg);
+      chosen.lines.forEach((line, li) => ctx.fillText(line, cx, baseOf(li)));
+      const k = MARK / 24; // the icon path occupies y 3..21 of its 24-unit box
+      const drawMark = (x, yy) => {
+        ctx.save();
+        ctx.globalAlpha = 0.35;
+        ctx.fillStyle = accent;
+        ctx.translate(x, yy);
+        ctx.scale(k, k);
+        ctx.fill(new Path2D(QUOTE_MARK_PATH_D));
+        ctx.restore();
+      };
+      const last = chosen.lines.length - 1;
+      const w1 = ctx.measureText(chosen.lines[0]).width;
+      const wL = ctx.measureText(chosen.lines[last]).width;
+      drawMark(cx - w1 / 2 - MARK_GAP - MARK, baseOf(0) - chosen.qf * 0.75 - 3 * k);   // glyph top ~ cap height of first line
+      drawMark(cx + wL / 2 + MARK_GAP, baseOf(last) - 21 * k);                         // glyph bottom on last baseline
     }
 
     function drawCollage() {
