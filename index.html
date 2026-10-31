@@ -3179,9 +3179,10 @@ function getMonthlyWrapupData(year, month) {
     else { gap++; if (gap > longestGap) longestGap = gap; }
   }
   // Kalau ada beberapa buku dengan rating tertinggi yang sama, pemenangnya diacak tiap recap di-generate.
-  const top = wrapupPickBest(books, b => Number(b.rating) || 0);
   // Urut rating tertinggi; yang rating-nya sama diacak (sama seperti Year in Pages).
   const byRating = wrapupShuffle(books).sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0));
+  // Buku "You really got into" = buku pertama di daftar Books Finished, jadi kalau rating teratas seri, keduanya selalu sama.
+  const top = byRating[0] || null;
   return { prefix, books, byRating, top, longestGap, quote: pickWrapupQuote(books) };
 }
 
@@ -3926,7 +3927,7 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
     drawOrnament(y + (isYear ? 48 : 56), 90, 14, 5);
 
     // ----- "Books Finished:" heading (same face as "You really got into") -----
-    ctx.font = isYear ? '500 30px Outfit, sans-serif' : '500 36px Outfit, sans-serif';
+    ctx.font = '500 30px Outfit, sans-serif';
     ctx.fillStyle = '#3F3F46';
     ctx.fillText(isYear ? 'Top Reads:' : 'Books Finished:', cx, y + (isYear ? 100 : 130));
     const listTop = y + (isYear ? 130 : 165);
@@ -3967,6 +3968,11 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
     const rows = Math.ceil(shown / 2);
     const rowH = Math.min(230, avail / rows);
     const offY = Math.min((avail - rows * rowH) / 2, 24);
+    // 3-4 books: rows are capped at 230px, so the list ends early. Let the quote follow the list instead of sitting at the bottom.
+    if (quoteBlock && !isYear && n === shown && rows >= 2 && rowH >= 230) {
+      const followTop = listTop + offY + rows * rowH + 28;
+      if (followTop < quoteBlock.top) quoteBlock.top = followTop;
+    }
     const shownBooks = data.byRating.slice(0, shown);
     const covers = await Promise.all(shownBooks.map(b => wrapupLoadImage(b.coverUrl)));
 
