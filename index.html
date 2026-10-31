@@ -4746,7 +4746,7 @@ function generateQuoteCollageCanvas(quotes, callback) {
     // (it's the "heading" of each block), the quote is the body copy, and the
     // author is a small tracked caption. This mirrors the hierarchy already
     // used on the in-app quote cards instead of fighting it.
-    const base = { quoteFont: 26, quoteLineHeight: 41, bookFont: 48, authorFont: 24, afterQuoteGap: 22, afterBookGap: 12, afterAuthorGap: 34, dividerGap: 58 };
+    const base = { quoteFont: 26, quoteLineHeight: 41, bookFont: 48, authorFont: 22, afterQuoteGap: 22, afterBookGap: 12, blockGap: 60 };
 
     // Draws text with manual letter-spacing (canvas' built-in letterSpacing
     // support is inconsistent across browsers), centered on cx.
@@ -4797,8 +4797,8 @@ function generateQuoteCollageCanvas(quotes, callback) {
         const qGap = Math.round(s('quoteFont') * 0.5);
         const quoteH = lines.length * s('quoteLineHeight') + quoteExtraTotal(lines, qGap);
         const hasAuthor = !!(q.author && q.author.trim());
-        const blockH = quoteH + s('afterQuoteGap') + s('bookFont') + (hasAuthor ? s('authorFont') + 10 : 0) + s('afterAuthorGap');
-        total += blockH + (i < quotes.length - 1 ? s('dividerGap') : 0);
+        const blockH = quoteH + s('afterQuoteGap') + s('bookFont') + (hasAuthor ? s('authorFont') + 10 : 0);
+        total += blockH + (i < quotes.length - 1 ? s('blockGap') : 0);
         return { lines, hasAuthor, blockH, quoteLineHeight: s('quoteLineHeight'), qGap };
       });
       return { total, blocks, s };
@@ -4811,11 +4811,11 @@ function generateQuoteCollageCanvas(quotes, callback) {
       const hasAuthor = !!(q.author && q.author.trim());
       const headColor = getAccentTextColor(accent);
       const { fb, fa } = fitSingleQuoteHead(ctx, q, textWidth, true, 24);
-      const regionTop = 120, regionBottom = 1790;
-      const HEAD_H = 175, GAP_HEAD = 60, GAP_COVER = 40, GAP_MARK = 52, MARK = 36, MARK_GAP = 12;
+      const regionTop = 100, regionBottom = 1790;
+      const HEAD_H = 175, GAP_HEAD = 60, GAP_COVER = 40, GAP_MARK = 72, MARK = 48, GAP_TEXT = 4;
       const authorH = hasAuthor ? 8 + fa : 0;
       const coverSizes = coverImg ? [450, 400, 350, 300] : [0];
-      const quoteSizes = [32, 30, 28, 26];
+      const quoteSizes = [30, 28, 26];
       let chosen = null;
       outer:
       for (const ch of coverSizes) {
@@ -4824,13 +4824,13 @@ function generateQuoteCollageCanvas(quotes, callback) {
           ctx.font = `${qf}px "Noto Serif", serif`;
           const lines = getWrappedLinesNL(ctx, q.text, textWidth);
           const qg = Math.round(qf * 0.5);
-          const H = HEAD_H + GAP_HEAD + (ch ? ch + GAP_COVER : 0) + fb + authorH + GAP_MARK + lines.length * lh + quoteExtraTotal(lines, qg);
+          const H = HEAD_H + GAP_HEAD + (ch ? ch + GAP_COVER : 0) + fb + authorH + GAP_MARK + MARK + GAP_TEXT + lines.length * lh + quoteExtraTotal(lines, qg) + GAP_TEXT + MARK;
           chosen = { ch, qf, lh, lines, H, qg };
           if (H <= regionBottom - regionTop) break outer;
         }
       }
-      // whole stack (heading, cover, title, author, quote) is centered on the canvas
-      let y = regionTop + Math.max((regionBottom - regionTop - chosen.H) / 2, 0);
+      // same placement as the Cards layout: stack starts near the top, 20% of the spare space above it
+      let y = regionTop + Math.max((regionBottom - regionTop - chosen.H) * 0.2, 0);
 
       ctx.textAlign = 'center';
       ctx.fillStyle = headColor;
@@ -4859,27 +4859,29 @@ function generateQuoteCollageCanvas(quotes, callback) {
       }
       y += GAP_MARK;
 
-      // quote block: opening mark sits right before the first line, closing mark right after
-      // the last line (same row as the text, so no extra rows above/below the quote).
-      ctx.textAlign = 'center';
+      // quote block (like the Cards layout): opening mark on the top-left corner of the text block,
+      // closing mark on the bottom-right corner, both in the accent text colour at half opacity.
       ctx.font = `${chosen.qf}px "Noto Serif", serif`;
-      ctx.fillStyle = '#2c2c2a';
-      const baseOf = li => y + chosen.lh * (li + 1) - chosen.lh * 0.3 + quoteExtraBefore(chosen.lines, li, chosen.qg);
-      chosen.lines.forEach((line, li) => ctx.fillText(line, cx, baseOf(li)));
-      const k = MARK / 24; // the icon path occupies y 3..21 of its 24-unit box
+      const blockW = Math.min(textWidth, Math.max(...chosen.lines.map(l => ctx.measureText(l).width)));
+      const markL = cx - blockW / 2, markR = cx + blockW / 2;
       const drawMark = (x, yy) => {
         ctx.save();
+        ctx.globalAlpha = 0.5;
         ctx.fillStyle = headColor;
         ctx.translate(x, yy);
-        ctx.scale(k, k);
+        ctx.scale(MARK / 24, MARK / 24);
         ctx.fill(new Path2D(QUOTE_MARK_PATH_D));
         ctx.restore();
       };
-      const last = chosen.lines.length - 1;
-      const w1 = ctx.measureText(chosen.lines[0]).width;
-      const wL = ctx.measureText(chosen.lines[last]).width;
-      drawMark(cx - w1 / 2 - MARK_GAP - MARK, baseOf(0) - chosen.qf * 0.75 - 3 * k);   // glyph top ~ cap height of first line
-      drawMark(cx + wL / 2 + MARK_GAP, baseOf(last) - 21 * k);                         // glyph bottom on last baseline
+      drawMark(markL, y);
+      y += MARK + GAP_TEXT;
+
+      ctx.textAlign = 'center';
+      ctx.font = `${chosen.qf}px "Noto Serif", serif`;
+      ctx.fillStyle = '#2c2c2a';
+      chosen.lines.forEach((line, li) => ctx.fillText(line, cx, y + chosen.lh * (li + 1) - chosen.lh * 0.3 + quoteExtraBefore(chosen.lines, li, chosen.qg)));
+      y += chosen.lines.length * chosen.lh + quoteExtraTotal(chosen.lines, chosen.qg) + GAP_TEXT;
+      drawMark(markR - MARK, y);
     }
 
     function drawCollage() {
@@ -4934,11 +4936,11 @@ function generateQuoteCollageCanvas(quotes, callback) {
           drawTracked(quotes[i].author.trim().toUpperCase(), cx, y + s('authorFont') * 0.78, 2);
           y += s('authorFont');
         }
-        y += s('afterAuthorGap');
-
+        // divider ornament sits exactly halfway between this author and the next quote
         if (i < blocks.length - 1) {
-          drawOrnament(y - s('afterAuthorGap') / 2, { armLength: 60, gap: 10, size: 3.5, color: '#B8B2AA', alpha: 0.9 });
-          y += s('dividerGap') + extraGap;
+          const fullGap = s('blockGap') + extraGap;
+          drawOrnament(y + fullGap / 2, { armLength: 60, gap: 10, size: 3.5, color: '#B8B2AA', alpha: 0.9 });
+          y += fullGap;
         }
       });
 
