@@ -3940,7 +3940,7 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
       const ql = wrapupFitLines(ctx, `\u201C${data.quote.text}\u201D`, 940, 6);
       const qlh = isYear ? 36 : 42;
       const hasAuthor = !!(data.quote.book.author && data.quote.book.author.trim());
-      const h = 46 + ql.length * qlh + 20 + 38 + (hasAuthor ? 8 + 18 : 0);
+      const h = 46 + ql.length * qlh + 20 + 40 + (hasAuthor ? 8 + 20 : 0);
       quoteBlock = { ql, qlh, hasAuthor, h, top: 1820 - h, font: qFont };
     }
 
@@ -4075,15 +4075,15 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
       ctx.fillStyle = '#2c2c2a';
       qb.ql.forEach((l, i) => ctx.fillText(l, cx, qy + qb.qlh * (i + 1) - qb.qlh * 0.3));
       qy += qb.ql.length * qb.qlh + 20;
-      ctx.font = '38px "Alex Brush", cursive';
+      ctx.font = '40px "Alex Brush", cursive';
       ctx.fillStyle = accentTxt;
-      ctx.fillText(data.quote.book.title, cx, qy + 38 * 0.72);
-      qy += 38;
+      ctx.fillText(data.quote.book.title, cx, qy + 40 * 0.72);
+      qy += 40;
       if (qb.hasAuthor) {
         qy += 8;
-        ctx.font = '600 18px Outfit, sans-serif';
+        ctx.font = '600 20px Outfit, sans-serif';
         ctx.fillStyle = '#8A8580';
-        drawTracked(data.quote.book.author.trim().toUpperCase(), cx, qy + 18 * 0.78, 2);
+        drawTracked(data.quote.book.author.trim().toUpperCase(), cx, qy + 20 * 0.78, 2);
       }
     }
     if (jokeBlock) {
