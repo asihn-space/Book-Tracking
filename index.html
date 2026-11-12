@@ -96,6 +96,23 @@
   .month-col-track { width: 100%; max-width: 18px; height: 84px; display: flex; align-items: flex-end; background: var(--bg); border-radius: 4px; overflow: hidden; }
   .month-col-fill { width: 100%; background: var(--accent); border-radius: 3px 3px 0 0; min-height: 0; }
   .month-col-label { font-size: 9.5px; color: var(--text-faint); margin-top: 4px; }
+  .pc-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .pc-head .year-top5-heading { margin: 0; }
+  .pc-toggle { display: flex; gap: 2px; padding: 2px; border: 1px solid var(--accent-text); border-radius: 10px; flex-shrink: 0; }
+  .pc-opt { border: none; background: transparent; color: var(--text-soft); font-family: inherit; font-size: 12px; padding: 3px 10px; border-radius: 8px; cursor: pointer; }
+  .pc-opt.active { background: var(--accent); color: var(--accent-contrast); }
+  .pc-read { font-size: 12px; font-weight: 600; color: var(--accent-text); margin: 8px 0 6px; min-height: 18px; }
+  .pc-chart { display: block; width: 100%; height: auto; touch-action: pan-y; cursor: crosshair; user-select: none; -webkit-user-select: none; }
+  .pc-axis { stroke: var(--border); stroke-width: 1; }
+  .pc-area { fill: rgba(var(--accent-rgb), 0.35); stroke: none; }
+  .pc-line { fill: none; stroke: var(--accent-text); stroke-width: 1.3; stroke-linejoin: round; }
+  .pc-tail { fill: none; stroke: var(--accent-text); stroke-width: 1.3; stroke-dasharray: 3 3; }
+  .pc-mlabel { font-size: 11px; fill: var(--text-faint); text-anchor: middle; }
+  .pc-peak { fill: var(--accent-text); }
+  .pc-peaklabel { font-size: 11px; font-weight: 600; fill: var(--accent-text); }
+  .pc-now { fill: var(--surface); stroke: var(--accent-text); stroke-width: 1.4; }
+  .pc-cur { stroke: var(--text-faint); stroke-width: 0.8; stroke-dasharray: 2 2; }
+  .pc-dot { fill: var(--surface); stroke: var(--accent-text); stroke-width: 1.5; }
   .year-top5-heading { font-size: 11px; font-weight: 800; color: var(--text-faint); letter-spacing: 0.02em; margin: 5px 0 2px; text-transform: uppercase; }
   .year-more-btn.link-btn { display: block; margin: 10px 0 0; text-align: left; color: var(--accent-text); text-decoration: none; font-weight: 700; }
   .dash-empty { font-size: 13px; color: var(--text-soft); text-align: center; padding: 30px 0; }
@@ -119,6 +136,22 @@
   .cal-day-cell { position: relative; display: block; aspect-ratio: 2/3; min-width: 0; padding: 0; margin: 0; overflow: hidden; border: 0; border-radius: 0; background: var(--surface); font-family: inherit; text-align: left; cursor: default; }
   .cal-day-cell.has-books { cursor: pointer; }
   .cal-day-cell.cal-day-blank { background: var(--bg); }
+  .cal-day-cell.has-heat { cursor: pointer; }
+  .cal-day-cell.has-heat .cal-day-num { color: var(--text); }
+  .cal-day-cell.heat-1 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.3), rgba(var(--accent-rgb), 0.3)); }
+  .cal-day-cell.heat-2 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.55), rgba(var(--accent-rgb), 0.55)); }
+  .cal-day-cell.heat-3 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.8), rgba(var(--accent-rgb), 0.8)); }
+  .cal-day-cell.heat-4 { background-image: linear-gradient(var(--accent), var(--accent)); }
+  .cal-day-cell.has-heat.selected::after { box-shadow: inset 0 0 0 2px var(--accent-dark); }
+  .cal-heat-legend { display: flex; align-items: center; justify-content: flex-end; gap: 5px; margin-top: 10px; font-size: 11px; color: var(--text-faint); }
+  .cal-heat-sw { width: 14px; height: 14px; box-sizing: border-box; background-color: var(--surface); border: 1px solid var(--border); }
+  .cal-heat-sw.heat-1 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.3), rgba(var(--accent-rgb), 0.3)); border-color: transparent; }
+  .cal-heat-sw.heat-2 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.55), rgba(var(--accent-rgb), 0.55)); border-color: transparent; }
+  .cal-heat-sw.heat-3 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.8), rgba(var(--accent-rgb), 0.8)); border-color: transparent; }
+  .cal-heat-sw.heat-4 { background-image: linear-gradient(var(--accent), var(--accent)); border-color: transparent; }
+  .cal-read-strip { margin-top: 12px; background: var(--bg); border-radius: 10px; padding: 10px 12px; }
+  .cal-read-head { font-size: 12px; font-weight: 700; color: var(--accent-text); margin: 0; }
+  .cal-read-line { font-size: 12px; color: var(--text-soft); margin: 2px 0 0; }
   .cal-day-cell.selected::after { content: ''; position: absolute; inset: 0; z-index: 4; box-shadow: inset 0 0 0 2px var(--accent); pointer-events: none; }
   .cal-day-cell .cal-cell-cover { position: absolute; inset: 0; width: 100%; height: 100%; aspect-ratio: auto; border-radius: 0; }
   .cal-cell-cover .cover-placeholder-letter { font-size: 15px; }
@@ -270,6 +303,8 @@
   .detail-timeline-card .timeline-title { padding-right: 0; }
   .timeline-list { display: flex; flex-direction: column; gap: 14px; margin: 0 0 14px; }
   .timeline-day-title { font-size: 12px; font-weight: 700; color: var(--text); margin: 0 0 8px; }
+  .timeline-gap { font-size: 11px; font-weight: 500; color: var(--text-faint); margin: 0; }
+  .timeline-day-total { font-size: 11px; font-weight: 600; }
   .timeline-day-date { font-size: 11px; font-weight: 500; color: var(--text-faint); margin-left: 2px; }
   .timeline-subs { display: flex; flex-direction: column; gap: 8px; }
   .timeline-subs { --tl-row: 18px; --tl-gap: 8px; --tl-axis: 10px; --tl-dot: 5px; }
@@ -729,6 +764,8 @@ let state = {
   calendarYear: new Date().getFullYear(),
   calendarMonth: new Date().getMonth(),
   calendarSelectedDate: null,
+  calendarReadDate: null,
+  pagesCurveMode: 'week',
   statisticsField: 'writer',
   pieSel: null,
   query: '',
@@ -1391,6 +1428,14 @@ function normalizeHistoryForDisplay(rawHistory) {
   });
   return result;
 }
+function countReadingDays(rawHistory) {
+  const keys = new Set();
+  normalizeHistoryForDisplay(rawHistory).forEach(h => {
+    const d = new Date(h.date);
+    if (!isNaN(d)) keys.add(`${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`);
+  });
+  return keys.size;
+}
 function renderTimelineGroups(rawHistory) {
   const history = normalizeHistoryForDisplay(rawHistory);
   if (!history.length) return `<p class="timeline-empty">No progress recorded yet.</p>`;
@@ -1401,13 +1446,25 @@ function renderTimelineGroups(rawHistory) {
     const dateKey = `${d.getFullYear()}.${pad2(d.getMonth() + 1)}.${pad2(d.getDate())}`;
     let group = dayGroups[dayGroups.length - 1];
     if (!group || group.dateKey !== dateKey) {
-      group = { dateKey, entries: [] };
+      // Day number = calendar-day difference from the first entry + 1 (not the group order)
+      const startOfDay = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      if (!dayGroups.length) dayGroups.firstDay = startOfDay;
+      const dayNum = Math.round((startOfDay - dayGroups.firstDay) / 86400000) + 1;
+      group = { dateKey, dayNum, entries: [] };
       dayGroups.push(group);
     }
     group.entries.push(h);
   });
+  // Total pages read per Day = last page of the Day minus last page of the previous Day (Day 1 counts from page 0)
+  dayGroups.forEach((g, gi) => {
+    const lastPage = Number(g.entries[g.entries.length - 1].page) || 0;
+    const prevPage = gi > 0 ? (Number(dayGroups[gi - 1].entries[dayGroups[gi - 1].entries.length - 1].page) || 0) : 0;
+    g.total = lastPage - prevPage;
+  });
   let flatIndex = 0;
   const groupsHtml = dayGroups.map((g, gi) => {
+    const gapDays = gi > 0 ? g.dayNum - dayGroups[gi - 1].dayNum - 1 : 0;
+    const gapHtml = gapDays > 0 ? `<p class="timeline-gap">${gapDays} day${gapDays === 1 ? '' : 's'} without reading</p>` : '';
     const subsHtml = g.entries.map((h, ei) => {
       const idx = flatIndex++;
       const diff = idx > 0 ? (Number(h.page) || 0) - (Number(history[idx - 1].page) || 0) : null;
@@ -1422,9 +1479,10 @@ function renderTimelineGroups(rawHistory) {
           <span class="timeline-sub-pages">${Number(h.page) || 0} pages${diff != null && diff > 0 ? ` <span class="timeline-diff">(+${diff})</span>` : ''}</span>
         </div>`;
     }).join('');
-    return `
+    const totalHtml = g.total > 0 ? `<span class="timeline-day-date"> · </span><span class="timeline-diff timeline-day-total">+${g.total} page${g.total === 1 ? '' : 's'}</span>` : '';
+    return `${gapHtml}
       <div class="timeline-day-group">
-        <p class="timeline-day-title">Day ${gi + 1} <span class="timeline-day-date">(${g.dateKey})</span></p>
+        <p class="timeline-day-title">Day ${g.dayNum} <span class="timeline-day-date">(${g.dateKey})</span>${totalHtml}</p>
         <div class="timeline-subs">${subsHtml}</div>
       </div>`;
   }).join('');
@@ -1448,11 +1506,13 @@ function renderHistorySummary(book, cycles) {
     const info = getCycleStatusInfo(c);
     const range = `${c.startDate ? formatDateShort(c.startDate) : '—'} – ${c.endDate ? formatDateShort(c.endDate) : (c.status === 'done' ? '—' : 'now')}`;
     const days = (c.startDate && c.endDate) ? daysBetween(c.startDate, c.endDate) : null;
+    const readDays = (days != null && days > 1) ? Math.min(countReadingDays(c.history), days) : 0;
+    const daysText = days == null ? '' : (readDays > 0 ? ` · Read ${readDays} of ${days} days` : ` · ${days} day${days === 1 ? '' : 's'}`);
     return `
       <div class="hist-sum-row" data-action="history-tab" data-tab="${c.n}">
         <div>
           <p class="hist-sum-name">${ordinalWord(c.n)} Read</p>
-          <p class="hist-sum-sub">${range}${days != null ? ` · ${days} day${days === 1 ? '' : 's'}` : ''} · ${esc(c.format)}</p>
+          <p class="hist-sum-sub">${range}${daysText} · ${esc(c.format)}</p>
         </div>
         <div class="hist-sum-right">${c.status === 'done'
           ? `<span class="detail-rating cycle">${ICONS.star}${(Number(c.rating) || 0).toFixed(1)}</span>`
@@ -2203,6 +2263,137 @@ function renderYearSheet() {
     </div>`;
 }
 
+// ---- Pages Per Week / Pages Per Day curve (Achievement) ----
+let pagesCurveCtx = null;
+function getPagesCurveData(year) {
+  const act = getReadingActivityByDate();
+  const isLeap = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+  const total = isLeap ? 366 : 365;
+  const now = new Date();
+  const curYear = now.getFullYear();
+  if (year > curYear) return null;
+  const lastIdx = year === curYear
+    ? Math.round((new Date(curYear, now.getMonth(), now.getDate()) - new Date(year, 0, 1)) / 86400000)
+    : total - 1;
+  const pad2 = n => String(n).padStart(2, '0');
+  const days = [];
+  let any = false;
+  for (let i = 0; i <= lastIdx; i++) {
+    const d = new Date(year, 0, 1 + i);
+    const e = act[`${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`];
+    const v = e ? e.pages : 0;
+    if (v > 0) any = true;
+    days.push(v);
+  }
+  if (!any) return null;
+  return { year, total, days, lastIdx, isCurrent: year === curYear, isLeap };
+}
+function pcPagesText(v) { return `${v} ${v === 1 ? 'Page' : 'Pages'}`; }
+function renderPagesCurve(year) {
+  const data = getPagesCurveData(year);
+  if (!data) { pagesCurveCtx = null; return ''; }
+  const mode = state.pagesCurveMode === 'day' ? 'day' : 'week';
+  const { total, days, isCurrent } = data;
+  const sd = i => new Date(year, 0, 1 + i).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  let pts = [];
+  let inProgress = false;
+  if (mode === 'week') {
+    let cw = null;
+    const weeks = [];
+    days.forEach((v, i) => {
+      const dow = new Date(year, 0, 1 + i).getDay();
+      if (!cw || dow === 1) { cw = { s: i, e: i, sum: 0 }; weeks.push(cw); }
+      cw.e = i; cw.sum += v;
+    });
+    const lastDow = new Date(year, 0, 1 + days.length - 1).getDay();
+    inProgress = isCurrent && lastDow !== 0 && weeks.length > 1;
+    pts = weeks.map((w, i) => ({
+      c: (w.s + w.e) / 2, v: w.sum,
+      lab: (w.s === w.e ? sd(w.s) : `${sd(w.s)} – ${sd(w.e)}`) + (inProgress && i === weeks.length - 1 ? ' · So Far' : '')
+    }));
+  } else {
+    pts = days.map((v, i) => ({ c: i, v, lab: new Date(year, 0, 1 + i).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) }));
+  }
+  let max = 0, mi = 0;
+  pts.forEach((q, i) => { if (q.v > max) { max = q.v; mi = i; } });
+  const step = mode === 'week' ? 50 : 10;
+  const yMax = Math.max(step, Math.ceil(max / step) * step);
+  const W = Math.max(280, Math.min(window.innerWidth || 380, 640) - 64), H = 150;
+  const L = 6, R = 6, T = 24, B = 128, pw = W - L - R;
+  const X = c => L + pw * c / (total - 1);
+  const Y = v => B - (B - T) * v / yMax;
+  const n = pts.length;
+  const solidEnd = inProgress ? n - 1 : n;
+  let path = '';
+  for (let i = 0; i < solidEnd; i++) path += `${i ? 'L' : 'M'}${X(pts[i].c).toFixed(1)} ${Y(pts[i].v).toFixed(1)}`;
+  const lp = pts[solidEnd - 1];
+  const area = `${path}L${X(lp.c).toFixed(1)} ${B}L${X(pts[0].c).toFixed(1)} ${B}Z`;
+  let tail = '', nowDot = '';
+  if (inProgress) {
+    const a = pts[n - 2], b = pts[n - 1];
+    tail = `<path class="pc-tail" d="M${X(a.c).toFixed(1)} ${Y(a.v).toFixed(1)}L${X(b.c).toFixed(1)} ${Y(b.v).toFixed(1)}"/>`;
+    nowDot = `<circle class="pc-now" cx="${X(b.c).toFixed(1)}" cy="${Y(b.v).toFixed(1)}" r="3"/>`;
+  }
+  const mLens = [31, data.isLeap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  const mNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  let acc = 0;
+  const months = mNames.map((nm, i) => { const x = X(acc + mLens[i] / 2); acc += mLens[i]; return `<text class="pc-mlabel" x="${x.toFixed(1)}" y="145">${nm}</text>`; }).join('');
+  const px = X(pts[mi].c), py = Y(max);
+  const anchor = px < 16 ? 'start' : px > W - 16 ? 'end' : 'middle';
+  const best = `Best ${mode === 'week' ? 'Week' : 'Day'} · ${pts[mi].lab} · ${pcPagesText(max)}`;
+  pagesCurveCtx = { pts, W, L, pw, total, B, T, yMax, best };
+  return `
+    <div class="year-group pc-group">
+      <div class="pc-head">
+        <p class="year-top5-heading">${mode === 'week' ? 'Pages Per Week' : 'Pages Per Day'}</p>
+        <div class="pc-toggle">
+          <button type="button" class="pc-opt${mode === 'week' ? ' active' : ''}" data-action="pc-mode" data-mode="week">Week</button>
+          <button type="button" class="pc-opt${mode === 'day' ? ' active' : ''}" data-action="pc-mode" data-mode="day">Day</button>
+        </div>
+      </div>
+      <p class="pc-read" id="pcRead">${esc(best)}</p>
+      <svg class="pc-chart" data-action="pc-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Pages read per ${mode} in ${year}">
+        <line class="pc-axis" x1="0" y1="${B}" x2="${W}" y2="${B}"/>
+        <path class="pc-area" d="${area}"/>
+        <path class="pc-line" d="${path}"/>
+        ${tail}${nowDot}${months}
+        <circle class="pc-peak" cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="3"/>
+        <text class="pc-peaklabel" x="${px.toFixed(1)}" y="${(py - 7).toFixed(1)}" text-anchor="${anchor}">${max}</text>
+        <line class="pc-cur" y1="6" y2="${B}" style="display:none"/>
+        <circle class="pc-dot" r="3.5" style="display:none"/>
+      </svg>
+    </div>`;
+}
+function pcBind(svg) {
+  const readEl = () => document.getElementById('pcRead');
+  const home = () => {
+    const c = pagesCurveCtx; if (!c) return;
+    svg.querySelector('.pc-cur').style.display = 'none';
+    svg.querySelector('.pc-dot').style.display = 'none';
+    const r = readEl(); if (r) r.textContent = c.best;
+  };
+  const show = e => {
+    const c = pagesCurveCtx; if (!c) return;
+    const rect = svg.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width * c.W;
+    const t = (x - c.L) / c.pw * (c.total - 1);
+    let bi = 0, bd = Infinity;
+    c.pts.forEach((q, i) => { const dd = Math.abs(q.c - t); if (dd < bd) { bd = dd; bi = i; } });
+    const q = c.pts[bi];
+    const cx = c.L + c.pw * q.c / (c.total - 1);
+    const cy = c.B - (c.B - c.T) * q.v / c.yMax;
+    const cur = svg.querySelector('.pc-cur'), dot = svg.querySelector('.pc-dot');
+    cur.setAttribute('x1', cx); cur.setAttribute('x2', cx); cur.style.display = '';
+    dot.setAttribute('cx', cx); dot.setAttribute('cy', cy); dot.style.display = '';
+    const r = readEl(); if (r) r.textContent = `${q.lab} · ${pcPagesText(q.v)}`;
+  };
+  svg.addEventListener('pointerdown', show);
+  svg.addEventListener('pointermove', e => { if (e.pointerType === 'mouse' || e.pressure > 0) show(e); });
+  svg.addEventListener('pointerleave', home);
+  svg.addEventListener('pointercancel', home);
+  svg.addEventListener('pointerup', e => { if (e.pointerType !== 'mouse') home(); });
+}
+
 function renderAchievementSection() {
   const years = getAvailableYears();
   if (!years.length) return `<p class="dash-empty">No data yet. Set an End Date on a book.</p>`;
@@ -2249,7 +2440,8 @@ function renderAchievementSection() {
       </div>
       ${top5Html}
     </div>
-    ${chartHtml ? `<div class="year-group"><p class="year-top5-heading">Finishes by Month</p>${chartHtml}</div>` : ''}`;
+    ${chartHtml ? `<div class="year-group"><p class="year-top5-heading">Finishes by Month</p>${chartHtml}</div>` : ''}
+    ${renderPagesCurve(Number(activeYear))}`;
 }
 
 function polarToCartesian(cx, cy, r, angleDeg) {
@@ -2589,6 +2781,46 @@ function getCalendarDoneBooksByDate() {
   return map;
 }
 
+// Pages read per calendar date (all books, all cycles). Same rule as the Day total in Reading History:
+// last page of the day minus last page of the previous day (first day counts from page 0).
+function getReadingActivityByDate() {
+  const map = {};
+  const pad2 = n => String(n).padStart(2, '0');
+  state.books.forEach(b => {
+    getCycles(b).forEach(c => {
+      const groups = [];
+      normalizeHistoryForDisplay(c.history).forEach(h => {
+        const d = new Date(h.date);
+        if (isNaN(d)) return;
+        const key = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+        let g = groups[groups.length - 1];
+        if (!g || g.key !== key) { g = { key, sod: new Date(d.getFullYear(), d.getMonth(), d.getDate()), page: 0 }; groups.push(g); }
+        g.page = Number(h.page) || 0;
+      });
+      let prev = 0;
+      groups.forEach(g => {
+        const pages = g.page - prev;
+        prev = g.page;
+        if (pages <= 0) return;
+        const dayNum = Math.round((g.sod - groups[0].sod) / 86400000) + 1;
+        const e = map[g.key] || (map[g.key] = { pages: 0, items: [] });
+        e.pages += pages;
+        e.items.push({ title: b.title, dayNum, pages });
+      });
+    });
+  });
+  return map;
+}
+function calHeatLevel(p) { return p <= 0 ? 0 : p <= 25 ? 1 : p <= 50 ? 2 : p <= 100 ? 3 : 4; }
+function renderCalendarReadStrip(activity) {
+  const key = state.calendarReadDate;
+  const act = key ? activity[key] : null;
+  if (!act) return '';
+  const multi = act.items.length > 1;
+  const lines = act.items.map(it => `<p class="cal-read-line">${esc(it.title)} · Day ${it.dayNum}${multi ? ` · +${it.pages} page${it.pages === 1 ? '' : 's'}` : ''}</p>`).join('');
+  return `<div class="cal-read-strip"><p class="cal-read-head">${calFmtDateHead(key)} · +${act.pages} page${act.pages === 1 ? '' : 's'}</p>${lines}</div>`;
+}
+
 function calDaysInMonth(y, m) { return new Date(y, m + 1, 0).getDate(); }
 function calFirstWeekday(y, m) { return new Date(y, m, 1).getDay(); }
 function calFmtDateHead(dateKey) {
@@ -2599,6 +2831,7 @@ function renderCalendarSection() {
   const year = state.calendarYear;
   const month = state.calendarMonth;
   const byDate = getCalendarDoneBooksByDate();
+  const activity = getReadingActivityByDate();
   const numDays = calDaysInMonth(year, month);
   const monthName = new Date(year, month, 1).toLocaleDateString('en-US', { month: 'long' });
 
@@ -2613,7 +2846,12 @@ function renderCalendarSection() {
     const books = byDate[dateKey] || [];
     const isSelected = state.calendarSelectedDate === dateKey;
     const num = `<span class="cal-day-head"><span class="cal-day-num">${day}</span></span>`;
-    if (!books.length) return `<div class="cal-day-cell">${num}</div>`;
+    if (!books.length) {
+      const act = activity[dateKey];
+      if (!act) return `<div class="cal-day-cell">${num}</div>`;
+      const isRead = state.calendarReadDate === dateKey;
+      return `<button type="button" class="cal-day-cell has-heat heat-${calHeatLevel(act.pages)}${isRead ? ' selected' : ''}" data-action="calendar-pick-read-day" data-date="${dateKey}" aria-label="${act.pages} pages">${num}</button>`;
+    }
     const b = books[0];
     const cover = `<div class="cover cal-cell-cover">${renderCoverPlaceholder(b.title)}${b.coverUrl ? `<img class="cover-img-layer" src="${esc(b.coverUrl)}" alt="" onerror="this.style.display='none'" />` : ''}</div>`;
     const count = books.length > 1 ? `<span class="cal-day-count">+${books.length - 1}</span>` : '';
@@ -2632,6 +2870,8 @@ function renderCalendarSection() {
       </div>
       <div class="cal-weekdays">${weekdayLabels.map(w => `<div class="cal-weekday">${w}</div>`).join('')}</div>
       <div class="cal-days">${dayCellsHtml}</div>
+      <div class="cal-heat-legend"><span>Less</span><span class="cal-heat-sw"></span><span class="cal-heat-sw heat-1"></span><span class="cal-heat-sw heat-2"></span><span class="cal-heat-sw heat-3"></span><span class="cal-heat-sw heat-4"></span><span>More</span></div>
+      ${renderCalendarReadStrip(activity)}
     </div>
     <div style="display:flex;gap:10px;margin-top:10px;">
     <button type="button" class="btn-secondary-sm" data-action="open-wrapup" style="flex:1;min-width:0;font-family:Outfit, sans-serif;font-weight:500;font-size:14px;color:var(--text);border:1px solid var(--accent-text);border-radius:14px;padding:12px;box-shadow:0 10px 22px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.06);">${ICONS.mailSm} Month in Pages</button>
@@ -5680,6 +5920,7 @@ function attachHandlers() {
     } else if (action === 'pick-dashboard-cat') {
       el.addEventListener('click', () => {
         state.dashboardCategory = el.getAttribute('data-cat');
+        state.calendarReadDate = null;
         render();
       });
     } else if (action === 'calendar-prev-month') {
@@ -5687,6 +5928,7 @@ function attachHandlers() {
         state.calendarMonth -= 1;
         if (state.calendarMonth < 0) { state.calendarMonth = 11; state.calendarYear -= 1; }
         state.calendarSelectedDate = null;
+        state.calendarReadDate = null;
         render();
       });
     } else if (action === 'calendar-next-month') {
@@ -5694,6 +5936,7 @@ function attachHandlers() {
         state.calendarMonth += 1;
         if (state.calendarMonth > 11) { state.calendarMonth = 0; state.calendarYear += 1; }
         state.calendarSelectedDate = null;
+        state.calendarReadDate = null;
         render();
       });
     } else if (action === 'open-cal-month-sheet') {
@@ -5707,6 +5950,7 @@ function attachHandlers() {
         e.stopPropagation();
         state.calendarMonth = parseInt(el.getAttribute('data-month'), 10);
         state.calendarSelectedDate = null;
+        state.calendarReadDate = null;
         state.showCalMonthSheet = false;
         render();
       });
@@ -5715,6 +5959,7 @@ function attachHandlers() {
         e.stopPropagation();
         state.calendarYear = parseInt(el.getAttribute('data-year'), 10);
         state.calendarSelectedDate = null;
+        state.calendarReadDate = null;
         state.showCalYearSheet = false;
         render();
       });
@@ -5722,8 +5967,22 @@ function attachHandlers() {
       el.addEventListener('click', () => {
         const dateKey = el.getAttribute('data-date');
         state.calendarSelectedDate = state.calendarSelectedDate === dateKey ? null : dateKey;
+        state.calendarReadDate = null;
         render();
       });
+    } else if (action === 'calendar-pick-read-day') {
+      el.addEventListener('click', () => {
+        const dateKey = el.getAttribute('data-date');
+        state.calendarReadDate = state.calendarReadDate === dateKey ? null : dateKey;
+        render();
+      });
+    } else if (action === 'pc-mode') {
+      el.addEventListener('click', () => {
+        state.pagesCurveMode = el.getAttribute('data-mode') === 'day' ? 'day' : 'week';
+        render();
+      });
+    } else if (action === 'pc-chart') {
+      pcBind(el);
     } else if (action === 'calendar-close-day') {
       el.addEventListener('click', e => { e.stopPropagation(); state.calendarSelectedDate = null; render(); });
     } else if (action === 'pie-open-slice') {
@@ -5922,7 +6181,7 @@ function attachHandlers() {
     if (state.activeTab !== 'dashboard' || e.touches.length !== 1) return;
     if (overlayOpen()) return;
     const t = e.target;
-    if (t.closest && t.closest('input, textarea, select')) return;
+    if (t.closest && t.closest('input, textarea, select, .pc-chart')) return;
     if (inHorizontalScroller(t)) return;
     sx = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now();
     tracking = true;
