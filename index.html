@@ -92,24 +92,39 @@
   .year-group-stats { font-size: 11.5px; color: var(--accent-text); }
   .month-chart { display: flex; align-items: flex-end; gap: 4px; margin-top: 8px; }
   .month-col { flex: 1; display: flex; flex-direction: column; align-items: center; }
-  .month-col-count { font-size: 10px; font-weight: 700; color: var(--text-soft); height: 13px; font-variant-numeric: tabular-nums; }
+  .month-col-count { font-size: 10px; font-weight: 600; color: var(--accent-text); height: 13px; font-variant-numeric: tabular-nums; }
+  button.month-col { background: none; border: none; padding: 0; margin: 0; font-family: inherit; cursor: pointer; min-width: 0; -webkit-tap-highlight-color: transparent; }
+  .month-chart.has-sel .month-col:not(.selected) { opacity: 0.35; }
+  .year-head-stack { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .year-chip { display: inline-flex; align-items: center; gap: 4px; padding: 0 10px; height: 28px; border-radius: 10px; background: transparent; border: 1px solid var(--accent-text); font-family: var(--font-display); font-weight: 700; font-size: 12px; color: var(--accent-text); cursor: pointer; }
+  .year-chip svg { width: 12px; height: 12px; color: var(--accent-text); flex-shrink: 0; }
   .month-col-track { width: 100%; max-width: 18px; height: 84px; display: flex; align-items: flex-end; background: var(--bg); border-radius: 4px; overflow: hidden; }
   .month-col-fill { width: 100%; background: var(--accent); border-radius: 3px 3px 0 0; min-height: 0; }
   .month-col-label { font-size: 9.5px; color: var(--text-faint); margin-top: 4px; }
   .pc-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .pc-head .year-top5-heading { margin: 0; }
+  .year-top5-heading.chart-heading-accent { color: var(--accent-text); }
   .pc-toggle { display: flex; gap: 2px; padding: 2px; border: 1px solid var(--accent-text); border-radius: 10px; flex-shrink: 0; }
   .pc-opt { border: none; background: transparent; color: var(--text-soft); font-family: inherit; font-size: 12px; padding: 3px 10px; border-radius: 8px; cursor: pointer; }
   .pc-opt.active { background: var(--accent); color: var(--accent-contrast); }
-  .pc-read { font-size: 12px; font-weight: 600; color: var(--accent-text); margin: 8px 0 6px; min-height: 18px; }
+  .pc-read { font-size: 10.5px; font-weight: 600; color: var(--accent-text); margin: 8px 0 2px; min-height: 14px; }
+  .pc-sub { font-size: 10.5px; color: var(--text-soft); margin: 0 0 6px; min-height: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pc-zoom-chip { border: none; background: var(--accent); color: var(--accent-contrast); font-family: inherit; font-size: 11px; font-weight: 700; padding: 0 10px; height: 24px; border-radius: 8px; cursor: pointer; flex-shrink: 0; }
+  .pc-tap { cursor: pointer; }
+  .pc-ly-line { fill: none; stroke: var(--text-faint); stroke-opacity: 0.55; stroke-width: 1.2; stroke-linejoin: round; }
+  .pc-foot { display: flex; justify-content: flex-start; margin-top: 8px; }
+  .pc-ly { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--accent-text); background: transparent; font-family: inherit; font-size: 12px; color: var(--text-soft); padding: 3px 10px; border-radius: 10px; cursor: pointer; }
+  .pc-ly.on { background: var(--accent); color: var(--accent-contrast); }
+  .pc-ly:disabled { opacity: 0.45; cursor: default; }
+  .pc-ly-sw { width: 14px; height: 0; border-top: 2px solid currentColor; opacity: 0.6; }
   .pc-chart { display: block; width: 100%; height: auto; touch-action: pan-y; cursor: crosshair; user-select: none; -webkit-user-select: none; }
   .pc-axis { stroke: var(--border); stroke-width: 1; }
   .pc-area { fill: rgba(var(--accent-rgb), 0.35); stroke: none; }
   .pc-line { fill: none; stroke: var(--accent-text); stroke-width: 1.3; stroke-linejoin: round; }
   .pc-tail { fill: none; stroke: var(--accent-text); stroke-width: 1.3; stroke-dasharray: 3 3; }
-  .pc-mlabel { font-size: 11px; fill: var(--text-faint); text-anchor: middle; }
+  .pc-mlabel { font-size: 9.5px; fill: var(--text-faint); text-anchor: middle; }
   .pc-peak { fill: var(--accent-text); }
-  .pc-peaklabel { font-size: 11px; font-weight: 600; fill: var(--accent-text); }
+  .pc-peaklabel { font-size: 10px; font-weight: 600; fill: var(--accent-text); }
   .pc-now { fill: var(--surface); stroke: var(--accent-text); stroke-width: 1.4; }
   .pc-cur { stroke: var(--text-faint); stroke-width: 0.8; stroke-dasharray: 2 2; }
   .pc-dot { fill: var(--surface); stroke: var(--accent-text); stroke-width: 1.5; }
@@ -138,17 +153,23 @@
   .cal-day-cell.cal-day-blank { background: var(--bg); }
   .cal-day-cell.has-heat { cursor: pointer; }
   .cal-day-cell.has-heat .cal-day-num { color: var(--text); }
-  .cal-day-cell.heat-1 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.3), rgba(var(--accent-rgb), 0.3)); }
-  .cal-day-cell.heat-2 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.55), rgba(var(--accent-rgb), 0.55)); }
-  .cal-day-cell.heat-3 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.8), rgba(var(--accent-rgb), 0.8)); }
-  .cal-day-cell.heat-4 { background-image: linear-gradient(var(--accent), var(--accent)); }
+  .cal-day-cell.heat-1 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.22), rgba(var(--accent-rgb), 0.22)); }
+  .cal-day-cell.heat-2 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.4), rgba(var(--accent-rgb), 0.4)); }
+  .cal-day-cell.heat-3 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.6), rgba(var(--accent-rgb), 0.6)); }
+  .cal-day-cell.heat-4 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.8), rgba(var(--accent-rgb), 0.8)); }
+  .cal-day-cell.heat-5 { background-image: linear-gradient(var(--accent), var(--accent)); }
+  .cal-day-cell.heat-6 { background-image: linear-gradient(var(--accent-text), var(--accent-text)); }
+  .cal-day-cell.heat-6 .cal-day-num { color: var(--surface); }
   .cal-day-cell.has-heat.selected::after { box-shadow: inset 0 0 0 2px var(--accent-dark); }
+  .cal-day-cell.heat-5.selected::after, .cal-day-cell.heat-6.selected::after { box-shadow: inset 0 0 0 2px var(--text); }
   .cal-heat-legend { display: flex; align-items: center; justify-content: flex-end; gap: 5px; margin-top: 10px; font-size: 11px; color: var(--text-faint); }
   .cal-heat-sw { width: 14px; height: 14px; box-sizing: border-box; background-color: var(--surface); border: 1px solid var(--border); }
-  .cal-heat-sw.heat-1 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.3), rgba(var(--accent-rgb), 0.3)); border-color: transparent; }
-  .cal-heat-sw.heat-2 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.55), rgba(var(--accent-rgb), 0.55)); border-color: transparent; }
-  .cal-heat-sw.heat-3 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.8), rgba(var(--accent-rgb), 0.8)); border-color: transparent; }
-  .cal-heat-sw.heat-4 { background-image: linear-gradient(var(--accent), var(--accent)); border-color: transparent; }
+  .cal-heat-sw.heat-1 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.22), rgba(var(--accent-rgb), 0.22)); border-color: transparent; }
+  .cal-heat-sw.heat-2 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.4), rgba(var(--accent-rgb), 0.4)); border-color: transparent; }
+  .cal-heat-sw.heat-3 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.6), rgba(var(--accent-rgb), 0.6)); border-color: transparent; }
+  .cal-heat-sw.heat-4 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.8), rgba(var(--accent-rgb), 0.8)); border-color: transparent; }
+  .cal-heat-sw.heat-5 { background-image: linear-gradient(var(--accent), var(--accent)); border-color: transparent; }
+  .cal-heat-sw.heat-6 { background-image: linear-gradient(var(--accent-text), var(--accent-text)); border-color: transparent; }
   .cal-read-strip { margin-top: 12px; background: var(--bg); border-radius: 10px; padding: 10px 12px; }
   .cal-read-head { font-size: 12px; font-weight: 700; color: var(--accent-text); margin: 0; }
   .cal-read-line { font-size: 12px; color: var(--text-soft); margin: 2px 0 0; }
@@ -766,6 +787,8 @@ let state = {
   calendarSelectedDate: null,
   calendarReadDate: null,
   pagesCurveMode: 'week',
+  pagesCurveLastYear: false,
+  pagesCurveMonth: null,
   statisticsField: 'writer',
   pieSel: null,
   query: '',
@@ -1190,7 +1213,7 @@ function getYearGrouping(books, yearFilter) {
         count: e.books.length,
         totalPages: e.totalPages,
         perDay: e.totalPages / 365,
-        top5: allSorted.slice(0, 7),
+        top5: allSorted.slice(0, 5),
         allSorted
       };
     });
@@ -2255,8 +2278,8 @@ function renderYearSheet() {
       ${esc(y)} ${y === activeYear ? ICONS.check : ''}
     </button>`).join('');
   return `
-    <div class="picker-sheet-backdrop" data-action="close-year-sheet">
-      <div class="picker-sheet" data-action="stop">
+    <div class="cal-sheet-backdrop" data-action="close-year-sheet">
+      <div class="cal-sheet" data-action="stop">
         <p class="picker-sheet-title">Select Year</p>
         <div class="sheet-option-list">${options}</div>
       </div>
@@ -2265,8 +2288,12 @@ function renderYearSheet() {
 
 // ---- Pages Per Week / Pages Per Day curve (Achievement) ----
 let pagesCurveCtx = null;
-function getPagesCurveData(year) {
-  const act = getReadingActivityByDate();
+const PC_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+function pcMonthLens(isLeap) { return [31, isLeap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]; }
+function pcMonthStarts(isLeap) { let acc = 0; return pcMonthLens(isLeap).map(l => { const st = acc; acc += l; return st; }); }
+function pcPagesText(v) { return `${v} ${v === 1 ? 'Page' : 'Pages'}`; }
+function getPagesCurveData(year, actIn) {
+  const act = actIn || getReadingActivityByDate();
   const isLeap = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
   const total = isLeap ? 366 : 365;
   const now = new Date();
@@ -2276,7 +2303,7 @@ function getPagesCurveData(year) {
     ? Math.round((new Date(curYear, now.getMonth(), now.getDate()) - new Date(year, 0, 1)) / 86400000)
     : total - 1;
   const pad2 = n => String(n).padStart(2, '0');
-  const days = [];
+  const days = [], items = [];
   let any = false;
   for (let i = 0; i <= lastIdx; i++) {
     const d = new Date(year, 0, 1 + i);
@@ -2284,45 +2311,76 @@ function getPagesCurveData(year) {
     const v = e ? e.pages : 0;
     if (v > 0) any = true;
     days.push(v);
+    items.push(e ? e.items : []);
   }
   if (!any) return null;
-  return { year, total, days, lastIdx, isCurrent: year === curYear, isLeap };
+  return { year, total, days, items, lastIdx, isCurrent: year === curYear, isLeap };
 }
-function pcPagesText(v) { return `${v} ${v === 1 ? 'Page' : 'Pages'}`; }
-function renderPagesCurve(year) {
-  const data = getPagesCurveData(year);
-  if (!data) { pagesCurveCtx = null; return ''; }
-  const mode = state.pagesCurveMode === 'day' ? 'day' : 'week';
-  const { total, days, isCurrent } = data;
+// Points for a range of day indexes [s, e] of one year. c = position inside the range (day units).
+function pcBuildPts(data, mode, s, e) {
+  const { year, days, items } = data;
+  const end = Math.min(e, days.length - 1);
+  if (end < s) return [];
   const sd = i => new Date(year, 0, 1 + i).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  let pts = [];
-  let inProgress = false;
+  const titleOf = idxs => {
+    const tot = new Map();
+    idxs.forEach(i => items[i].forEach(it => tot.set(it.title, (tot.get(it.title) || 0) + it.pages)));
+    const names = [...tot.entries()].sort((a, b) => b[1] - a[1]).map(x => x[0]);
+    if (!names.length) return '';
+    return names.length <= 2 ? names.join(', ') : `${names.slice(0, 2).join(', ')} +${names.length - 2} More`;
+  };
   if (mode === 'week') {
-    let cw = null;
     const weeks = [];
-    days.forEach((v, i) => {
+    let cw = null;
+    for (let i = s; i <= end; i++) {
       const dow = new Date(year, 0, 1 + i).getDay();
-      if (!cw || dow === 1) { cw = { s: i, e: i, sum: 0 }; weeks.push(cw); }
-      cw.e = i; cw.sum += v;
-    });
-    const lastDow = new Date(year, 0, 1 + days.length - 1).getDay();
-    inProgress = isCurrent && lastDow !== 0 && weeks.length > 1;
-    pts = weeks.map((w, i) => ({
-      c: (w.s + w.e) / 2, v: w.sum,
-      lab: (w.s === w.e ? sd(w.s) : `${sd(w.s)} – ${sd(w.e)}`) + (inProgress && i === weeks.length - 1 ? ' · So Far' : '')
-    }));
-  } else {
-    pts = days.map((v, i) => ({ c: i, v, lab: new Date(year, 0, 1 + i).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) }));
+      if (!cw || dow === 1) { cw = { s: i, e: i, sum: 0, idx: [] }; weeks.push(cw); }
+      cw.e = i; cw.sum += days[i]; cw.idx.push(i);
+    }
+    return weeks.map(w => ({ c: (w.s + w.e) / 2 - s, v: w.sum, lab: w.s === w.e ? sd(w.s) : `${sd(w.s)} – ${sd(w.e)}`, sub: titleOf(w.idx) }));
   }
+  const out = [];
+  for (let i = s; i <= end; i++) {
+    out.push({ c: i - s, v: days[i], lab: new Date(year, 0, 1 + i).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }), sub: titleOf([i]) });
+  }
+  return out;
+}
+function renderPagesCurve(year) {
+  const act = getReadingActivityByDate();
+  const data = getPagesCurveData(year, act);
+  if (!data) { pagesCurveCtx = null; return ''; }
+  const mLens = pcMonthLens(data.isLeap), mStart = pcMonthStarts(data.isLeap);
+  let zoom = state.pagesCurveMonth;
+  if (zoom === null || zoom === undefined || zoom < 0 || zoom > 11 || mStart[zoom] > data.lastIdx) zoom = null;
+  const mode = zoom !== null ? 'day' : (state.pagesCurveMode === 'day' ? 'day' : 'week');
+  const s0 = zoom !== null ? mStart[zoom] : 0;
+  const e0 = zoom !== null ? mStart[zoom] + mLens[zoom] - 1 : data.total - 1;
+  const axisN = e0 - s0 + 1;
+  const pts = pcBuildPts(data, mode, s0, e0);
+  const n = pts.length;
+  let inProgress = false;
+  if (mode === 'week' && data.isCurrent && n > 1) inProgress = new Date(year, 0, 1 + data.lastIdx).getDay() !== 0;
+  if (inProgress) pts[n - 1].lab += ' · So Far';
+  // Last year (shadow line)
+  const prevData = getPagesCurveData(year - 1, act);
+  let lyPts = [];
+  if (prevData) {
+    const pStart = pcMonthStarts(prevData.isLeap), pLens = pcMonthLens(prevData.isLeap);
+    const ps = zoom !== null ? pStart[zoom] : 0;
+    const pe = zoom !== null ? pStart[zoom] + pLens[zoom] - 1 : prevData.total - 1;
+    lyPts = pcBuildPts(prevData, mode, ps, pe);
+  }
+  const showLy = !!state.pagesCurveLastYear && lyPts.length > 0;
   let max = 0, mi = 0;
   pts.forEach((q, i) => { if (q.v > max) { max = q.v; mi = i; } });
+  const hasData = max > 0;
+  const lyMax = showLy ? Math.max(0, ...lyPts.map(q => q.v)) : 0;
   const step = mode === 'week' ? 50 : 10;
-  const yMax = Math.max(step, Math.ceil(max / step) * step);
+  const yMax = Math.max(step, Math.ceil(Math.max(max, lyMax) / step) * step);
   const W = Math.max(280, Math.min(window.innerWidth || 380, 640) - 64), H = 150;
   const L = 6, R = 6, T = 24, B = 128, pw = W - L - R;
-  const X = c => L + pw * c / (total - 1);
+  const X = c => L + pw * c / Math.max(1, axisN - 1);
   const Y = v => B - (B - T) * v / yMax;
-  const n = pts.length;
   const solidEnd = inProgress ? n - 1 : n;
   let path = '';
   for (let i = 0; i < solidEnd; i++) path += `${i ? 'L' : 'M'}${X(pts[i].c).toFixed(1)} ${Y(pts[i].v).toFixed(1)}`;
@@ -2334,58 +2392,90 @@ function renderPagesCurve(year) {
     tail = `<path class="pc-tail" d="M${X(a.c).toFixed(1)} ${Y(a.v).toFixed(1)}L${X(b.c).toFixed(1)} ${Y(b.v).toFixed(1)}"/>`;
     nowDot = `<circle class="pc-now" cx="${X(b.c).toFixed(1)}" cy="${Y(b.v).toFixed(1)}" r="3"/>`;
   }
-  const mLens = [31, data.isLeap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-  const mNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  let acc = 0;
-  const months = mNames.map((nm, i) => { const x = X(acc + mLens[i] / 2); acc += mLens[i]; return `<text class="pc-mlabel" x="${x.toFixed(1)}" y="145">${nm}</text>`; }).join('');
-  const px = X(pts[mi].c), py = Y(max);
+  let lyLine = '';
+  if (showLy) {
+    let lp2 = '';
+    lyPts.forEach((q, i) => { lp2 += `${i ? 'L' : 'M'}${X(q.c).toFixed(1)} ${Y(q.v).toFixed(1)}`; });
+    lyLine = `<path class="pc-ly-line" d="${lp2}"/>`;
+  }
+  let axisLabels = '';
+  if (zoom === null) {
+    axisLabels = PC_MONTHS.map((nm, i) => {
+      const x = X(mStart[i] + mLens[i] / 2);
+      const tappable = mStart[i] <= data.lastIdx;
+      return `<g class="${tappable ? 'pc-tap' : ''}"${tappable ? ` data-action="pc-zoom" data-month="${i}"` : ''}><rect x="${(x - 14).toFixed(1)}" y="132" width="28" height="18" fill="transparent"/><text class="pc-mlabel" x="${x.toFixed(1)}" y="145">${nm}</text></g>`;
+    }).join('');
+  } else {
+    const dim = mLens[zoom];
+    const ticks = [1, 5, 10, 15, 20, 25];
+    if (dim >= 30) ticks.push(dim);
+    axisLabels = ticks.map(d => `<text class="pc-mlabel" x="${X(d - 1).toFixed(1)}" y="145">${d}</text>`).join('');
+  }
+  const px = hasData ? X(pts[mi].c) : 0, py = hasData ? Y(max) : 0;
   const anchor = px < 16 ? 'start' : px > W - 16 ? 'end' : 'middle';
-  const best = `Best ${mode === 'week' ? 'Week' : 'Day'} · ${pts[mi].lab} · ${pcPagesText(max)}`;
-  pagesCurveCtx = { pts, W, L, pw, total, B, T, yMax, best };
+  const peak = hasData ? `<circle class="pc-peak" cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="3"/><text class="pc-peaklabel" x="${px.toFixed(1)}" y="${(py - 7).toFixed(1)}" text-anchor="${anchor}">${max}</text>` : '';
+  const best = hasData ? `Best ${mode === 'week' ? 'Week' : 'Day'} · ${pts[mi].lab} · ${pcPagesText(max)}` : 'No Pages Logged';
+  const bestSub = hasData ? pts[mi].sub : '';
+  pagesCurveCtx = { pts, lyPts, showLy, mode, W, L, pw, axisN, B, T, yMax, best, bestSub };
+  const headRight = zoom !== null
+    ? `<button type="button" class="pc-zoom-chip" data-action="pc-unzoom" aria-label="Back to full year">${PC_MONTHS[zoom]} ✕</button>`
+    : `<div class="pc-toggle">
+          <button type="button" class="pc-opt${mode === 'week' ? ' active' : ''}" data-action="pc-mode" data-mode="week">Week</button>
+          <button type="button" class="pc-opt${mode === 'day' ? ' active' : ''}" data-action="pc-mode" data-mode="day">Day</button>
+        </div>`;
+  const lyBtn = `<div class="pc-foot"><button type="button" class="pc-ly${showLy ? ' on' : ''}"${prevData ? ' data-action="pc-last-year"' : ' disabled'} aria-pressed="${showLy}"><span class="pc-ly-sw"></span>${prevData ? 'Last Year' : 'Last Year · No Data'}</button></div>`;
   return `
     <div class="year-group pc-group">
       <div class="pc-head">
-        <p class="year-top5-heading">${mode === 'week' ? 'Pages Per Week' : 'Pages Per Day'}</p>
-        <div class="pc-toggle">
-          <button type="button" class="pc-opt${mode === 'week' ? ' active' : ''}" data-action="pc-mode" data-mode="week">Week</button>
-          <button type="button" class="pc-opt${mode === 'day' ? ' active' : ''}" data-action="pc-mode" data-mode="day">Day</button>
-        </div>
+        <p class="year-top5-heading chart-heading-accent">${mode === 'week' ? 'Pages Per Week' : 'Pages Per Day'}</p>
+        ${headRight}
       </div>
       <p class="pc-read" id="pcRead">${esc(best)}</p>
+      <p class="pc-sub" id="pcSub">${esc(bestSub)}</p>
       <svg class="pc-chart" data-action="pc-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Pages read per ${mode} in ${year}">
         <line class="pc-axis" x1="0" y1="${B}" x2="${W}" y2="${B}"/>
+        ${lyLine}
         <path class="pc-area" d="${area}"/>
         <path class="pc-line" d="${path}"/>
-        ${tail}${nowDot}${months}
-        <circle class="pc-peak" cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="3"/>
-        <text class="pc-peaklabel" x="${px.toFixed(1)}" y="${(py - 7).toFixed(1)}" text-anchor="${anchor}">${max}</text>
+        ${tail}${nowDot}${axisLabels}${peak}
         <line class="pc-cur" y1="6" y2="${B}" style="display:none"/>
         <circle class="pc-dot" r="3.5" style="display:none"/>
       </svg>
+      ${lyBtn}
     </div>`;
 }
 function pcBind(svg) {
-  const readEl = () => document.getElementById('pcRead');
+  const el2 = id => document.getElementById(id);
   const home = () => {
     const c = pagesCurveCtx; if (!c) return;
     svg.querySelector('.pc-cur').style.display = 'none';
     svg.querySelector('.pc-dot').style.display = 'none';
-    const r = readEl(); if (r) r.textContent = c.best;
+    const r = el2('pcRead'); if (r) r.textContent = c.best;
+    const sb = el2('pcSub'); if (sb) sb.textContent = c.bestSub;
   };
   const show = e => {
-    const c = pagesCurveCtx; if (!c) return;
+    const c = pagesCurveCtx; if (!c || !c.pts.length) return;
+    if (e.target && e.target.closest && e.target.closest('.pc-tap')) return;
     const rect = svg.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width * c.W;
-    const t = (x - c.L) / c.pw * (c.total - 1);
+    const t = (x - c.L) / c.pw * Math.max(1, c.axisN - 1);
     let bi = 0, bd = Infinity;
     c.pts.forEach((q, i) => { const dd = Math.abs(q.c - t); if (dd < bd) { bd = dd; bi = i; } });
     const q = c.pts[bi];
-    const cx = c.L + c.pw * q.c / (c.total - 1);
+    const cx = c.L + c.pw * q.c / Math.max(1, c.axisN - 1);
     const cy = c.B - (c.B - c.T) * q.v / c.yMax;
     const cur = svg.querySelector('.pc-cur'), dot = svg.querySelector('.pc-dot');
     cur.setAttribute('x1', cx); cur.setAttribute('x2', cx); cur.style.display = '';
     dot.setAttribute('cx', cx); dot.setAttribute('cy', cy); dot.style.display = '';
-    const r = readEl(); if (r) r.textContent = `${q.lab} · ${pcPagesText(q.v)}`;
+    let txt = `${q.lab} · ${pcPagesText(q.v)}`;
+    if (c.showLy) {
+      const tol = c.mode === 'week' ? 4 : 0.5;
+      let lb = null, ld = Infinity;
+      c.lyPts.forEach(p2 => { const dd = Math.abs(p2.c - q.c); if (dd < ld) { ld = dd; lb = p2; } });
+      if (lb && ld <= tol) txt += ` · Last Year ${lb.v}`;
+    }
+    const r = el2('pcRead'); if (r) r.textContent = txt;
+    const sb = el2('pcSub'); if (sb) sb.textContent = q.sub;
   };
   svg.addEventListener('pointerdown', show);
   svg.addEventListener('pointermove', e => { if (e.pointerType === 'mouse' || e.pressure > 0) show(e); });
@@ -2420,27 +2510,30 @@ function renderAchievementSection() {
   if (m) {
     const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const max = Math.max(1, ...m.counts);
+    const ps = state.pieSel;
+    const finishSelMonth = (ps && ps.kind === 'finish' && ps.year === String(g.year)) ? ps.month : null;
     const bars = m.counts.map((c, i) => {
       const pct = Math.max(c > 0 ? 6 : 0, Math.round((c / max) * 100));
-      return `
-        <div class="month-col">
+      const inner = `
           <span class="month-col-count">${c || ''}</span>
           <div class="month-col-track"><div class="month-col-fill" style="height:${pct}%;"></div></div>
-          <span class="month-col-label">${monthLabels[i]}</span>
-        </div>`;
+          <span class="month-col-label">${monthLabels[i]}</span>`;
+      if (c > 0) {
+        return `<button type="button" class="month-col${finishSelMonth === i ? ' selected' : ''}" data-action="pick-finish-month" data-month="${i}" data-year="${esc(g.year)}" aria-label="${monthLabels[i]}: ${c} book${c === 1 ? '' : 's'}">${inner}</button>`;
+      }
+      return `<div class="month-col">${inner}</div>`;
     }).join('');
-    chartHtml = `<div class="month-chart" style="margin-top:16px;">${bars}</div>`;
+    chartHtml = `<div class="month-chart${finishSelMonth !== null ? ' has-sel' : ''}" style="margin-top:16px;">${bars}</div>`;
   }
   return `
-    ${trigger}
     <div class="year-group">
-      <div class="year-group-head">
-        <span class="year-group-title">${esc(g.year)}</span>
+      <div class="year-group-head year-head-stack">
+        <button type="button" class="year-chip" data-action="open-year-sheet">${esc(g.year)} ${ICONS.chevronDown}</button>
         <span class="year-group-stats">${g.count} book${g.count === 1 ? '' : 's'} · ${g.totalPages} pages · ${g.perDay.toFixed(1)} pg/day avg</span>
       </div>
       ${top5Html}
     </div>
-    ${chartHtml ? `<div class="year-group"><p class="year-top5-heading">Finishes by Month</p>${chartHtml}</div>` : ''}
+    ${chartHtml ? `<div class="year-group"><p class="year-top5-heading chart-heading-accent">Finishes by Month</p>${chartHtml}</div>` : ''}
     ${renderPagesCurve(Number(activeYear))}`;
 }
 
@@ -2691,30 +2784,59 @@ function pieCloseAt(e, backdrop) {
     const under = document.elementFromPoint(e.clientX, e.clientY);
     backdrop.style.pointerEvents = '';
     const hit = under && under.closest ? under.closest('[data-action="pie-open-slice"]') : null;
+    const hitBar = under && under.closest ? under.closest('[data-action="pick-finish-month"]') : null;
     if (hit) {
       const idx = Number(hit.getAttribute('data-idx'));
       const same = state.pieSel && state.pieSel.idx === idx;
       if (!same) next = pieMeasure(hit.closest('svg'), idx);
+    } else if (hitBar) {
+      const same = state.pieSel && state.pieSel.kind === 'finish' && state.pieSel.month === Number(hitBar.getAttribute('data-month'));
+      if (!same) next = finishMeasure(hitBar);
     }
   } catch (err) { backdrop.style.pointerEvents = ''; }
   state.pieSel = next;
   render();
 }
 
+const FINISH_MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+function getFinishMonthBooks(year, month) {
+  return getDoneEntries()
+    .filter(b => b.endDate && b.endDate.slice(0, 4) === String(year) && parseInt(b.endDate.slice(5, 7), 10) - 1 === month)
+    .sort((a, b) => a.endDate.localeCompare(b.endDate) || String(a.title).localeCompare(String(b.title)));
+}
+// Same popup as the Statistics pie, anchored to a Finishes by Month bar
+function finishMeasure(el) {
+  const r = el.getBoundingClientRect();
+  const vw = window.innerWidth || 400;
+  return {
+    kind: 'finish', year: el.getAttribute('data-year'), month: Number(el.getAttribute('data-month')),
+    side: (r.left + r.right) / 2 < vw / 2 ? 'left' : 'right',
+    rect: { left: r.left, right: r.right, top: r.top, bottom: r.bottom },
+    fs: 12, expanded: false, page: 0
+  };
+}
 function renderPiePopup() {
   const sel = state.pieSel;
   if (!sel) return '';
-  if (sel.field !== state.statisticsField) { state.pieSel = null; return ''; }
-  const active = STATISTICS_FIELDS.find(f => f.key === state.statisticsField) || STATISTICS_FIELDS[0];
-  const sl = buildPieSlices(rankBooksBy(state.books, active.getKey))[sel.idx];
-  if (!sl) { state.pieSel = null; return ''; }
-  const name = sl[0];
-  const isOthers = !!sl[3];
-  const cmp = (x, y) => String(x).localeCompare(String(y), undefined, { sensitivity: 'base' });
-  // Others: urut per nama kategori dulu (buku dengan nama yang sama mengumpul), baru judul; slice lain tetap urut judul
-  const books = [...(sl[2] || [])].sort(isOthers
-    ? (a, b) => cmp((a.names && a.names[0]) || '', (b.names && b.names[0]) || '') || cmp(a.title, b.title)
-    : (a, b) => cmp(a.title, b.title));
+  let name, isOthers = false, books;
+  if (sel.kind === 'finish') {
+    const list = getFinishMonthBooks(sel.year, sel.month);
+    if (!list.length) { state.pieSel = null; return ''; }
+    name = FINISH_MONTH_NAMES[sel.month];
+    books = list.map(b => ({ id: b.id, title: b.title }));
+  } else {
+    if (sel.field !== state.statisticsField) { state.pieSel = null; return ''; }
+    const active = STATISTICS_FIELDS.find(f => f.key === state.statisticsField) || STATISTICS_FIELDS[0];
+    const sl = buildPieSlices(rankBooksBy(state.books, active.getKey))[sel.idx];
+    if (!sl) { state.pieSel = null; return ''; }
+    name = sl[0];
+    isOthers = !!sl[3];
+    const cmp = (x, y) => String(x).localeCompare(String(y), undefined, { sensitivity: 'base' });
+    // Others: urut per nama kategori dulu (buku dengan nama yang sama mengumpul), baru judul; slice lain tetap urut judul
+    books = [...(sl[2] || [])].sort(isOthers
+      ? (a, b) => cmp((a.names && a.names[0]) || '', (b.names && b.names[0]) || '') || cmp(a.title, b.title)
+      : (a, b) => cmp(a.title, b.title));
+  }
   const n = books.length;
   const fs = sel.fs || 12;
   const row = 1.8 * fs, head = 1.95 * fs, pad = 0.575 * fs, lp = 0.4 * fs + 2, pg = 0.3 * fs;   // pad = setengah dari (padding atas 0.45em + bawah 0.7em); head = tinggi 1.85em + margin 0.1em; lp = padding + border kotak abu, pg = jarak kotak ke pager
@@ -2811,7 +2933,7 @@ function getReadingActivityByDate() {
   });
   return map;
 }
-function calHeatLevel(p) { return p <= 0 ? 0 : p <= 25 ? 1 : p <= 50 ? 2 : p <= 100 ? 3 : 4; }
+function calHeatLevel(p) { return p <= 0 ? 0 : p <= 10 ? 1 : p <= 25 ? 2 : p <= 50 ? 3 : p <= 100 ? 4 : p <= 200 ? 5 : 6; }
 function renderCalendarReadStrip(activity) {
   const key = state.calendarReadDate;
   const act = key ? activity[key] : null;
@@ -2870,7 +2992,7 @@ function renderCalendarSection() {
       </div>
       <div class="cal-weekdays">${weekdayLabels.map(w => `<div class="cal-weekday">${w}</div>`).join('')}</div>
       <div class="cal-days">${dayCellsHtml}</div>
-      <div class="cal-heat-legend"><span>Less</span><span class="cal-heat-sw"></span><span class="cal-heat-sw heat-1"></span><span class="cal-heat-sw heat-2"></span><span class="cal-heat-sw heat-3"></span><span class="cal-heat-sw heat-4"></span><span>More</span></div>
+      <div class="cal-heat-legend"><span>Less</span><span class="cal-heat-sw"></span><span class="cal-heat-sw heat-1"></span><span class="cal-heat-sw heat-2"></span><span class="cal-heat-sw heat-3"></span><span class="cal-heat-sw heat-4"></span><span class="cal-heat-sw heat-5"></span><span class="cal-heat-sw heat-6"></span><span>More</span></div>
       ${renderCalendarReadStrip(activity)}
     </div>
     <div style="display:flex;gap:10px;margin-top:10px;">
@@ -2942,7 +3064,7 @@ function renderCalendarPopup() {
 
 function renderDashboardTab() {
   const cat = state.dashboardCategory;
-  if (cat !== 'statistics') state.pieSel = null;
+  if (state.pieSel && cat !== (state.pieSel.kind === 'finish' ? 'year' : 'statistics')) state.pieSel = null;
   const tabs = [
     { key: 'year', label: 'Achievement', icon: ICONS.trophy },
     { key: 'calendar', label: 'Calendar', icon: ICONS.calendar },
@@ -2958,7 +3080,7 @@ function renderDashboardTab() {
       <div class="dash-content${anim}">${content}</div>
     </div>
     ${cat === 'calendar' ? renderCalendarPopup() : ''}
-    ${cat === 'statistics' ? renderPiePopup() : ''}
+    ${cat === 'statistics' || cat === 'year' ? renderPiePopup() : ''}
     ${cat === 'calendar' && state.showCalMonthSheet ? renderCalMonthSheet() : ''}
     ${cat === 'calendar' && state.showCalYearSheet ? renderCalYearSheet() : ''}
     ${state.showYearSheet ? renderYearSheet() : ''}
@@ -5983,6 +6105,21 @@ function attachHandlers() {
       });
     } else if (action === 'pc-chart') {
       pcBind(el);
+    } else if (action === 'pc-zoom') {
+      el.addEventListener('click', () => {
+        state.pagesCurveMonth = Number(el.getAttribute('data-month'));
+        render();
+      });
+    } else if (action === 'pc-unzoom') {
+      el.addEventListener('click', () => { state.pagesCurveMonth = null; render(); });
+    } else if (action === 'pc-last-year') {
+      el.addEventListener('click', () => { state.pagesCurveLastYear = !state.pagesCurveLastYear; render(); });
+    } else if (action === 'pick-finish-month') {
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        state.pieSel = finishMeasure(el);
+        render();
+      });
     } else if (action === 'calendar-close-day') {
       el.addEventListener('click', e => { e.stopPropagation(); state.calendarSelectedDate = null; render(); });
     } else if (action === 'pie-open-slice') {
@@ -6003,6 +6140,8 @@ function attachHandlers() {
         state.dashboardYearFilter = el.getAttribute('data-year') || '';
         state.showYearSheet = false;
         state.showAllYearBooks = false;
+        state.pieSel = null;
+        state.pagesCurveMonth = null;
         render();
       });
     } else if (action === 'pick-stat-field') {
