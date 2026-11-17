@@ -161,16 +161,23 @@
   .cal-day-cell.has-books { cursor: pointer; }
   .cal-day-cell.cal-day-blank { background: var(--bg); }
   .cal-day-cell.has-heat { cursor: pointer; }
-  .cal-day-cell.has-heat .cal-day-num { color: var(--text); }
+  .cal-day-cell.heat-1 .cal-day-num { color: var(--heat-num-1, var(--text)); }
+  .cal-day-cell.heat-2 .cal-day-num { color: var(--heat-num-2, var(--text)); }
+  .cal-day-cell.heat-3 .cal-day-num { color: var(--heat-num-3, var(--text)); }
+  .cal-day-cell.heat-4 .cal-day-num { color: var(--heat-num-4, var(--text)); }
+  .cal-day-cell.heat-5 .cal-day-num { color: var(--heat-num-5, var(--text)); }
+  .cal-day-cell.heat-6 .cal-day-num { color: var(--heat-num-6, var(--text)); }
   .cal-day-cell.heat-1 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.22), rgba(var(--accent-rgb), 0.22)); }
   .cal-day-cell.heat-2 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.4), rgba(var(--accent-rgb), 0.4)); }
   .cal-day-cell.heat-3 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.6), rgba(var(--accent-rgb), 0.6)); }
   .cal-day-cell.heat-4 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.8), rgba(var(--accent-rgb), 0.8)); }
   .cal-day-cell.heat-5 { background-image: linear-gradient(var(--accent), var(--accent)); }
   .cal-day-cell.heat-6 { background-image: linear-gradient(var(--accent-text), var(--accent-text)); }
-  .cal-day-cell.heat-6 .cal-day-num { color: var(--surface); }
   .cal-day-cell.has-heat.selected::after { box-shadow: inset 0 0 0 2px var(--accent-dark); }
-  .cal-day-cell.heat-5.selected::after, .cal-day-cell.heat-6.selected::after { box-shadow: inset 0 0 0 2px var(--text); }
+  .cal-day-cell.heat-3.selected::after { box-shadow: inset 0 0 0 2px var(--heat-num-3, var(--text)); }
+  .cal-day-cell.heat-4.selected::after { box-shadow: inset 0 0 0 2px var(--heat-num-4, var(--text)); }
+  .cal-day-cell.heat-5.selected::after { box-shadow: inset 0 0 0 2px var(--heat-num-5, var(--text)); }
+  .cal-day-cell.heat-6.selected::after { box-shadow: inset 0 0 0 2px var(--heat-num-6, var(--text)); }
   .cal-heat-legend { display: flex; align-items: center; justify-content: flex-end; gap: 5px; margin-top: 10px; font-size: 11px; color: var(--text-faint); }
   .cal-heat-sw { width: 14px; height: 14px; box-sizing: border-box; background-color: var(--surface); border: 1px solid var(--border); }
   .cal-heat-sw.heat-1 { background-image: linear-gradient(rgba(var(--accent-rgb), 0.22), rgba(var(--accent-rgb), 0.22)); border-color: transparent; }
@@ -769,7 +776,22 @@ function getAccentTextColor(hex) {
   }
   return out;
 }
+// Calendar heatmap: pick the readable text color (dark or white) for every tint level of the current accent
+function blendOnWhiteHex(hex, a) {
+  const h = hex.replace('#', '');
+  const ch = i => Math.round(a * parseInt(h.substring(i, i + 2), 16) + (1 - a) * 255);
+  return `#${[ch(0), ch(2), ch(4)].map(v => v.toString(16).padStart(2, '0')).join('')}`;
+}
+function bestTextOn(bgHex) {
+  const lb = getRelLuminance(bgHex);
+  const darkL = getRelLuminance('#18181B');
+  const cDark = (lb + 0.05) / (darkL + 0.05);
+  const cWhite = 1.05 / (lb + 0.05);
+  return cDark >= cWhite ? '#18181B' : '#FFFFFF';
+}
 function applyAccent(hex) {
+  const heatBgs = [0.22, 0.4, 0.6, 0.8].map(a => blendOnWhiteHex(hex, a)).concat([hex, getAccentTextColor(hex)]);
+  heatBgs.forEach((bg, i) => document.documentElement.style.setProperty('--heat-num-' + (i + 1), bestTextOn(bg)));
   document.documentElement.style.setProperty('--accent', hex);
   document.documentElement.style.setProperty('--accent-rgb', hexToRgbString(hex));
   document.documentElement.style.setProperty('--accent-contrast', getContrastTextColor(hex));
