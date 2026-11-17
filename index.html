@@ -92,14 +92,23 @@
   .year-group-stats { font-size: 11.5px; color: var(--accent-text); }
   .month-chart { display: flex; align-items: flex-end; gap: 4px; margin-top: 8px; }
   .month-col { flex: 1; display: flex; flex-direction: column; align-items: center; }
-  .month-col-count { font-size: 10px; font-weight: 600; color: var(--accent-text); height: 13px; font-variant-numeric: tabular-nums; }
+  .month-col-count { font-size: 10px; font-weight: 600; color: var(--accent-text); height: 13px; margin-bottom: 4px; font-variant-numeric: tabular-nums; }
   button.month-col { background: none; border: none; padding: 0; margin: 0; font-family: inherit; cursor: pointer; min-width: 0; -webkit-tap-highlight-color: transparent; }
   .month-chart.has-sel .month-col:not(.selected) { opacity: 0.35; }
-  .year-head-stack { flex-direction: column; align-items: flex-start; gap: 6px; }
-  .year-chip { display: inline-flex; align-items: center; gap: 4px; padding: 0 10px; height: 28px; border-radius: 10px; background: transparent; border: 1px solid var(--accent-text); font-family: var(--font-display); font-weight: 700; font-size: 12px; color: var(--accent-text); cursor: pointer; }
+  .year-pop-backdrop { position: fixed; inset: 0; z-index: 40; background: transparent; touch-action: none; }
+  .year-pop { position: fixed; z-index: 41; box-sizing: border-box; width: 112px; padding: 4px; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; background: var(--surface); border-radius: 12px; box-shadow: 0 10px 26px rgba(0,0,0,0.2); animation: picker-sheet-pop 0.15s ease-out; }
+  .year-pop-opt { box-sizing: border-box; flex: 0 0 auto; width: 104px; height: 34px; padding: 0 8px; display: flex; align-items: center; justify-content: space-between; border: none; border-radius: 9px; background: none; font-family: var(--font-body); font-weight: 600; font-size: 16px; color: var(--text); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .year-pop-opt.active { background: rgba(var(--accent-rgb), 0.35); color: var(--accent-text); font-weight: 800; }
+  .year-pop-opt svg { width: 14px; height: 14px; color: var(--accent-text); flex-shrink: 0; }
+  .year-head-one { flex-wrap: nowrap; align-items: center; gap: 12px; }
+  .year-head-one .year-group-stats { white-space: nowrap; }
+  .year-chip { display: inline-flex; align-items: center; gap: 4px; padding: 0; margin: 0; border: none; background: none; font-family: var(--font-body); font-weight: 800; font-size: 16px; color: var(--accent-text); cursor: pointer; -webkit-tap-highlight-color: transparent; flex-shrink: 0; }
   .year-chip svg { width: 12px; height: 12px; color: var(--accent-text); flex-shrink: 0; }
+  @media (max-width: 350px) { .year-head-one .year-group-stats { font-size: 10.5px; } }
   .month-col-track { width: 100%; max-width: 18px; height: 84px; display: flex; align-items: flex-end; background: var(--bg); border-radius: 4px; overflow: hidden; }
   .month-col-fill { width: 100%; background: var(--accent); border-radius: 3px 3px 0 0; min-height: 0; }
+  .fin-card { min-height: 225px; box-sizing: border-box; }
+  .fin-card .month-col-track { height: 125px; }
   .month-col-label { font-size: 9.5px; color: var(--text-faint); margin-top: 4px; }
   .pc-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .pc-head .year-top5-heading { margin: 0; }
@@ -220,10 +229,18 @@
   .pie-pop-count { flex: 0 0 auto; font-size: 1.21em; line-height: 1.3; font-weight: 600; color: var(--accent-text); }
   .pie-pop-back { width: 100%; cursor: pointer; }
   .pie-pop-list { flex: 1 1 auto; min-height: 0; overflow: hidden; box-sizing: border-box; padding: 0.2em 0.1em; background: #F5F5F6; border: 1px solid var(--border); border-radius: 0.8em; }
-  .pie-pop-row { display: block; position: relative; width: 100%; box-sizing: border-box; height: 1.8em; margin: 0; padding: 0 0.45em 0 1.3em; background: none; border: none; border-radius: 0.45em; font: inherit; font-weight: 400; line-height: 1.8em; text-align: left; color: var(--text); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .pie-pop-row { display: flex; align-items: center; position: relative; width: 100%; box-sizing: border-box; height: 1.8em; margin: 0; padding: 0 0.45em 0 1.3em; background: none; border: none; border-radius: 0.45em; font: inherit; font-weight: 400; line-height: 1.8em; text-align: left; color: var(--text); cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .pie-pop-row::before { content: ''; position: absolute; left: 0.6em; top: 50%; width: 0.3em; height: 0.3em; margin-top: -0.15em; border-radius: 50%; background: var(--accent-text); }
   .pie-pop-row:active { background: rgba(128,150,147,0.16); background: color-mix(in srgb, var(--accent-text) 16%, transparent); }
-  .pie-pop-row-t { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 1.21em; color: var(--text); color: color-mix(in srgb, var(--text) 84%, var(--text-soft)); }
+  .pie-pop-row-t { display: block; flex: 1 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 1.21em; color: var(--text); color: color-mix(in srgb, var(--text) 84%, var(--text-soft)); }
+  .pie-pop-rate { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 0.2em; margin-left: 0.5em; font-size: 1.21em; font-weight: 600; color: #CA8A04; }
+  .pie-pop-rate svg { width: 0.85em; height: 0.85em; }
+  .pie-pop-rate-none { color: var(--text-faint); font-weight: 400; }
+  .pie-pop-fin .pie-pop-name, .pie-pop-fin .pie-pop-count { font-size: 10.5px; }
+  .pie-pop-fin .pie-pop-row, .pie-pop-fin .pie-pop-more { height: 24px; line-height: 24px; }
+  .pie-pop-fin .pie-pop-row-t { font-size: 10.5px; color: var(--text-soft); }
+  .pie-pop-fin .pie-pop-more-t { font-size: 10.5px; }
+  .pie-pop-fin .pie-pop-rate { font-size: 10.5px; }
   .pie-pop-more { display: block; width: 100%; height: 1.8em; padding: 0 0.45em 0 1.3em; margin: 0; background: none; border: none; font: inherit; font-weight: 600; line-height: 1.8em; text-align: left; color: var(--accent-text); cursor: pointer; }
   .pie-pop-more-t { font-size: 1.21em; }
   .pie-pop-row-t.pie-pop-row-multi { display: flex; align-items: baseline; text-overflow: clip; }
@@ -788,6 +805,7 @@ let state = {
   calendarReadDate: null,
   pagesCurveMode: 'week',
   pagesCurveLastYear: false,
+  yearPop: null,
   pagesCurveMonth: null,
   statisticsField: 'writer',
   pieSel: null,
@@ -1179,7 +1197,7 @@ function rankBooksBy(books, keyFn) {
       let e = map.get(key);
       if (!e) { e = { count: 0, books: [], seen: new Set() }; map.set(key, e); }
       e.count += 1;
-      if (!e.seen.has(b.id)) { e.seen.add(b.id); e.books.push({ id: b.id, title: b.title || 'Untitled' }); }
+      if (!e.seen.has(b.id)) { e.seen.add(b.id); e.books.push({ id: b.id, title: b.title || 'Untitled', rating: b.rating }); }
     });
   });
   return [...map.entries()].map(([k, e]) => [k, e.count, e.books]).sort((a, b) => b[1] - a[1]);
@@ -2273,16 +2291,21 @@ function renderYearPickerTrigger(years, activeYear) {
 function renderYearSheet() {
   const years = getAvailableYears();
   const activeYear = (state.dashboardYearFilter && years.includes(state.dashboardYearFilter)) ? state.dashboardYearFilter : years[0];
-  const options = years.map(y => `
-    <button type="button" class="sheet-option-btn ${y === activeYear ? 'active' : ''}" data-action="pick-year" data-year="${y}">
-      ${esc(y)} ${y === activeYear ? ICONS.check : ''}
-    </button>`).join('');
+  const pop = state.yearPop;
+  if (!pop) { state.showYearSheet = false; return ''; }
+  const vw = window.innerWidth || 400, vh = window.innerHeight || 700;
+  const rows = Math.max(1, Math.min(years.length, 5));
+  const w = 112, h = rows * 34 + (rows - 1) * 2 + 8;
+  const left = Math.max(8, Math.min(pop.left - 12, vw - 8 - w));
+  let top = pop.bottom + 4, oy = 'top';
+  if (top + h > vh - 8) {
+    const up = pop.top - 4 - h;
+    if (up >= 8) { top = up; oy = 'bottom'; } else { top = Math.max(8, vh - 8 - h); }
+  }
+  const options = years.map(y => `<button type="button" class="year-pop-opt${y === activeYear ? ' active' : ''}" data-action="pick-year" data-year="${esc(y)}"><span>${esc(y)}</span>${y === activeYear ? ICONS.check : ''}</button>`).join('');
   return `
-    <div class="cal-sheet-backdrop" data-action="close-year-sheet">
-      <div class="cal-sheet" data-action="stop">
-        <p class="picker-sheet-title">Select Year</p>
-        <div class="sheet-option-list">${options}</div>
-      </div>
+    <div class="year-pop-backdrop" data-action="close-year-sheet">
+      <div class="year-pop" data-action="stop" style="left:${left.toFixed(1)}px;top:${top.toFixed(1)}px;max-height:${h}px;transform-origin:left ${oy}">${options}</div>
     </div>`;
 }
 
@@ -2329,6 +2352,16 @@ function pcBuildPts(data, mode, s, e) {
     if (!names.length) return '';
     return names.length <= 2 ? names.join(', ') : `${names.slice(0, 2).join(', ')} +${names.length - 2} More`;
   };
+  if (mode === 'total') {
+    const out = [];
+    let run = 0;
+    for (let i = 0; i <= end; i++) {
+      run += days[i];
+      if (i < s) continue;
+      out.push({ c: i - s, v: run, d: days[i], lab: new Date(year, 0, 1 + i).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }), sub: titleOf([i]) });
+    }
+    return out;
+  }
   if (mode === 'week') {
     const weeks = [];
     let cw = null;
@@ -2351,8 +2384,9 @@ function renderPagesCurve(year) {
   if (!data) { pagesCurveCtx = null; return ''; }
   const mLens = pcMonthLens(data.isLeap), mStart = pcMonthStarts(data.isLeap);
   let zoom = state.pagesCurveMonth;
-  if (zoom === null || zoom === undefined || zoom < 0 || zoom > 11 || mStart[zoom] > data.lastIdx) zoom = null;
-  const mode = zoom !== null ? 'day' : (state.pagesCurveMode === 'day' ? 'day' : 'week');
+  const isTotal = state.pagesCurveMode === 'total';
+  if (isTotal || zoom === null || zoom === undefined || zoom < 0 || zoom > 11 || mStart[zoom] > data.lastIdx) zoom = null;
+  const mode = isTotal ? 'total' : (zoom !== null ? 'day' : (state.pagesCurveMode === 'day' ? 'day' : 'week'));
   const s0 = zoom !== null ? mStart[zoom] : 0;
   const e0 = zoom !== null ? mStart[zoom] + mLens[zoom] - 1 : data.total - 1;
   const axisN = e0 - s0 + 1;
@@ -2373,10 +2407,12 @@ function renderPagesCurve(year) {
   const showLy = !!state.pagesCurveLastYear && lyPts.length > 0;
   let max = 0, mi = 0;
   pts.forEach((q, i) => { if (q.v > max) { max = q.v; mi = i; } });
+  if (mode === 'total') { mi = n - 1; max = pts[n - 1].v; }
   const hasData = max > 0;
   const lyMax = showLy ? Math.max(0, ...lyPts.map(q => q.v)) : 0;
-  const step = mode === 'week' ? 50 : 10;
-  const yMax = Math.max(step, Math.ceil(Math.max(max, lyMax) / step) * step);
+  const ref = Math.max(max, lyMax);
+  const step = mode === 'week' ? 50 : mode === 'day' ? 10 : (ref < 1000 ? 100 : ref < 5000 ? 500 : 1000);
+  const yMax = Math.max(step, Math.ceil(ref / step) * step);
   const W = Math.max(280, Math.min(window.innerWidth || 380, 640) - 64), H = 150;
   const L = 6, R = 6, T = 24, B = 128, pw = W - L - R;
   const X = c => L + pw * c / Math.max(1, axisN - 1);
@@ -2402,7 +2438,7 @@ function renderPagesCurve(year) {
   if (zoom === null) {
     axisLabels = PC_MONTHS.map((nm, i) => {
       const x = X(mStart[i] + mLens[i] / 2);
-      const tappable = mStart[i] <= data.lastIdx;
+      const tappable = !isTotal && mStart[i] <= data.lastIdx;
       return `<g class="${tappable ? 'pc-tap' : ''}"${tappable ? ` data-action="pc-zoom" data-month="${i}"` : ''}><rect x="${(x - 14).toFixed(1)}" y="132" width="28" height="18" fill="transparent"/><text class="pc-mlabel" x="${x.toFixed(1)}" y="145">${nm}</text></g>`;
     }).join('');
   } else {
@@ -2414,25 +2450,37 @@ function renderPagesCurve(year) {
   const px = hasData ? X(pts[mi].c) : 0, py = hasData ? Y(max) : 0;
   const anchor = px < 16 ? 'start' : px > W - 16 ? 'end' : 'middle';
   const peak = hasData ? `<circle class="pc-peak" cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="3"/><text class="pc-peaklabel" x="${px.toFixed(1)}" y="${(py - 7).toFixed(1)}" text-anchor="${anchor}">${max}</text>` : '';
-  const best = hasData ? `Best ${mode === 'week' ? 'Week' : 'Day'} · ${pts[mi].lab} · ${pcPagesText(max)}` : 'No Pages Logged';
-  const bestSub = hasData ? pts[mi].sub : '';
+  let best, bestSub;
+  if (mode === 'total') {
+    best = `${data.isCurrent ? 'Total So Far' : 'Year Total'} · ${pts[n - 1].lab} · ${pcPagesText(max)}`;
+    bestSub = '';
+    if (showLy) {
+      const lyAt = lyPts[Math.min(n - 1, lyPts.length - 1)];
+      const diff = max - lyAt.v;
+      bestSub = diff === 0 ? 'Level With Last Year' : (diff > 0 ? `${diff} Pages Ahead Of Last Year` : `${-diff} Pages Behind Last Year`);
+    }
+  } else {
+    best = hasData ? `Best ${mode === 'week' ? 'Week' : 'Day'} · ${pts[mi].lab} · ${pcPagesText(max)}` : 'No Pages Logged';
+    bestSub = hasData ? pts[mi].sub : '';
+  }
   pagesCurveCtx = { pts, lyPts, showLy, mode, W, L, pw, axisN, B, T, yMax, best, bestSub };
   const headRight = zoom !== null
     ? `<button type="button" class="pc-zoom-chip" data-action="pc-unzoom" aria-label="Back to full year">${PC_MONTHS[zoom]} ✕</button>`
     : `<div class="pc-toggle">
           <button type="button" class="pc-opt${mode === 'week' ? ' active' : ''}" data-action="pc-mode" data-mode="week">Week</button>
           <button type="button" class="pc-opt${mode === 'day' ? ' active' : ''}" data-action="pc-mode" data-mode="day">Day</button>
+          <button type="button" class="pc-opt${mode === 'total' ? ' active' : ''}" data-action="pc-mode" data-mode="total">Total</button>
         </div>`;
   const lyBtn = `<div class="pc-foot"><button type="button" class="pc-ly${showLy ? ' on' : ''}"${prevData ? ' data-action="pc-last-year"' : ' disabled'} aria-pressed="${showLy}"><span class="pc-ly-sw"></span>${prevData ? 'Last Year' : 'Last Year · No Data'}</button></div>`;
   return `
     <div class="year-group pc-group">
       <div class="pc-head">
-        <p class="year-top5-heading chart-heading-accent">${mode === 'week' ? 'Pages Per Week' : 'Pages Per Day'}</p>
+        <p class="year-top5-heading chart-heading-accent">${mode === 'week' ? 'Pages Per Week' : mode === 'day' ? 'Pages Per Day' : 'Total Pages'}</p>
         ${headRight}
       </div>
       <p class="pc-read" id="pcRead">${esc(best)}</p>
       <p class="pc-sub" id="pcSub">${esc(bestSub)}</p>
-      <svg class="pc-chart" data-action="pc-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Pages read per ${mode} in ${year}">
+      <svg class="pc-chart" data-action="pc-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${mode === 'total' ? 'Total pages read' : 'Pages read per ' + mode} in ${year}">
         <line class="pc-axis" x1="0" y1="${B}" x2="${W}" y2="${B}"/>
         ${lyLine}
         <path class="pc-area" d="${area}"/>
@@ -2474,8 +2522,10 @@ function pcBind(svg) {
       c.lyPts.forEach(p2 => { const dd = Math.abs(p2.c - q.c); if (dd < ld) { ld = dd; lb = p2; } });
       if (lb && ld <= tol) txt += ` · Last Year ${lb.v}`;
     }
+    let sub = q.sub;
+    if (c.mode === 'total') sub = (q.d > 0 ? `+${q.d} That Day` : 'No Reading That Day') + (q.sub ? ` · ${q.sub}` : '');
     const r = el2('pcRead'); if (r) r.textContent = txt;
-    const sb = el2('pcSub'); if (sb) sb.textContent = q.sub;
+    const sb = el2('pcSub'); if (sb) sb.textContent = sub;
   };
   svg.addEventListener('pointerdown', show);
   svg.addEventListener('pointermove', e => { if (e.pointerType === 'mouse' || e.pressure > 0) show(e); });
@@ -2527,13 +2577,13 @@ function renderAchievementSection() {
   }
   return `
     <div class="year-group">
-      <div class="year-group-head year-head-stack">
+      <div class="year-group-head year-head-one">
         <button type="button" class="year-chip" data-action="open-year-sheet">${esc(g.year)} ${ICONS.chevronDown}</button>
         <span class="year-group-stats">${g.count} book${g.count === 1 ? '' : 's'} · ${g.totalPages} pages · ${g.perDay.toFixed(1)} pg/day avg</span>
       </div>
       ${top5Html}
     </div>
-    ${chartHtml ? `<div class="year-group"><p class="year-top5-heading chart-heading-accent">Finishes by Month</p>${chartHtml}</div>` : ''}
+    ${chartHtml ? `<div class="year-group fin-card"><p class="year-top5-heading chart-heading-accent">Finishes by Month</p>${chartHtml}</div>` : ''}
     ${renderPagesCurve(Number(activeYear))}`;
 }
 
@@ -2739,7 +2789,7 @@ function buildPieSlices(entries) {
     const byId = new Map(), books = [];
     rest.forEach(e => (e[2] || []).forEach(bk => {
       let item = byId.get(bk.id);
-      if (!item) { item = { id: bk.id, title: bk.title, names: [] }; byId.set(bk.id, item); books.push(item); }
+      if (!item) { item = { id: bk.id, title: bk.title, rating: bk.rating, names: [] }; byId.set(bk.id, item); books.push(item); }
       if (e[0] && !item.names.includes(e[0])) item.names.push(e[0]);   // e[0] = nama kategori (penulis/negara/dst)
     }));
     books.forEach(b => b.names.sort((x, y) => String(x).localeCompare(String(y), undefined, { sensitivity: 'base' })));
@@ -2798,6 +2848,11 @@ function pieCloseAt(e, backdrop) {
   render();
 }
 
+const PIE_STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="currentColor"/></svg>';
+function pieRatingHtml(r) {
+  const v = Number(r);
+  return v > 0 ? `<span class="pie-pop-rate">${PIE_STAR}${v.toFixed(1)}</span>` : `<span class="pie-pop-rate pie-pop-rate-none">${PIE_STAR}-</span>`;
+}
 const FINISH_MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 function getFinishMonthBooks(year, month) {
   return getDoneEntries()
@@ -2823,7 +2878,7 @@ function renderPiePopup() {
     const list = getFinishMonthBooks(sel.year, sel.month);
     if (!list.length) { state.pieSel = null; return ''; }
     name = FINISH_MONTH_NAMES[sel.month];
-    books = list.map(b => ({ id: b.id, title: b.title }));
+    books = list.map(b => ({ id: b.id, title: b.title, rating: b.rating }));
   } else {
     if (sel.field !== state.statisticsField) { state.pieSel = null; return ''; }
     const active = STATISTICS_FIELDS.find(f => f.key === state.statisticsField) || STATISTICS_FIELDS[0];
@@ -2838,17 +2893,18 @@ function renderPiePopup() {
       : (a, b) => cmp(a.title, b.title));
   }
   const n = books.length;
-  const fs = sel.fs || 12;
-  const row = 1.8 * fs, head = 1.95 * fs, pad = 0.575 * fs, lp = 0.4 * fs + 2, pg = 0.3 * fs;   // pad = setengah dari (padding atas 0.45em + bawah 0.7em); head = tinggi 1.85em + margin 0.1em; lp = padding + border kotak abu, pg = jarak kotak ke pager
+  const isFin = sel.kind === 'finish';
+  const fs = isFin ? 12 : (sel.fs || 12);
+  const row = isFin ? 24 : 1.8 * fs, head = 1.95 * fs, pad = 0.575 * fs, lp = 0.4 * fs + 2, pg = 0.3 * fs;   // pad = setengah dari (padding atas 0.45em + bawah 0.7em); head = tinggi 1.85em + margin 0.1em; lp = padding + border kotak abu, pg = jarak kotak ke pager
    // head = tinggi 1.9em + margin bawah 0.3em
   const vw = window.innerWidth || 400, vh = window.innerHeight || 700;
-  const w = Math.min(18 * fs, vw - 16);
+  const w = Math.min(isFin ? 220 : 18 * fs, vw - 16);
   const PREVIEW = 5;
   const perPage = Math.max(3, Math.min(6, Math.floor((vh - 24 - 2 * pad - head - lp - row - pg) / row)));
   const countTxt = `${n} book${n === 1 ? '' : 's'}`;
   const rowsHtml = list => list.map(b => `<button type="button" class="pie-pop-row" data-action="pie-open-book" data-id="${esc(b.id)}">${isOthers && b.names && b.names.length
     ? `<span class="pie-pop-row-t pie-pop-row-multi"><span class="pie-pop-row-title">${esc(b.title)}</span><span class="pie-pop-row-sep">·</span><span class="pie-pop-row-name">${esc(b.names.join(', '))}</span></span>`
-    : `<span class="pie-pop-row-t">${esc(b.title)}</span>`}</button>`).join('');
+    : `<span class="pie-pop-row-t">${esc(b.title)}</span>`}${pieRatingHtml(b.rating)}</button>`).join('');
   // Animasi pop-in hanya saat popup baru dibuka; ganti page / expand / balik dari Book Details tidak mengulang animasi
   const animate = !sel.shown;
   sel.shown = true;
@@ -2886,7 +2942,7 @@ function renderPiePopup() {
   const ox = sel.side === 'left' ? 'left' : 'right';
   return `
     <div class="pie-pop-backdrop${state.expandedId ? ' pie-under' : ''}" data-action="pie-close">
-      <div class="pie-pop${animate ? ' pie-pop-anim' : ''}" data-action="stop" style="font-size:${fs}px;left:${left.toFixed(1)}px;top:${top.toFixed(1)}px;width:${w.toFixed(1)}px;height:${h.toFixed(1)}px;transform-origin:${ox} ${oy}">
+      <div class="pie-pop${animate ? ' pie-pop-anim' : ''}${isFin ? ' pie-pop-fin' : ''}" data-action="stop" style="font-size:${fs}px;left:${left.toFixed(1)}px;top:${top.toFixed(1)}px;width:${w.toFixed(1)}px;height:${h.toFixed(1)}px;transform-origin:${ox} ${oy}">
         ${headHtml}
         <div class="pie-pop-list">${listHtml}</div>
         ${footHtml}
@@ -6100,7 +6156,8 @@ function attachHandlers() {
       });
     } else if (action === 'pc-mode') {
       el.addEventListener('click', () => {
-        state.pagesCurveMode = el.getAttribute('data-mode') === 'day' ? 'day' : 'week';
+        const m = el.getAttribute('data-mode');
+        state.pagesCurveMode = (m === 'day' || m === 'total') ? m : 'week';
         render();
       });
     } else if (action === 'pc-chart') {
@@ -6164,7 +6221,12 @@ function attachHandlers() {
     } else if (action === 'close-year-stat-picker') {
       el.addEventListener('click', e => { e.stopPropagation(); state.showYearStatPicker = false; render(); });
     } else if (action === 'open-year-sheet') {
-      el.addEventListener('click', () => { state.showYearSheet = true; render(); });
+      el.addEventListener('click', () => {
+        const r = el.getBoundingClientRect();
+        state.yearPop = { left: r.left, top: r.top, bottom: r.bottom };
+        state.showYearSheet = true;
+        render();
+      });
     } else if (action === 'close-year-sheet') {
       el.addEventListener('click', e => { e.stopPropagation(); state.showYearSheet = false; render(); });
     } else if (action === 'toggle-year-books') {
@@ -6371,7 +6433,7 @@ let _pieLastW = window.innerWidth;
 window.addEventListener('resize', () => {
   if (window.innerWidth === _pieLastW) return;
   _pieLastW = window.innerWidth;
-  if (state.pieSel) { state.pieSel = null; render(); }
+  if (state.pieSel || state.showYearSheet) { state.pieSel = null; state.showYearSheet = false; render(); }
 });
 
 render();
