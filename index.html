@@ -1374,6 +1374,7 @@ function render() {
   if (activeHistTab && activeHistTab.scrollIntoView) { try { activeHistTab.scrollIntoView({ block: 'nearest', inline: 'center' }); } catch (e) {} }
   updateHistTabFades();
   requestAnimationFrame(updateHistTabFades);
+  pcFitText();
   if (savedScrollTop !== null) {
     const nextModalBody = app.querySelector('.modal-body');
     if (nextModalBody) nextModalBody.scrollTop = savedScrollTop;
@@ -2890,7 +2891,9 @@ function finishMeasure(el) {
     kind: 'finish', year: el.getAttribute('data-year'), month: Number(el.getAttribute('data-month')),
     side: (r.left + r.right) / 2 < vw / 2 ? 'left' : 'right',
     rect: { left: r.left, right: r.right, top: r.top, bottom: r.bottom },
-    fs: 12, expanded: false, page: 0
+    // Skala sama seperti popup pie di Statistics (lebar kartu / lebar viewBox pie)
+    fs: (() => { const aw = Math.min(vw, 640) - 62, W = aw > 440 ? Math.min(aw, 640) : 440; return Math.round(Math.max(9, 12 * aw / W) * 10) / 10; })(),
+    expanded: false, page: 0
   };
 }
 function renderPiePopup() {
@@ -2917,11 +2920,11 @@ function renderPiePopup() {
   }
   const n = books.length;
   const isFin = sel.kind === 'finish';
-  const fs = isFin ? 12 : (sel.fs || 12);
-  const row = isFin ? 24 : 1.8 * fs, head = 1.95 * fs, pad = 0.575 * fs, lp = 0.4 * fs + 2, pg = 0.3 * fs;   // pad = setengah dari (padding atas 0.45em + bawah 0.7em); head = tinggi 1.85em + margin 0.1em; lp = padding + border kotak abu, pg = jarak kotak ke pager
+  const fs = sel.fs || 12;
+  const row = 1.8 * fs, head = 1.95 * fs, pad = 0.575 * fs, lp = 0.4 * fs + 2, pg = 0.3 * fs;   // pad = setengah dari (padding atas 0.45em + bawah 0.7em); head = tinggi 1.85em + margin 0.1em; lp = padding + border kotak abu, pg = jarak kotak ke pager
    // head = tinggi 1.9em + margin bawah 0.3em
   const vw = window.innerWidth || 400, vh = window.innerHeight || 700;
-  const w = Math.min(isFin ? 220 : 18 * fs, vw - 16);
+  const w = Math.min(18 * fs, vw - 16);
   const PREVIEW = 5;
   const perPage = Math.max(3, Math.min(6, Math.floor((vh - 24 - 2 * pad - head - lp - row - pg) / row)));
   const countTxt = `${n} book${n === 1 ? '' : 's'}`;
@@ -2965,7 +2968,7 @@ function renderPiePopup() {
   const ox = sel.side === 'left' ? 'left' : 'right';
   return `
     <div class="pie-pop-backdrop${state.expandedId ? ' pie-under' : ''}" data-action="pie-close">
-      <div class="pie-pop${animate ? ' pie-pop-anim' : ''}${isFin ? ' pie-pop-fin' : ''}" data-action="stop" style="font-size:${fs}px;left:${left.toFixed(1)}px;top:${top.toFixed(1)}px;width:${w.toFixed(1)}px;height:${h.toFixed(1)}px;transform-origin:${ox} ${oy}">
+      <div class="pie-pop${animate ? ' pie-pop-anim' : ''}" data-action="stop" style="font-size:${fs}px;left:${left.toFixed(1)}px;top:${top.toFixed(1)}px;width:${w.toFixed(1)}px;height:${h.toFixed(1)}px;transform-origin:${ox} ${oy}">
         ${headHtml}
         <div class="pie-pop-list">${listHtml}</div>
         ${footHtml}
@@ -4448,8 +4451,14 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
       const panelTop = 382, panelH = 205, colW = PW / stats.length;
       ctx.fillStyle = 'rgba(70,60,50,0.07)';
       ctx.beginPath(); ctx.roundRect(PX, panelTop, PW, panelH, 28); ctx.fill();
+      // all stats share one size: the largest that fits the widest value
+      let statSz = 96;
+      for (; statSz > 40; statSz -= 4) {
+        ctx.font = `800 ${statSz}px "Plus Jakarta Sans", sans-serif`;
+        if (stats.every(s3 => ctx.measureText(s3.t).width <= colW - 50)) break;
+      }
       stats.forEach((s2, i) => {
-        let sz = s2.big ? 100 : 76;
+        let sz = statSz;
         for (; sz > 40; sz -= 4) { ctx.font = `800 ${sz}px "Plus Jakarta Sans", sans-serif`; if (ctx.measureText(s2.t).width <= colW - 50) break; }
         const bh = sz + 12 + 25, top = panelTop + (panelH - bh) / 2, x = PX + colW * i + colW / 2;
         ctx.textAlign = 'center';
@@ -4628,6 +4637,27 @@ function generateMonthlyWrapupCanvas(year, month, callback) {
       }
 
       // ----- joke + footer -----
+      // frosted panel behind the joke so it doesn't blend into the quote above it
+      {
+        const bx = PX, bw = PW, by = jokeTop - 22, bh = jokeLast + 26 - by;
+        ctx.save();
+        ctx.beginPath(); ctx.roundRect(bx, by, bw, bh, 28); ctx.clip();
+        try {
+          if ('filter' in ctx) {
+            const tmp = document.createElement('canvas'); tmp.width = canvas.width; tmp.height = canvas.height;
+            tmp.getContext('2d').drawImage(canvas, 0, 0);
+            ctx.filter = 'blur(14px)';
+            ctx.drawImage(tmp, 0, 0);
+            ctx.filter = 'none';
+          }
+        } catch (e) { ctx.filter = 'none'; }
+        const accRgb = getComputedStyle(document.documentElement).getPropertyValue('--accent-rgb').trim() || '185, 217, 213';
+        ctx.fillStyle = `rgba(${accRgb}, 0.28)`;
+        ctx.fillRect(bx, by, bw, bh);
+        ctx.restore();
+        ctx.strokeStyle = `rgba(${accRgb}, 0.6)`; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.roundRect(bx, by, bw, bh, 28); ctx.stroke();
+      }
       ctx.textAlign = 'center';
       ctx.font = '28px "Noto Serif", serif';
       ctx.fillStyle = INK;
@@ -6810,6 +6840,17 @@ document.addEventListener('scroll', e => {
   if (t && t.classList && t.classList.contains('hist-tabs')) updateHistTabFades();
 }, true);
 window.addEventListener('resize', updateHistTabFades);
+// Samakan ukuran teks sumbu chart SVG dengan chart HTML (9.5px / 10px), apa pun skala viewBox-nya
+function pcFitText() {
+  document.querySelectorAll('svg.pc-chart').forEach(svg => {
+    const vb = svg.viewBox && svg.viewBox.baseVal, w = svg.getBoundingClientRect().width;
+    if (!vb || !vb.width || !w) return;
+    const k = vb.width / w;
+    svg.querySelectorAll('.pc-mlabel').forEach(t => { t.style.fontSize = (9.5 * k).toFixed(2) + 'px'; });
+    svg.querySelectorAll('.pc-peaklabel').forEach(t => { t.style.fontSize = (10 * k).toFixed(2) + 'px'; });
+  });
+}
+window.addEventListener('resize', pcFitText);
 
 // Popup slice pie ditutup kalau lebar layar berubah (rotate/resize) karena posisinya sudah tidak valid
 let _pieLastW = window.innerWidth;
